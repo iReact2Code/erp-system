@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "welcomeBack": "Bon Retour",
+    "signInDescription": "Connectez-vous à votre compte pour continuer",
+    "email": "Email",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "createAccount": "Créer un compte",
+    "signUpDescription": "Créez un nouveau compte pour commencer",
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "register": "S'inscrire",
+    "welcome": "Bon retour"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "inventory": "Inventaire",
+    "sales": "Ventes",
+    "reports": "Rapports",
+    "users": "Utilisateurs",
+    "orders": "Commandes",
+    "profile": "Profil",
+    "purchases": "Achats",
+    "name": "Nom",
+    "role": "Rôle"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "actions": "Actions",
+    "saving": "Enregistrement...",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "loadingUsers": "Chargement des utilisateurs...",
+    "loadingSales": "Chargement des ventes...",
+    "loadingReports": "Chargement des rapports...",
+    "loadingPurchases": "Chargement des achats...",
+    "loadingProfile": "Chargement du profil...",
+    "loadingInventory": "Chargement de l'inventaire...",
+    "logOut": "Se déconnecter"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
+  "language": {
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "french": "Français",
+    "arabic": "Arabe",
+    "hebrew": "Hébreu",
+    "chinese": "Chinois"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bon retour",
+    "role": "Rôle",
+    "stats": {
+      "totalSales": "Ventes Totales",
+      "inventoryItems": "Articles d'Inventaire",
+      "activeOrders": "Commandes Actives",
+      "totalUsers": "Utilisateurs Totaux",
+      "fromLastMonth": "depuis le mois dernier",
+      "itemsLowStock": "articles en rupture de stock",
+      "pendingApproval": "en attente d'approbation"
+    },
+    "tabs": {
+      "inventory": "Inventaire",
+      "sales": "Ventes",
+      "purchases": "Achats",
+      "reports": "Rapports"
+    }
+  },
+  "inventory": {
+    "title": "Gestion d'Inventaire",
+    "description": "Gérez vos articles d'inventaire",
+    "product": "Produit",
+    "productDescription": "un nouveau produit à votre inventaire",
+    "name": "Nom du Produit",
+    "sku": "SKU",
+    "itemDescription": "Description",
+    "quantity": "Quantité",
+    "unitPrice": "Prix Unitaire",
+    "addItem": "Ajouter un Article",
+    "editItem": "Modifier l'Article",
+    "deleteItem": "Supprimer l'Article",
+    "itemName": "Nom de l'Article",
+    "price": "Prix",
+    "category": "Catégorie",
+    "status": "Statut",
+    "inStock": "En Stock",
+    "lowStock": "Stock Faible",
+    "outOfStock": "En Rupture de Stock"
+  },
+  "sales": {
+    "title": "Gestion des Ventes",
+    "description": "Suivez et gérez vos ventes",
+    "addSale": "Ajouter une Vente",
+    "customer": "Client",
+    "amount": "Montant",
+    "date": "Date",
+    "status": "Statut",
+    "completed": "Terminée",
+    "pending": "En attente",
+    "cancelled": "Annulée"
+  },
+  "orders": {
+    "title": "Gestion des Commandes",
+    "description": "Gérez vos commandes",
+    "orderNumber": "Numéro de Commande",
+    "orderDate": "Date de Commande",
+    "totalAmount": "Montant Total",
+    "orderStatus": "Statut de la Commande",
+    "processing": "En cours de traitement",
+    "shipped": "Expédiée",
+    "delivered": "Livrée"
+  },
+  "reports": {
+    "title": "Rapports",
+    "description": "Voir les rapports détaillés de l'entreprise",
+    "salesReport": "Rapport des Ventes",
+    "inventoryReport": "Rapport d'Inventaire",
+    "userReport": "Rapport Utilisateur"
+  },
+  "users": {
+    "title": "Gestion des Utilisateurs",
+    "description": "Gérer les utilisateurs du système",
+    "addUser": "Ajouter un Utilisateur",
+    "editUser": "Modifier l'Utilisateur",
+    "deleteUser": "Supprimer l'Utilisateur",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "role": "Rôle",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "profile": {
+    "title": "Profil",
+    "description": "Gérez vos informations personnelles",
+    "personalInfo": "Informations Personnelles",
+    "accountSettings": "Paramètres du Compte",
+    "changePassword": "Changer le Mot de Passe",
+    "preferences": "Préférences"
+  },
+  "purchases": {
+    "title": "Gestion des Achats",
+    "description": "Suivez et gérez vos achats",
+    "purchase": "Achat",
+    "purchaseDescription": "un nouvel ordre d'achat",
+    "status": "Statut",
+    "items": "Articles",
+    "item": "Article",
+    "product": "Produit",
+    "quantity": "Quantité",
+    "unitPrice": "Prix Unitaire",
+    "subtotal": "Sous-total",
+    "total": "Total"
+  }
+}

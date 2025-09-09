@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "welcomeBack": "Bienvenido de Vuelta",
+    "signInDescription": "Inicia sesión en tu cuenta para continuar",
+    "email": "Correo",
+    "password": "Contraseña",
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "createAccount": "Crear Cuenta",
+    "signUpDescription": "Crea una nueva cuenta para comenzar",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "register": "Registrarse",
+    "welcome": "Bienvenido de vuelta"
+  },
+  "navigation": {
+    "dashboard": "Tablero",
+    "inventory": "Inventario",
+    "sales": "Ventas",
+    "reports": "Reportes",
+    "users": "Usuarios",
+    "orders": "Pedidos",
+    "profile": "Perfil",
+    "purchases": "Compras",
+    "name": "Nombre",
+    "role": "Rol"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "actions": "Acciones",
+    "saving": "Guardando...",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este artículo?",
+    "loadingUsers": "Cargando usuarios...",
+    "loadingSales": "Cargando ventas...",
+    "loadingReports": "Cargando reportes...",
+    "loadingPurchases": "Cargando compras...",
+    "loadingProfile": "Cargando perfil...",
+    "loadingInventory": "Cargando inventario...",
+    "logOut": "Cerrar sesión"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "language": {
+    "english": "Inglés",
+    "spanish": "Español",
+    "french": "Francés",
+    "arabic": "Árabe",
+    "hebrew": "Hebreo",
+    "chinese": "Chino"
+  },
+  "dashboard": {
+    "title": "Tablero",
+    "welcome": "Bienvenido de nuevo",
+    "role": "Rol",
+    "stats": {
+      "totalSales": "Ventas Totales",
+      "inventoryItems": "Artículos de Inventario",
+      "activeOrders": "Pedidos Activos",
+      "totalUsers": "Usuarios Totales",
+      "fromLastMonth": "desde el mes pasado",
+      "itemsLowStock": "artículos con poco stock",
+      "pendingApproval": "pendientes de aprobación"
+    },
+    "tabs": {
+      "inventory": "Inventario",
+      "sales": "Ventas",
+      "purchases": "Compras",
+      "reports": "Reportes"
+    }
+  },
+  "inventory": {
+    "title": "Gestión de Inventario",
+    "description": "Administre sus artículos de inventario",
+    "product": "Producto",
+    "productDescription": "un nuevo producto a su inventario",
+    "name": "Nombre del Producto",
+    "sku": "SKU",
+    "itemDescription": "Descripción",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "addItem": "Agregar Artículo",
+    "editItem": "Editar Artículo",
+    "deleteItem": "Eliminar Artículo",
+    "itemName": "Nombre del Artículo",
+    "price": "Precio",
+    "category": "Categoría",
+    "status": "Estado",
+    "inStock": "En Stock",
+    "lowStock": "Poco Stock",
+    "outOfStock": "Sin Stock"
+  },
+  "sales": {
+    "title": "Gestión de Ventas",
+    "description": "Rastree y administre sus ventas",
+    "addSale": "Agregar Venta",
+    "customer": "Cliente",
+    "amount": "Cantidad",
+    "date": "Fecha",
+    "status": "Estado",
+    "completed": "Completado",
+    "pending": "Pendiente",
+    "cancelled": "Cancelado"
+  },
+  "orders": {
+    "title": "Gestión de Pedidos",
+    "description": "Administre sus pedidos",
+    "orderNumber": "Número de Pedido",
+    "orderDate": "Fecha del Pedido",
+    "totalAmount": "Cantidad Total",
+    "orderStatus": "Estado del Pedido",
+    "processing": "Procesando",
+    "shipped": "Enviado",
+    "delivered": "Entregado"
+  },
+  "reports": {
+    "title": "Reportes",
+    "description": "Ver reportes detallados del negocio",
+    "salesReport": "Reporte de Ventas",
+    "inventoryReport": "Reporte de Inventario",
+    "userReport": "Reporte de Usuarios"
+  },
+  "users": {
+    "title": "Gestión de Usuarios",
+    "description": "Administrar usuarios del sistema",
+    "addUser": "Agregar Usuario",
+    "editUser": "Editar Usuario",
+    "deleteUser": "Eliminar Usuario",
+    "username": "Nombre de Usuario",
+    "email": "Correo",
+    "role": "Rol",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "profile": {
+    "title": "Perfil",
+    "description": "Administre su información personal",
+    "personalInfo": "Información Personal",
+    "accountSettings": "Configuración de Cuenta",
+    "changePassword": "Cambiar Contraseña",
+    "preferences": "Preferencias"
+  },
+  "purchases": {
+    "title": "Gestión de Compras",
+    "description": "Rastrea y gestiona tus compras",
+    "purchase": "Compra",
+    "purchaseDescription": "una nueva orden de compra",
+    "status": "Estado",
+    "items": "Artículos",
+    "item": "Artículo",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "subtotal": "Subtotal",
+    "total": "Total"
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "welcomeBack": "أهلاً بعودتك",
+    "signInDescription": "سجل دخولك إلى حسابك للمتابعة",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "createAccount": "إنشاء حساب",
+    "signUpDescription": "أنشئ حساباً جديداً للبدء",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "register": "التسجيل",
+    "welcome": "أهلاً بعودتك"
+  },
+  "navigation": {
+    "dashboard": "لوحة القيادة",
+    "inventory": "المخزون",
+    "sales": "المبيعات",
+    "reports": "التقارير",
+    "users": "المستخدمون",
+    "orders": "الطلبات",
+    "profile": "الملف الشخصي",
+    "purchases": "المشتريات",
+    "name": "الاسم",
+    "role": "الدور"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "actions": "الإجراءات",
+    "saving": "جاري الحفظ...",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
+    "loadingUsers": "جاري تحميل المستخدمين...",
+    "loadingSales": "جاري تحميل المبيعات...",
+    "loadingReports": "جاري تحميل التقارير...",
+    "loadingPurchases": "جاري تحميل المشتريات...",
+    "loadingProfile": "جاري تحميل الملف الشخصي...",
+    "loadingInventory": "جاري تحميل المخزون...",
+    "logOut": "تسجيل الخروج"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام"
+  },
+  "language": {
+    "english": "الإنجليزية",
+    "spanish": "الإسبانية",
+    "french": "الفرنسية",
+    "arabic": "العربية",
+    "hebrew": "العبرية",
+    "chinese": "الصينية"
+  },
+  "dashboard": {
+    "title": "لوحة القيادة",
+    "welcome": "مرحباً بعودتك",
+    "role": "الدور",
+    "stats": {
+      "totalSales": "إجمالي المبيعات",
+      "inventoryItems": "عناصر المخزون",
+      "activeOrders": "الطلبات النشطة",
+      "totalUsers": "إجمالي المستخدمين",
+      "fromLastMonth": "من الشهر الماضي",
+      "itemsLowStock": "عناصر منخفضة المخزون",
+      "pendingApproval": "في انتظار الموافقة"
+    },
+    "tabs": {
+      "inventory": "المخزون",
+      "sales": "المبيعات",
+      "purchases": "المشتريات",
+      "reports": "التقارير"
+    }
+  },
+  "inventory": {
+    "title": "إدارة المخزون",
+    "description": "إدارة عناصر المخزون الخاصة بك",
+    "product": "المنتج",
+    "productDescription": "منتج جديد إلى مخزونك",
+    "name": "اسم المنتج",
+    "sku": "SKU",
+    "itemDescription": "الوصف",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "addItem": "إضافة عنصر",
+    "editItem": "تعديل العنصر",
+    "deleteItem": "حذف العنصر",
+    "itemName": "اسم العنصر",
+    "price": "السعر",
+    "category": "الفئة",
+    "status": "الحالة",
+    "inStock": "متوفر",
+    "lowStock": "مخزون منخفض",
+    "outOfStock": "غير متوفر"
+  },
+  "sales": {
+    "title": "إدارة المبيعات",
+    "description": "تتبع وإدارة مبيعاتك",
+    "addSale": "إضافة بيع",
+    "customer": "العميل",
+    "amount": "المبلغ",
+    "date": "التاريخ",
+    "status": "الحالة",
+    "completed": "مكتمل",
+    "pending": "قيد الانتظار",
+    "cancelled": "ملغى"
+  },
+  "orders": {
+    "title": "إدارة الطلبات",
+    "description": "إدارة طلباتك",
+    "orderNumber": "رقم الطلب",
+    "orderDate": "تاريخ الطلب",
+    "totalAmount": "المبلغ الإجمالي",
+    "orderStatus": "حالة الطلب",
+    "processing": "قيد المعالجة",
+    "shipped": "تم الشحن",
+    "delivered": "تم التوصيل"
+  },
+  "reports": {
+    "title": "التقارير",
+    "description": "عرض تقارير الأعمال المفصلة",
+    "salesReport": "تقرير المبيعات",
+    "inventoryReport": "تقرير المخزون",
+    "userReport": "تقرير المستخدم"
+  },
+  "users": {
+    "title": "إدارة المستخدمين",
+    "description": "إدارة مستخدمي النظام",
+    "addUser": "إضافة مستخدم",
+    "editUser": "تعديل المستخدم",
+    "deleteUser": "حذف المستخدم",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "description": "إدارة معلوماتك الشخصية",
+    "personalInfo": "المعلومات الشخصية",
+    "accountSettings": "إعدادات الحساب",
+    "changePassword": "تغيير كلمة المرور",
+    "preferences": "التفضيلات"
+  },
+  "purchases": {
+    "title": "إدارة المشتريات",
+    "description": "تتبع وإدارة مشترياتك",
+    "purchase": "شراء",
+    "purchaseDescription": "أمر شراء جديد",
+    "status": "الحالة",
+    "items": "العناصر",
+    "item": "العنصر",
+    "product": "المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "subtotal": "المجموع الفرعي",
+    "total": "المجموع"
+  }
+}

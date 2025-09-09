@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  CLERK
+  SUPERVISOR
+  THIRD_PARTY_CLIENT
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String?
+  hashedPassword String
+  role           UserRole
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  // Relations
+  sales          Sale[]
+  purchases      Purchase[]
+  createdItems   InventoryItem[] @relation("CreatedBy")
+  updatedItems   InventoryItem[] @relation("UpdatedBy")
+}
+
+model InventoryItem {
+  id            String         @id @default(cuid())
+  name          String
+  sku           String         @unique
+  description   String?
+  quantity      Int            @default(0)
+  unitPrice     Float
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  createdById   String
+  updatedById   String
+  // Relations
+  createdBy     User           @relation("CreatedBy", fields: [createdById], references: [id])
+  updatedBy     User           @relation("UpdatedBy", fields: [updatedById], references: [id])
+  saleItems     SaleItem[]
+  purchaseItems PurchaseItem[]
+}
+
+model Sale {
+  id        String     @id @default(cuid())
+  saleDate  DateTime   @default(now())
+  total     Float
+  status    String // pending, completed, cancelled
+  userId    String
+  // Relations
+  user      User       @relation(fields: [userId], references: [id])
+  items     SaleItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model SaleItem {
+  id              String        @id @default(cuid())
+  quantity        Int
+  unitPrice       Float
+  total           Float
+  saleId          String
+  inventoryItemId String
+  // Relations
+  sale            Sale          @relation(fields: [saleId], references: [id])
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}
+
+model Purchase {
+  id           String         @id @default(cuid())
+  purchaseDate DateTime       @default(now())
+  total        Float
+  status       String // pending, completed, cancelled
+  userId       String
+  // Relations
+  user         User           @relation(fields: [userId], references: [id])
+  items        PurchaseItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model PurchaseItem {
+  id              String        @id @default(cuid())
+  quantity        Int
+  unitPrice       Float
+  total           Float
+  purchaseId      String
+  inventoryItemId String
+  // Relations
+  purchase        Purchase      @relation(fields: [purchaseId], references: [id])
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}

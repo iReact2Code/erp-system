@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInDescription": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "createAccount": "Create Account",
+    "signUpDescription": "Create a new account to get started",
+    "login": "Log In",
+    "logout": "Log Out",
+    "register": "Register",
+    "welcome": "Welcome back"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "sales": "Sales",
+    "reports": "Reports",
+    "users": "Users",
+    "orders": "Orders",
+    "profile": "Profile",
+    "purchases": "Purchases",
+    "name": "Name",
+    "role": "Role"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "actions": "Actions",
+    "saving": "Saving...",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "loadingUsers": "Loading users...",
+    "loadingSales": "Loading sales...",
+    "loadingReports": "Loading reports...",
+    "loadingPurchases": "Loading purchases...",
+    "loadingProfile": "Loading profile...",
+    "loadingInventory": "Loading inventory...",
+    "logOut": "Log out"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "english": "English",
+    "spanish": "Spanish",
+    "french": "French",
+    "arabic": "Arabic",
+    "hebrew": "Hebrew",
+    "chinese": "Chinese"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "role": "Role",
+    "stats": {
+      "totalSales": "Total Sales",
+      "inventoryItems": "Inventory Items",
+      "activeOrders": "Active Orders",
+      "totalUsers": "Total Users",
+      "fromLastMonth": "from last month",
+      "itemsLowStock": "items low in stock",
+      "pendingApproval": "pending approval"
+    },
+    "tabs": {
+      "inventory": "Inventory",
+      "sales": "Sales",
+      "purchases": "Purchases",
+      "reports": "Reports"
+    }
+  },
+  "inventory": {
+    "title": "Inventory Management",
+    "description": "Manage your inventory items",
+    "product": "Product",
+    "productDescription": "a new product to your inventory",
+    "name": "Product Name",
+    "sku": "SKU",
+    "itemDescription": "Description",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "addItem": "Add Item",
+    "editItem": "Edit Item",
+    "deleteItem": "Delete Item",
+    "itemName": "Item Name",
+    "price": "Price",
+    "category": "Category",
+    "status": "Status",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "sales": {
+    "title": "Sales Management",
+    "description": "Track and manage your sales",
+    "addSale": "Add Sale",
+    "customer": "Customer",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "completed": "Completed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  },
+  "orders": {
+    "title": "Order Management",
+    "description": "Manage your orders",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "totalAmount": "Total Amount",
+    "orderStatus": "Order Status",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered"
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "View detailed business reports",
+    "salesReport": "Sales Report",
+    "inventoryReport": "Inventory Report",
+    "userReport": "User Report"
+  },
+  "users": {
+    "title": "User Management",
+    "description": "Manage system users",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "deleteUser": "Delete User",
+    "username": "Username",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your personal information",
+    "personalInfo": "Personal Information",
+    "accountSettings": "Account Settings",
+    "changePassword": "Change Password",
+    "preferences": "Preferences"
+  },
+  "purchases": {
+    "title": "Purchase Management",
+    "description": "Track and manage your purchases",
+    "purchase": "Purchase",
+    "purchaseDescription": "a new purchase order",
+    "status": "Status",
+    "items": "Items",
+    "item": "Item",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "subtotal": "Subtotal",
+    "total": "Total"
+  }
+}

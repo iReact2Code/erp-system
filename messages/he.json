@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "welcomeBack": "ברוך שובך",
+    "signInDescription": "היכנס לחשבונך כדי להמשיך",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "signIn": "היכנס",
+    "signUp": "הירשם",
+    "createAccount": "צור חשבון",
+    "signUpDescription": "צור חשבון חדש כדי להתחיל",
+    "login": "התחברות",
+    "logout": "התנתקות",
+    "register": "הרשמה",
+    "welcome": "ברוך שובך"
+  },
+  "navigation": {
+    "dashboard": "לוח בקרה",
+    "inventory": "מלאי",
+    "sales": "מכירות",
+    "reports": "דוחות",
+    "users": "משתמשים",
+    "orders": "הזמנות",
+    "profile": "פרופיל",
+    "purchases": "רכישות",
+    "name": "שם",
+    "role": "תפקיד"
+  },
+  "common": {
+    "loading": "טוען...",
+    "save": "שמור",
+    "cancel": "בטל",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "add": "הוסף",
+    "search": "חיפוש",
+    "actions": "פעולות",
+    "saving": "שומר...",
+    "confirmDelete": "האם אתה בטוח שברצונך למחוק פריט זה?",
+    "loadingUsers": "טוען משתמשים...",
+    "loadingSales": "טוען מכירות...",
+    "loadingReports": "טוען דוחות...",
+    "loadingPurchases": "טוען רכישות...",
+    "loadingProfile": "טוען פרופיל...",
+    "loadingInventory": "טוען מלאי...",
+    "logOut": "התנתקות"
+  },
+  "theme": {
+    "light": "בהיר",
+    "dark": "כהה",
+    "system": "מערכת"
+  },
+  "language": {
+    "english": "אנגלית",
+    "spanish": "ספרדית",
+    "french": "צרפתית",
+    "arabic": "ערבית",
+    "hebrew": "עברית",
+    "chinese": "סינית"
+  },
+  "dashboard": {
+    "title": "לוח בקרה",
+    "welcome": "ברוך השב",
+    "role": "תפקיד",
+    "stats": {
+      "totalSales": "סך המכירות",
+      "inventoryItems": "פריטי מלאי",
+      "activeOrders": "הזמנות פעילות",
+      "totalUsers": "סך המשתמשים",
+      "fromLastMonth": "מהחודש שעבר",
+      "itemsLowStock": "פריטים עם מלאי נמוך",
+      "pendingApproval": "ממתינים לאישור"
+    },
+    "tabs": {
+      "inventory": "מלאי",
+      "sales": "מכירות",
+      "purchases": "רכישות",
+      "reports": "דוחות"
+    }
+  },
+  "inventory": {
+    "title": "ניהול מלאי",
+    "description": "נהל את פריטי המלאי שלך",
+    "product": "מוצר",
+    "productDescription": "מוצר חדש למלאי שלך",
+    "name": "שם המוצר",
+    "sku": "SKU",
+    "itemDescription": "תיאור",
+    "quantity": "כמות",
+    "unitPrice": "מחיר ליחידה",
+    "addItem": "הוסף פריט",
+    "editItem": "ערוך פריט",
+    "deleteItem": "מחק פריט",
+    "itemName": "שם הפריט",
+    "price": "מחיר",
+    "category": "קטגוריה",
+    "status": "סטטוס",
+    "inStock": "במלאי",
+    "lowStock": "מלאי נמוך",
+    "outOfStock": "אזל מהמלאי"
+  },
+  "sales": {
+    "title": "ניהול מכירות",
+    "description": "עקוב ונהל את המכירות שלך",
+    "addSale": "הוסף מכירה",
+    "customer": "לקוח",
+    "amount": "סכום",
+    "date": "תאריך",
+    "status": "סטטוס",
+    "completed": "הושלם",
+    "pending": "ממתין",
+    "cancelled": "בוטל"
+  },
+  "orders": {
+    "title": "ניהול הזמנות",
+    "description": "נהל את ההזמנות שלך",
+    "orderNumber": "מספר הזמנה",
+    "orderDate": "תאריך הזמנה",
+    "totalAmount": "סכום כולל",
+    "orderStatus": "סטטוס הזמנה",
+    "processing": "בעיבוד",
+    "shipped": "נשלח",
+    "delivered": "נמסר"
+  },
+  "reports": {
+    "title": "דוחות",
+    "description": "צפה בדוחות עסקיים מפורטים",
+    "salesReport": "דוח מכירות",
+    "inventoryReport": "דוח מלאי",
+    "userReport": "דוח משתמשים"
+  },
+  "users": {
+    "title": "ניהול משתמשים",
+    "description": "נהל משתמשי המערכת",
+    "addUser": "הוסף משתמש",
+    "editUser": "ערוך משתמש",
+    "deleteUser": "מחק משתמש",
+    "username": "שם משתמש",
+    "email": "אימייל",
+    "role": "תפקיד",
+    "status": "סטטוס",
+    "active": "פעיל",
+    "inactive": "לא פעיל"
+  },
+  "profile": {
+    "title": "פרופיל",
+    "description": "נהל את המידע האישי שלך",
+    "personalInfo": "מידע אישי",
+    "accountSettings": "הגדרות חשבון",
+    "changePassword": "שנה סיסמה",
+    "preferences": "העדפות"
+  },
+  "purchases": {
+    "title": "ניהול רכישות",
+    "description": "עקוב ונהל את הרכישות שלך",
+    "purchase": "רכישה",
+    "purchaseDescription": "הזמנת רכש חדשה",
+    "status": "סטטוס",
+    "items": "פריטים",
+    "item": "פריט",
+    "product": "מוצר",
+    "quantity": "כמות",
+    "unitPrice": "מחיר ליחידה",
+    "subtotal": "סכום ביניים",
+    "total": "סך הכל"
+  }
+}
