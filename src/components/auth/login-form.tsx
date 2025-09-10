@@ -53,6 +53,7 @@ export const LoginForm = () => {
       router.refresh();
       router.push("/dashboard");
     } catch (error) {
+      console.error("Login error:", error);
       setError("An error occurred. Please try again.");
     }
   };

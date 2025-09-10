@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
+interface SaleItem {
+  quantity: number;
+  unitPrice: number;
+  inventoryItemId: string;
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -49,7 +55,7 @@ export async function POST(request: NextRequest) {
         status,
         userId: session.user.id,
         items: {
-          create: items.map((item: any) => ({
+          create: items.map((item: SaleItem) => ({
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             total: item.quantity * item.unitPrice,

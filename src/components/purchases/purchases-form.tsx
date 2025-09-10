@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/compone  const calculateTotal = useCallback(() => {
-    const total = formData.items.reduce((sum, item) => {
-      return sum + (item.quantity * item.unitPrice);
-    }, 0);
-    setFormData(prev => ({ ...prev, total }));
-  }, [formData.items]);/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -112,16 +107,16 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
     }));
   };
 
-  const calculateTotal = () => {
+  const calculateTotal = useCallback(() => {
     const total = formData.items.reduce((sum, item) => {
       return sum + item.quantity * item.unitPrice;
     }, 0);
     setFormData((prev) => ({ ...prev, total }));
-  };
+  }, [formData.items]);
 
   useEffect(() => {
     calculateTotal();
-  }, [formData.items, calculateTotal]);
+  }, [calculateTotal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

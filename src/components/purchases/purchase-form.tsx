@@ -20,7 +20,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Edit, Save, X, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 interface InventoryItem {
   id: string;
@@ -57,9 +56,6 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
     status: purchase?.status || "PENDING",
     items: purchase?.items || [],
   });
-
-  const t = useTranslations("common");
-  const tPurchases = useTranslations("purchases");
 
   useEffect(() => {
     fetchInventoryItems();
