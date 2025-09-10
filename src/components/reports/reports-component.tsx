@@ -63,7 +63,7 @@ export function ReportsComponent() {
 
       // Calculate metrics
       const totalRevenue = sales.reduce(
-        (sum: number, sale: { totalAmount: number }) => sum + sale.totalAmount,
+        (sum: number, sale: { total: number }) => sum + sale.total,
         0
       );
       const lowStockItems = inventory.filter(
@@ -74,30 +74,20 @@ export function ReportsComponent() {
       const recentTransactions = [
         ...sales
           .slice(0, 3)
-          .map(
-            (sale: {
-              totalAmount: number;
-              createdAt: string;
-              customerName: string;
-            }) => ({
-              type: "sale" as const,
-              amount: sale.totalAmount,
-              date: sale.createdAt,
-              description: `Sale to ${sale.customerName}`,
-            })
-          ),
+          .map((sale: { total: number; createdAt: string; id: string }) => ({
+            type: "sale" as const,
+            amount: sale.total,
+            date: sale.createdAt,
+            description: `Sale #${sale.id.slice(0, 8)}`,
+          })),
         ...purchases
           .slice(0, 3)
           .map(
-            (purchase: {
-              totalAmount: number;
-              createdAt: string;
-              vendorName: string;
-            }) => ({
+            (purchase: { total: number; createdAt: string; id: string }) => ({
               type: "purchase" as const,
-              amount: purchase.totalAmount,
+              amount: purchase.total,
               date: purchase.createdAt,
-              description: `Purchase from ${purchase.vendorName}`,
+              description: `Purchase #${purchase.id.slice(0, 8)}`,
             })
           ),
       ]

@@ -19,8 +19,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Eye, Edit } from "lucide-react";
+import { Search, Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SaleForm } from "./sale-form";
+
+interface SaleItem {
+  id: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  saleId: string;
+  inventoryItemId: string;
+  inventoryItem?: {
+    name: string;
+    sku: string;
+    quantity: number;
+    unitPrice: number;
+  };
+}
 
 interface Sale {
   id: string;
@@ -30,6 +46,7 @@ interface Sale {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  items?: SaleItem[];
 }
 
 export function SalesTable() {
@@ -99,10 +116,7 @@ export function SalesTable() {
               className="w-64"
             />
           </div>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            New Sale
-          </Button>
+          <SaleForm mode="add" onSuccess={fetchSales} />
         </div>
 
         <Table>
@@ -137,9 +151,6 @@ export function SalesTable() {
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>

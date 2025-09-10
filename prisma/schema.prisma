@@ -80,7 +80,7 @@ model Purchase {
   id           String         @id @default(cuid())
   purchaseDate DateTime       @default(now())
   total        Float
-  status       String // pending, completed, cancelled
+  status       String // pending, approved, rejected, completed
   userId       String
   // Relations
   user         User           @relation(fields: [userId], references: [id])

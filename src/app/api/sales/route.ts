@@ -66,6 +66,20 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // If sale is completed, deduct from inventory
+    if (status === "COMPLETED") {
+      for (const item of items) {
+        await db.inventoryItem.update({
+          where: { id: item.inventoryItemId },
+          data: {
+            quantity: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+    }
+
     return NextResponse.json(sale, { status: 201 });
   } catch (error) {
     console.error("Error creating sale:", error);

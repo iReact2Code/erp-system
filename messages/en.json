@@ -42,7 +42,11 @@
     "loadingPurchases": "Loading purchases...",
     "loadingProfile": "Loading profile...",
     "loadingInventory": "Loading inventory...",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "select": "Select",
+    "noItems": "No items added yet",
+    "clickAdd": "Click add",
+    "toStart": "to start"
   },
   "theme": {
     "light": "Light",
@@ -102,13 +106,23 @@
     "title": "Sales Management",
     "description": "Track and manage your sales",
     "addSale": "Add Sale",
+    "sale": "Sale",
+    "saleDescription": "a new sale transaction",
     "customer": "Customer",
     "amount": "Amount",
     "date": "Date",
     "status": "Status",
     "completed": "Completed",
     "pending": "Pending",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "items": "Items",
+    "item": "Item",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "total": "Total",
+    "grandTotal": "Grand Total",
+    "available": "Available"
   },
   "orders": {
     "title": "Order Management",
@@ -161,6 +175,13 @@
     "quantity": "Quantity",
     "unitPrice": "Unit Price",
     "subtotal": "Subtotal",
-    "total": "Total"
+    "total": "Total",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "completed": "Completed",
+    "approve": "Approve",
+    "reject": "Reject",
+    "complete": "Complete"
   }
 }

@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Package, Trash2 } from "lucide-react";
+import { Package, Trash2, Check, X, Edit } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PurchaseForm } from "./purchase-form";
 
@@ -29,8 +29,7 @@ interface PurchaseItem {
 
 interface Purchase {
   id: string;
-  vendorName: string;
-  totalAmount: number;
+  total: number;
   status: string;
   createdAt: string;
   items: PurchaseItem[];
@@ -61,13 +60,36 @@ export function PurchasesTable() {
     }
   };
 
+  const updatePurchaseStatus = async (purchaseId: string, status: string) => {
+    try {
+      const response = await fetch(`/api/purchases/${purchaseId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (response.ok) {
+        // Refresh the purchases list
+        fetchPurchases();
+      } else {
+        console.error("Failed to update purchase status");
+      }
+    } catch (error) {
+      console.error("Error updating purchase status:", error);
+    }
+  };
+
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case "COMPLETED":
         return "default";
-      case "PENDING":
+      case "APPROVED":
         return "secondary";
-      case "CANCELLED":
+      case "PENDING":
+        return "outline";
+      case "REJECTED":
         return "destructive";
       default:
         return "outline";
@@ -117,11 +139,11 @@ export function PurchasesTable() {
             <TableHeader>
               <TableRow>
                 <TableHead>Purchase ID</TableHead>
-                <TableHead>Vendor</TableHead>
                 <TableHead>Total Amount</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Items</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,10 +152,7 @@ export function PurchasesTable() {
                   <TableCell className="font-mono text-sm">
                     {purchase.id.slice(0, 8)}...
                   </TableCell>
-                  <TableCell className="font-medium">
-                    {purchase.vendorName}
-                  </TableCell>
-                  <TableCell>${purchase.totalAmount.toFixed(2)}</TableCell>
+                  <TableCell>${purchase.total.toFixed(2)}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(purchase.status)}>
                       {purchase.status}
@@ -143,6 +162,54 @@ export function PurchasesTable() {
                     {new Date(purchase.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>{purchase.items?.length || 0} items</TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      {purchase.status === "PENDING" && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updatePurchaseStatus(purchase.id, "APPROVED")
+                            }
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updatePurchaseStatus(purchase.id, "REJECTED")
+                            }
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </>
+                      )}
+                      {purchase.status === "APPROVED" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            updatePurchaseStatus(purchase.id, "COMPLETED")
+                          }
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Check className="w-4 h-4 mr-1" />
+                          Complete
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-gray-600 hover:text-gray-700"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
