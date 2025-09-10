@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect, useCallback } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -18,144 +18,144 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Plus, Edit, Save, X, Trash2 } from "lucide-react";
+} from '@/components/ui/dialog'
+import { Plus, Edit, Save, X, Trash2 } from 'lucide-react'
 
 interface InventoryItem {
-  id: string;
-  name: string;
-  sku: string;
-  unitPrice: number;
+  id: string
+  name: string
+  sku: string
+  unitPrice: number
 }
 
 interface PurchaseItem {
-  inventoryItemId: string;
-  quantity: number;
-  unitPrice: number;
+  inventoryItemId: string
+  quantity: number
+  unitPrice: number
 }
 
 interface Purchase {
-  id?: string;
-  total: number;
-  status: string;
-  items: PurchaseItem[];
+  id?: string
+  total: number
+  status: string
+  items: PurchaseItem[]
 }
 
 interface PurchaseFormProps {
-  purchase?: Purchase;
-  mode: "add" | "edit";
-  onSuccess: () => void;
+  purchase?: Purchase
+  mode: 'add' | 'edit'
+  onSuccess: () => void
 }
 
 export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
   const [formData, setFormData] = useState<Purchase>({
     total: purchase?.total || 0,
-    status: purchase?.status || "PENDING",
+    status: purchase?.status || 'PENDING',
     items: purchase?.items || [],
-  });
+  })
 
   useEffect(() => {
-    fetchInventoryItems();
-  }, []);
+    fetchInventoryItems()
+  }, [])
 
   const fetchInventoryItems = async () => {
     try {
-      const response = await fetch("/api/inventory");
+      const response = await fetch('/api/inventory')
       if (response.ok) {
-        const data = await response.json();
-        setInventoryItems(data);
+        const data = await response.json()
+        setInventoryItems(data)
       }
     } catch (error) {
-      console.error("Error fetching inventory items:", error);
+      console.error('Error fetching inventory items:', error)
     }
-  };
+  }
 
   const addPurchaseItem = () => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       items: [
         ...prev.items,
-        { inventoryItemId: "", quantity: 1, unitPrice: 0 },
+        { inventoryItemId: '', quantity: 1, unitPrice: 0 },
       ],
-    }));
-  };
+    }))
+  }
 
   const removePurchaseItem = (index: number) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       items: prev.items.filter((_, i) => i !== index),
-    }));
-  };
+    }))
+  }
 
   const updatePurchaseItem = (
     index: number,
     field: keyof PurchaseItem,
     value: string | number
   ) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       items: prev.items.map((item, i) =>
         i === index ? { ...item, [field]: value } : item
       ),
-    }));
-  };
+    }))
+  }
 
   const calculateTotal = useCallback(() => {
     const total = formData.items.reduce((sum, item) => {
-      return sum + item.quantity * item.unitPrice;
-    }, 0);
-    setFormData((prev) => ({ ...prev, total }));
-  }, [formData.items]);
+      return sum + item.quantity * item.unitPrice
+    }, 0)
+    setFormData(prev => ({ ...prev, total }))
+  }, [formData.items])
 
   useEffect(() => {
-    calculateTotal();
-  }, [calculateTotal]);
+    calculateTotal()
+  }, [calculateTotal])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     try {
-      const url = "/api/purchases";
-      const method = mode === "add" ? "POST" : "PUT";
+      const url = '/api/purchases'
+      const method = mode === 'add' ? 'POST' : 'PUT'
       const body =
-        mode === "edit" ? { ...formData, id: purchase?.id } : formData;
+        mode === 'edit' ? { ...formData, id: purchase?.id } : formData
 
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-      });
+      })
 
       if (response.ok) {
-        setOpen(false);
-        onSuccess();
-        if (mode === "add") {
+        setOpen(false)
+        onSuccess()
+        if (mode === 'add') {
           setFormData({
             total: 0,
-            status: "PENDING",
+            status: 'PENDING',
             items: [],
-          });
+          })
         }
       } else {
-        console.error("Failed to save purchase");
+        console.error('Failed to save purchase')
       }
     } catch (error) {
-      console.error("Error saving purchase:", error);
+      console.error('Error saving purchase:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {mode === "add" ? (
+        {mode === 'add' ? (
           <Button className="hover-lift animate-scale-in">
             <Plus className="w-4 h-4 mr-2" />
             Add Purchase
@@ -170,17 +170,17 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
       <DialogContent className="sm:max-w-lg animate-scale-in max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {mode === "add" ? (
+            {mode === 'add' ? (
               <Plus className="w-5 h-5" />
             ) : (
               <Edit className="w-5 h-5" />
             )}
-            {mode === "add" ? "Add" : "Edit"} Purchase
+            {mode === 'add' ? 'Add' : 'Edit'} Purchase
           </DialogTitle>
           <DialogDescription>
-            {mode === "add"
-              ? "Create a new purchase order"
-              : "Edit purchase order"}
+            {mode === 'add'
+              ? 'Create a new purchase order'
+              : 'Edit purchase order'}
           </DialogDescription>
         </DialogHeader>
 
@@ -189,8 +189,8 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
             <Label htmlFor="status">Status</Label>
             <Select
               value={formData.status}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, status: value }))
+              onValueChange={value =>
+                setFormData(prev => ({ ...prev, status: value }))
               }
             >
               <SelectTrigger className="hover-glow">
@@ -240,17 +240,17 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                     <Label>Product</Label>
                     <Select
                       value={item.inventoryItemId}
-                      onValueChange={(value) => {
-                        updatePurchaseItem(index, "inventoryItemId", value);
+                      onValueChange={value => {
+                        updatePurchaseItem(index, 'inventoryItemId', value)
                         const selectedItem = inventoryItems.find(
-                          (inv) => inv.id === value
-                        );
+                          inv => inv.id === value
+                        )
                         if (selectedItem) {
                           updatePurchaseItem(
                             index,
-                            "unitPrice",
+                            'unitPrice',
                             selectedItem.unitPrice
-                          );
+                          )
                         }
                       }}
                     >
@@ -258,7 +258,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent>
-                        {inventoryItems.map((invItem) => (
+                        {inventoryItems.map(invItem => (
                           <SelectItem key={invItem.id} value={invItem.id}>
                             {invItem.name} ({invItem.sku})
                           </SelectItem>
@@ -273,10 +273,10 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                       type="number"
                       min="1"
                       value={item.quantity}
-                      onChange={(e) =>
+                      onChange={e =>
                         updatePurchaseItem(
                           index,
-                          "quantity",
+                          'quantity',
                           parseInt(e.target.value) || 1
                         )
                       }
@@ -291,10 +291,10 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                       min="0"
                       step="0.01"
                       value={item.unitPrice}
-                      onChange={(e) =>
+                      onChange={e =>
                         updatePurchaseItem(
                           index,
-                          "unitPrice",
+                          'unitPrice',
                           parseFloat(e.target.value) || 0
                         )
                       }
@@ -336,11 +336,11 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
               className="hover-lift"
             >
               <Save className="w-4 h-4 mr-2" />
-              {loading ? "Saving..." : "Save"}
+              {loading ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

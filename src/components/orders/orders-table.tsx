@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -9,64 +9,64 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Package } from "lucide-react";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { ShoppingBag, Package } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Order {
-  id: string;
-  orderNumber: string;
-  status: string;
-  totalAmount: number;
-  createdAt: string;
+  id: string
+  orderNumber: string
+  status: string
+  totalAmount: number
+  createdAt: string
   items: {
-    quantity: number;
+    quantity: number
     inventoryItem: {
-      name: string;
-    };
-  }[];
+      name: string
+    }
+  }[]
 }
 
 export function OrdersTable() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const t = useTranslations("common");
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const t = useTranslations('common')
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    fetchOrders()
+  }, [])
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch("/api/orders");
+      const response = await fetch('/api/orders')
       if (response.ok) {
-        const data = await response.json();
-        setOrders(data);
+        const data = await response.json()
+        setOrders(data)
       } else {
-        console.error("Failed to fetch orders");
+        console.error('Failed to fetch orders')
       }
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error('Error fetching orders:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case "DELIVERED":
-        return "default";
-      case "PROCESSING":
-        return "secondary";
-      case "SHIPPED":
-        return "outline";
-      case "CANCELLED":
-        return "destructive";
+      case 'DELIVERED':
+        return 'default'
+      case 'PROCESSING':
+        return 'secondary'
+      case 'SHIPPED':
+        return 'outline'
+      case 'CANCELLED':
+        return 'destructive'
       default:
-        return "outline";
+        return 'outline'
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -79,11 +79,11 @@ export function OrdersTable() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-32">
-            <div className="text-muted-foreground">{t("loading")}</div>
+            <div className="text-muted-foreground">{t('loading')}</div>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -115,7 +115,7 @@ export function OrdersTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order) => (
+              {orders.map(order => (
                 <TableRow key={order.id}>
                   <TableCell className="font-mono">
                     {order.orderNumber}
@@ -137,5 +137,5 @@ export function OrdersTable() {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

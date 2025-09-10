@@ -1,92 +1,90 @@
-import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
+import { auth } from '@/lib/auth'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware'
 
-const locales = ["en", "es", "fr", "ar", "he", "zh"];
+const locales = ['en', 'es', 'fr', 'ar', 'he', 'zh']
 
 const intlMiddleware = createIntlMiddleware({
   locales,
-  defaultLocale: "en",
-});
+  defaultLocale: 'en',
+})
 
 export async function middleware(request: NextRequest) {
   // Handle internationalization first
-  const response = intlMiddleware(request);
+  const response = intlMiddleware(request)
 
-  const session = await auth();
+  const session = await auth()
   const isAuthPage =
-    request.nextUrl.pathname.includes("/login") ||
-    request.nextUrl.pathname.includes("/register");
+    request.nextUrl.pathname.includes('/login') ||
+    request.nextUrl.pathname.includes('/register')
 
   if (isAuthPage) {
     if (session) {
       // Extract locale from the current path for redirect
-      const locale = request.nextUrl.pathname.split("/")[1];
+      const locale = request.nextUrl.pathname.split('/')[1]
       const redirectUrl = locales.includes(locale)
         ? `/${locale}/dashboard`
-        : "/en/dashboard";
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
+        : '/en/dashboard'
+      return NextResponse.redirect(new URL(redirectUrl, request.url))
     }
-    return response;
+    return response
   }
 
   if (!session) {
-    let callbackUrl = request.nextUrl.pathname;
+    let callbackUrl = request.nextUrl.pathname
     if (request.nextUrl.search) {
-      callbackUrl += request.nextUrl.search;
+      callbackUrl += request.nextUrl.search
     }
 
     // Extract locale for login redirect
-    const locale = request.nextUrl.pathname.split("/")[1];
-    const loginUrl = locales.includes(locale)
-      ? `/${locale}/login`
-      : "/en/login";
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    const locale = request.nextUrl.pathname.split('/')[1]
+    const loginUrl = locales.includes(locale) ? `/${locale}/login` : '/en/login'
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl)
     return NextResponse.redirect(
       new URL(`${loginUrl}?callbackUrl=${encodedCallbackUrl}`, request.url)
-    );
+    )
   }
 
   // Add role-based access control here
-  const userRole = session.user?.role as string;
-  const path = request.nextUrl.pathname;
+  const userRole = session.user?.role as string
+  const path = request.nextUrl.pathname
 
   // Define role-based route access (including locale paths)
   const roleAccess = {
-    CLERK: ["/dashboard", "/inventory", "/sales"],
+    CLERK: ['/dashboard', '/inventory', '/sales'],
     SUPERVISOR: [
-      "/dashboard",
-      "/inventory",
-      "/sales",
-      "/purchases",
-      "/reports",
-      "/users",
+      '/dashboard',
+      '/inventory',
+      '/sales',
+      '/purchases',
+      '/reports',
+      '/users',
     ],
-    THIRD_PARTY_CLIENT: ["/dashboard", "/orders", "/profile"],
-  };
-
-  const allowedPaths = roleAccess[userRole as keyof typeof roleAccess] || [];
-
-  // Check if the path (without locale) is allowed
-  const pathWithoutLocale = path.replace(/^\/[a-z]{2}\//, "/");
-  const isAllowed = allowedPaths.some((allowedPath) =>
-    pathWithoutLocale.startsWith(allowedPath)
-  );
-
-  if (!isAllowed) {
-    const locale = path.split("/")[1];
-    const dashboardUrl = locales.includes(locale)
-      ? `/${locale}/dashboard`
-      : "/en/dashboard";
-    return NextResponse.redirect(new URL(dashboardUrl, request.url));
+    THIRD_PARTY_CLIENT: ['/dashboard', '/orders', '/profile'],
   }
 
-  return response;
+  const allowedPaths = roleAccess[userRole as keyof typeof roleAccess] || []
+
+  // Check if the path (without locale) is allowed
+  const pathWithoutLocale = path.replace(/^\/[a-z]{2}\//, '/')
+  const isAllowed = allowedPaths.some(allowedPath =>
+    pathWithoutLocale.startsWith(allowedPath)
+  )
+
+  if (!isAllowed) {
+    const locale = path.split('/')[1]
+    const dashboardUrl = locales.includes(locale)
+      ? `/${locale}/dashboard`
+      : '/en/dashboard'
+    return NextResponse.redirect(new URL(dashboardUrl, request.url))
+  }
+
+  return response
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
-};
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+}
 
-export default middleware;
+export default middleware

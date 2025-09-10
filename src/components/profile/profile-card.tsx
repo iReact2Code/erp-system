@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Mail, Calendar, Shield } from "lucide-react";
+import { useSession } from 'next-auth/react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { User, Mail, Calendar, Shield } from 'lucide-react'
 
 export function ProfileCard() {
-  const { data: session } = useSession();
+  const { data: session } = useSession()
 
   if (!session?.user) {
     return (
@@ -21,21 +21,21 @@ export function ProfileCard() {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
-      case "SUPERVISOR":
-        return "default";
-      case "CLERK":
-        return "secondary";
-      case "THIRD_PARTY_CLIENT":
-        return "outline";
+      case 'SUPERVISOR':
+        return 'default'
+      case 'CLERK':
+        return 'secondary'
+      case 'THIRD_PARTY_CLIENT':
+        return 'outline'
       default:
-        return "outline";
+        return 'outline'
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -50,7 +50,7 @@ export function ProfileCard() {
           <div className="flex items-start space-x-4">
             <Avatar className="h-16 w-16">
               <AvatarFallback className="text-lg">
-                {session.user.name?.[0]?.toUpperCase() || "U"}
+                {session.user.name?.[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2 flex-1">
@@ -58,8 +58,8 @@ export function ProfileCard() {
                 <h3 className="text-lg font-semibold">{session.user.name}</h3>
                 <p className="text-muted-foreground">{session.user.email}</p>
               </div>
-              <Badge variant={getRoleBadgeVariant(session.user.role || "")}>
-                {session.user.role?.replace("_", " ") || "Unknown Role"}
+              <Badge variant={getRoleBadgeVariant(session.user.role || '')}>
+                {session.user.role?.replace('_', ' ') || 'Unknown Role'}
               </Badge>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function ProfileCard() {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-semibold">
-              {session.user.role?.replace("_", " ") || "Unknown"}
+              {session.user.role?.replace('_', ' ') || 'Unknown'}
             </div>
             <p className="text-xs text-muted-foreground">
               Your access level in the system
@@ -119,5 +119,5 @@ export function ProfileCard() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

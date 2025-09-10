@@ -1,8 +1,8 @@
-"use client";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+'use client'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -10,53 +10,52 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Please enter a valid email address.",
+    message: 'Please enter a valid email address.',
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: 'Password must be at least 6 characters.',
   }),
-});
+})
 
 export const LoginForm = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await signIn("credentials", {
+      const response = await signIn('credentials', {
         email: values.email,
         password: values.password,
         redirect: false,
-      });
+      })
 
       if (response?.error) {
-        setError("Invalid email or password");
-        return;
+        setError('Invalid email or password')
+        return
       }
 
-      router.refresh();
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("An error occurred. Please try again.");
+      router.refresh()
+      router.push('/dashboard')
+    } catch {
+      setError('An error occurred. Please try again.')
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -99,16 +98,16 @@ export const LoginForm = () => {
           Sign In
         </Button>
         <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          Don&apos;t have an account?{' '}
           <Button
             variant="link"
             className="p-0 h-auto font-normal"
-            onClick={() => router.push("/register")}
+            onClick={() => router.push('/register')}
           >
             Sign up here
           </Button>
         </div>
       </form>
     </Form>
-  );
-};
+  )
+}

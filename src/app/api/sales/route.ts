@@ -1,19 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-
-interface SaleItem {
-  quantity: number;
-  unitPrice: number;
-  inventoryItemId: string;
-}
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
 
 export async function GET() {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const sales = await db.sale.findMany({
@@ -24,43 +18,57 @@ export async function GET() {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
-    });
+      orderBy: { createdAt: 'desc' },
+    })
 
-    return NextResponse.json(sales);
+    return NextResponse.json({ data: sales })
   } catch (error) {
-    console.error("Error fetching sales:", error);
+    console.error('Error fetching sales:', error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const { total, status, items } = body;
+    const body = await request.json()
+    const {
+      total,
+      status,
+      items,
+    }: {
+      total: number
+      status: string
+      items: { quantity: number; unitPrice: number; inventoryItemId: string }[]
+    } = body
 
     const sale = await db.sale.create({
       data: {
         saleDate: new Date(),
-        total: parseFloat(total),
+        total: total,
         status,
         userId: session.user.id,
         items: {
-          create: items.map((item: SaleItem) => ({
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            total: item.quantity * item.unitPrice,
-            inventoryItemId: item.inventoryItemId,
-          })),
+          create: items.map(
+            (item: {
+              quantity: number
+              unitPrice: number
+              inventoryItemId: string
+            }) => ({
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              total: item.quantity * item.unitPrice,
+              inventoryItemId: item.inventoryItemId,
+            })
+          ),
         },
       },
       include: {
@@ -70,10 +78,10 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     // If sale is completed, deduct from inventory
-    if (status === "COMPLETED") {
+    if (status === 'COMPLETED') {
       for (const item of items) {
         await db.inventoryItem.update({
           where: { id: item.inventoryItemId },
@@ -82,16 +90,19 @@ export async function POST(request: NextRequest) {
               decrement: item.quantity,
             },
           },
-        });
+        })
       }
     }
 
-    return NextResponse.json(sale, { status: 201 });
-  } catch (error) {
-    console.error("Error creating sale:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { data: sale, message: 'Sale created successfully' },
+      { status: 201 }
+    )
+  } catch (error) {
+    console.error('Error creating sale:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }

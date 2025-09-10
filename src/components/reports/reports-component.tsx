@@ -1,29 +1,29 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import {
   BarChart3,
   TrendingUp,
   Package,
   ShoppingCart,
   DollarSign,
-} from "lucide-react";
-import { useTranslations } from "next-intl";
+} from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface ReportData {
-  totalInventoryItems: number;
-  totalSales: number;
-  totalPurchases: number;
-  totalRevenue: number;
-  lowStockItems: number;
+  totalInventoryItems: number
+  totalSales: number
+  totalPurchases: number
+  totalRevenue: number
+  lowStockItems: number
   recentTransactions: {
-    type: "sale" | "purchase";
-    amount: number;
-    date: string;
-    description: string;
-  }[];
+    type: 'sale' | 'purchase'
+    amount: number
+    date: string
+    description: string
+  }[]
 }
 
 export function ReportsComponent() {
@@ -34,48 +34,48 @@ export function ReportsComponent() {
     totalRevenue: 0,
     lowStockItems: 0,
     recentTransactions: [],
-  });
-  const [loading, setLoading] = useState(true);
-  const t = useTranslations("common");
-  const tReports = useTranslations("reports");
+  })
+  const [loading, setLoading] = useState(true)
+  const t = useTranslations('common')
+  const tReports = useTranslations('reports')
 
   useEffect(() => {
-    fetchReportData();
-  }, []);
+    fetchReportData()
+  }, [])
 
   const fetchReportData = async () => {
     try {
       // Fetch inventory data
-      const inventoryResponse = await fetch("/api/inventory");
+      const inventoryResponse = await fetch('/api/inventory')
       const inventory = inventoryResponse.ok
         ? await inventoryResponse.json()
-        : [];
+        : []
 
       // Fetch sales data
-      const salesResponse = await fetch("/api/sales");
-      const sales = salesResponse.ok ? await salesResponse.json() : [];
+      const salesResponse = await fetch('/api/sales')
+      const sales = salesResponse.ok ? await salesResponse.json() : []
 
       // Fetch purchases data
-      const purchasesResponse = await fetch("/api/purchases");
+      const purchasesResponse = await fetch('/api/purchases')
       const purchases = purchasesResponse.ok
         ? await purchasesResponse.json()
-        : [];
+        : []
 
       // Calculate metrics
       const totalRevenue = sales.reduce(
         (sum: number, sale: { total: number }) => sum + sale.total,
         0
-      );
+      )
       const lowStockItems = inventory.filter(
         (item: { quantity: number }) => item.quantity < 10
-      ).length;
+      ).length
 
       // Create recent transactions
       const recentTransactions = [
         ...sales
           .slice(0, 3)
           .map((sale: { total: number; createdAt: string; id: string }) => ({
-            type: "sale" as const,
+            type: 'sale' as const,
             amount: sale.total,
             date: sale.createdAt,
             description: `Sale #${sale.id.slice(0, 8)}`,
@@ -84,7 +84,7 @@ export function ReportsComponent() {
           .slice(0, 3)
           .map(
             (purchase: { total: number; createdAt: string; id: string }) => ({
-              type: "purchase" as const,
+              type: 'purchase' as const,
               amount: purchase.total,
               date: purchase.createdAt,
               description: `Purchase #${purchase.id.slice(0, 8)}`,
@@ -92,7 +92,7 @@ export function ReportsComponent() {
           ),
       ]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5);
+        .slice(0, 5)
 
       setReportData({
         totalInventoryItems: inventory.length,
@@ -101,13 +101,13 @@ export function ReportsComponent() {
         totalRevenue,
         lowStockItems,
         recentTransactions,
-      });
+      })
     } catch (error) {
-      console.error("Error fetching report data:", error);
+      console.error('Error fetching report data:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -115,16 +115,16 @@ export function ReportsComponent() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <BarChart3 className="mr-2 h-5 w-5" />
-            {tReports("title")}
+            {tReports('title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-32">
-            <div className="text-muted-foreground">{t("loadingReports")}</div>
+            <div className="text-muted-foreground">{t('loadingReports')}</div>
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -133,7 +133,7 @@ export function ReportsComponent() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <BarChart3 className="mr-2 h-5 w-5" />
-            {tReports("title")}
+            {tReports('title')}
           </CardTitle>
         </CardHeader>
       </Card>
@@ -225,10 +225,10 @@ export function ReportsComponent() {
                   <div className="flex items-center space-x-4">
                     <Badge
                       variant={
-                        transaction.type === "sale" ? "default" : "secondary"
+                        transaction.type === 'sale' ? 'default' : 'secondary'
                       }
                     >
-                      {transaction.type === "sale" ? "Sale" : "Purchase"}
+                      {transaction.type === 'sale' ? 'Sale' : 'Purchase'}
                     </Badge>
                     <div>
                       <p className="font-medium">{transaction.description}</p>
@@ -247,5 +247,5 @@ export function ReportsComponent() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

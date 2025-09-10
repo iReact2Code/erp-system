@@ -1,11 +1,11 @@
-import { RegisterForm } from "@/components/auth/register-form";
+import { RegisterForm } from '@/components/auth/register-form'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card'
 
 export default function RegisterPage() {
   return (
@@ -22,5 +22,5 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

@@ -1,0 +1,46 @@
+# Ignore build outputs
+dist/
+build/
+.next/
+out/
+
+# Ignore dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Ignore generated files
+*.min.js
+*.min.css
+.generated/
+generated/
+
+# Ignore package-lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore specific config files
+.env*
+.eslintcache
+
+# Ignore test coverage
+coverage/
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore Prisma migrations (formatted by Prisma)
+prisma/migrations/
+
+# Ignore Storybook build
+storybook-static/

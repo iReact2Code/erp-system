@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
 
 export async function GET() {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const purchases = await db.purchase.findMany({
@@ -18,29 +18,29 @@ export async function GET() {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
-    });
+      orderBy: { createdAt: 'desc' },
+    })
 
-    return NextResponse.json(purchases);
+    return NextResponse.json({ data: purchases })
   } catch (error) {
-    console.error("Error fetching purchases:", error);
+    console.error('Error fetching purchases:', error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const { total, status, items } = body;
+    const body = await request.json()
+    const { total, status, items } = body
 
     const purchase = await db.purchase.create({
       data: {
@@ -51,9 +51,9 @@ export async function POST(request: NextRequest) {
         items: {
           create: items.map(
             (item: {
-              quantity: number;
-              unitPrice: number;
-              inventoryItemId: string;
+              quantity: number
+              unitPrice: number
+              inventoryItemId: string
             }) => ({
               quantity: item.quantity,
               unitPrice: item.unitPrice,
@@ -70,31 +70,31 @@ export async function POST(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
-    return NextResponse.json(purchase, { status: 201 });
+    return NextResponse.json(purchase, { status: 201 })
   } catch (error) {
-    console.error("Error creating purchase:", error);
+    console.error('Error creating purchase:', error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json();
-    const { id, total, status } = body;
+    const body = await request.json()
+    const { id, total, status } = body
 
     if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
     const purchase = await db.purchase.update({
@@ -111,48 +111,48 @@ export async function PUT(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
-    return NextResponse.json(purchase);
+    return NextResponse.json(purchase)
   } catch (error) {
-    console.error("Error updating purchase:", error);
+    console.error('Error updating purchase:', error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
 
     if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
     // Delete purchase items first, then purchase
     await db.purchaseItem.deleteMany({
       where: { purchaseId: id },
-    });
+    })
 
     await db.purchase.delete({
       where: { id },
-    });
+    })
 
-    return NextResponse.json({ message: "Purchase deleted successfully" });
+    return NextResponse.json({ message: 'Purchase deleted successfully' })
   } catch (error) {
-    console.error("Error deleting purchase:", error);
+    console.error('Error deleting purchase:', error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
