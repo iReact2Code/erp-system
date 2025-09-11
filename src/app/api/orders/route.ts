@@ -213,7 +213,7 @@ async function createOrderHandler(
     const totalAmount = subtotal + taxAmount
 
     // Create order with items in a transaction
-    const order = (await db.$transaction(async tx => {
+    const order = await db.$transaction(async tx => {
       // Create the order
       const newOrder = await tx.order.create({
         data: {
@@ -269,7 +269,7 @@ async function createOrderHandler(
       }
 
       return newOrder
-    })) as any // Type assertion for mock compatibility
+    })
 
     logSecurityEvent('ORDER_CREATED', req, {
       userId: user.id,

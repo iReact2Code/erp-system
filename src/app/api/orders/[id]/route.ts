@@ -136,20 +136,20 @@ async function updateOrderHandler(
       return createErrorResponse('Order not found', 'NOT_FOUND', 404)
     }
 
-    // Type assertion for mock compatibility
-    const order = existingOrder as any
-
     // Check if order can be modified (business logic)
-    if (order.status === 'DELIVERED' || order.status === 'CANCELLED') {
+    if (
+      existingOrder.status === 'DELIVERED' ||
+      existingOrder.status === 'CANCELLED'
+    ) {
       return createErrorResponse(
-        'Cannot modify order with status: ' + order.status,
+        'Cannot modify order with status: ' + existingOrder.status,
         'INVALID_STATUS',
         400
       )
     }
 
     // Update order in a transaction
-    const updatedOrder = (await db.$transaction(async tx => {
+    const updatedOrder = await db.$transaction(async tx => {
       // If items are being updated, handle inventory changes
       if (validatedData.items) {
         // Restore original inventory quantities
@@ -295,7 +295,7 @@ async function updateOrderHandler(
           },
         })
       }
-    })) as any // Type assertion for mock compatibility
+    })
 
     logSecurityEvent('ORDER_UPDATED', req, {
       userId: user.id,
@@ -391,7 +391,7 @@ async function deleteOrderHandler(
     }
 
     // Cancel order and restore inventory in a transaction
-    const cancelledOrder = (await db.$transaction(async tx => {
+    const cancelledOrder = await db.$transaction(async tx => {
       // Restore inventory quantities
       for (const item of existingOrder.items) {
         await tx.inventoryItem.update({
@@ -425,7 +425,7 @@ async function deleteOrderHandler(
           },
         },
       })
-    })) as any // Type assertion for mock compatibility
+    })
 
     logSecurityEvent('ORDER_CANCELLED', req, {
       userId: user.id,

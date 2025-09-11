@@ -96,8 +96,8 @@ export async function GET(request: NextRequest) {
       { name: string; quantity: number; revenue: number }
     >()
 
-    currentSales.forEach((sale: any) => {
-      sale.items?.forEach((item: any) => {
+    currentSales.forEach(sale => {
+      sale.items?.forEach(item => {
         const key = item.inventoryItem.id
         const existing = productSales.get(key) || {
           name: item.inventoryItem.name,
@@ -144,8 +144,8 @@ export async function GET(request: NextRequest) {
 
     // Revenue by category (using description as category for now)
     const categoryRevenue = new Map<string, number>()
-    currentSales.forEach((sale: any) => {
-      sale.items?.forEach((item: any) => {
+    currentSales.forEach(sale => {
+      sale.items?.forEach(item => {
         const category =
           item.inventoryItem.description?.split(' ')[0] || 'General'
         categoryRevenue.set(
