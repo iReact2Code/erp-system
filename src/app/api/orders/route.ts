@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
+import { getUserFromRequest } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 import {
   withRequestValidation,
@@ -9,7 +9,6 @@ import {
 } from '@/lib/request-validation'
 import { withSecurity, logSecurityEvent } from '@/lib/security-headers'
 import { createOrderSchema, ordersQuerySchema } from '@/types/validation'
-import { auth } from '@/lib/auth'
 
 /**
  * Enhanced orders GET endpoint with filtering and pagination
@@ -19,9 +18,8 @@ async function getOrdersHandler(
   validatedData: z.infer<typeof ordersQuerySchema>
 ) {
   const user = getUserFromRequest(req)
-  requireAuth(user)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: '/api/orders',
     })
@@ -75,9 +73,9 @@ async function getOrdersHandler(
     }
 
     // Role-based filtering
-    if (session.user.role === 'THIRD_PARTY_CLIENT') {
+    if (user.role === 'THIRD_PARTY_CLIENT') {
       // Third-party clients can only see their own orders
-      where.customerEmail = session.user.email
+      where.customerEmail = user.email
     }
 
     // Build orderBy clause
@@ -137,7 +135,7 @@ async function getOrdersHandler(
     console.error('Error fetching orders:', error)
 
     logSecurityEvent('ORDER_LIST_ERROR', req, {
-      userId: session.user.id,
+      userId: user.id,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
 
@@ -152,9 +150,9 @@ async function createOrderHandler(
   req: NextRequest,
   validatedData: z.infer<typeof createOrderSchema>
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: '/api/orders',
       method: 'POST',
@@ -233,7 +231,7 @@ async function createOrderHandler(
           subtotal,
           taxAmount,
           totalAmount,
-          userId: session.user.id!,
+          userId: user.id,
         },
         include: {
           items: {
@@ -274,7 +272,7 @@ async function createOrderHandler(
     })) as any // Type assertion for mock compatibility
 
     logSecurityEvent('ORDER_CREATED', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: order.id,
       orderNumber: order.orderNumber,
       totalAmount: order.totalAmount,
@@ -285,7 +283,7 @@ async function createOrderHandler(
     console.error('Error creating order:', error)
 
     logSecurityEvent('ORDER_CREATE_ERROR', req, {
-      userId: session.user.id,
+      userId: user.id,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
 

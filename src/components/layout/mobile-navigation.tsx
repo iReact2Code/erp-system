@@ -26,8 +26,8 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react'
-import { useSession, signOut } from 'next-auth/react'
 import { useResponsive } from '@/lib/responsive-utils'
+import { useAuth } from '@/hooks/use-auth'
 
 interface NavigationItem {
   title: string
@@ -189,10 +189,9 @@ const NavigationItemComponent: React.FC<NavigationItemComponentProps> = ({
 
 export default function MobileNavigation({ className }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
+  const { user, signOut } = useAuth()
   const pathname = usePathname()
   const params = useParams()
-  const { data: session } = useSession()
   const { isMobile } = useResponsive()
 
   // Determine RTL based on locale
@@ -255,21 +254,20 @@ export default function MobileNavigation({ className }: MobileNavigationProps) {
             </div>
 
             {/* User Info */}
-            {session?.user && (
+            {user && (
               <div className="border-b px-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-sm font-medium">
-                      {session.user.name?.charAt(0) ||
-                        session.user.email?.charAt(0)}
+                      {user.name?.charAt(0) || user.email?.charAt(0)}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {session.user.name || 'User'}
+                      {user.name || 'User'}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {session.user.email}
+                      {user.email}
                     </p>
                   </div>
                 </div>

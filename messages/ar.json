@@ -14,8 +14,10 @@
     "signUpDescription": "أنشئ حساباً جديداً للبدء",
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
-    "register": "التسجيل",
-    "welcome": "أهلاً بعودتك"
+    "register": "تسجيل",
+    "welcome": "مرحباً بعودتك",
+    "redirecting": "جاري إعادة التوجيه...",
+    "redirectingMessage": "يرجى الانتظار بينما نقوم بإعادة توجيهك إلى صفحة تسجيل الدخول."
   },
   "navigation": {
     "dashboard": "لوحة القيادة",

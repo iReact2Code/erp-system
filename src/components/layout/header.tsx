@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useParams, useRouter } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { LanguageToggle } from '@/components/theme/language-toggle'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/use-auth'
 
 const navigationKeys = {
   CLERK: ['dashboard', 'inventory', 'sales', 'profile'],
@@ -32,53 +32,18 @@ const navigationKeys = {
 }
 
 export function Header() {
-  const [user, setUser] = useState<{
-    id: string
-    name: string
-    email: string
-    role: string
-  } | null>(null)
+  const { user, signOut } = useAuth()
   const pathname = usePathname()
   const params = useParams()
-  const router = useRouter()
   const locale = params?.locale as string
   const isRTL = locale === 'ar' || locale === 'he' || locale === 'ug'
   const t = useTranslations('navigation')
   const tAuth = useTranslations('auth')
 
-  useEffect(() => {
-    // Check for stored user data
-    const storedUser = localStorage.getItem('user')
-    const storedToken = localStorage.getItem('auth-token')
-
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser))
-    }
-  }, [])
-
   if (!user) return null
 
   const userRole = user.role as keyof typeof navigationKeys
   const navKeys = navigationKeys[userRole] || []
-
-  const handleSignOut = async () => {
-    // Clear local storage
-    localStorage.removeItem('auth-token')
-    localStorage.removeItem('user')
-
-    // Call logout API
-    try {
-      await fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include',
-      })
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-
-    // Redirect to login
-    router.push('/login')
-  }
 
   return (
     <header className="border-b bg-background px-4 lg:px-6 animate-slide-in-left shadow-md">
@@ -176,7 +141,7 @@ export function Header() {
                   {user.email}
                 </p>
               </div>
-              <DropdownMenuItem onClick={handleSignOut}>
+              <DropdownMenuItem onClick={signOut}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>{tAuth('logout')}</span>
               </DropdownMenuItem>

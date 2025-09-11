@@ -15,7 +15,9 @@
     "login": "Se connecter",
     "logout": "Se déconnecter",
     "register": "S'inscrire",
-    "welcome": "Bon retour"
+    "welcome": "Bon retour",
+    "redirecting": "Redirection...",
+    "redirectingMessage": "Veuillez patienter pendant que nous vous redirigeons vers la page de connexion."
   },
   "navigation": {
     "dashboard": "Tableau de bord",

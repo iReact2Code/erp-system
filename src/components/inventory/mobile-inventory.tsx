@@ -343,11 +343,11 @@ const InventoryForm: React.FC<{
             label={t('price')}
             type="number"
             required
-            value={formData.price.toString()}
+            value={formData.unitPrice.toString()}
             onChange={e =>
               setFormData(prev => ({
                 ...prev,
-                price: parseFloat(e.target.value) || 0,
+                unitPrice: parseFloat(e.target.value) || 0,
               }))
             }
             placeholder={t('price')}

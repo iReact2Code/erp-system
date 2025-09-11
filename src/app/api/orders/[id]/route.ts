@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 import {
   withRequestValidation,
@@ -21,9 +21,9 @@ async function getOrderHandler(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: `/api/orders/${context.params.id}`,
     })
@@ -39,9 +39,9 @@ async function getOrderHandler(
     // Build where clause with role-based filtering
     const where: Record<string, unknown> = { id: validatedId.id }
 
-    if (session.user.role === 'THIRD_PARTY_CLIENT') {
+    if (user.role === 'THIRD_PARTY_CLIENT') {
       // Third-party clients can only see their own orders
-      where.customerEmail = session.user.email
+      where.customerEmail = user.email
     }
 
     const order = await db.order.findFirst({
@@ -71,7 +71,7 @@ async function getOrderHandler(
 
     if (!order) {
       logSecurityEvent('ORDER_NOT_FOUND', req, {
-        userId: session.user.id,
+        userId: user.id,
         orderId: id,
       })
       return createErrorResponse('Order not found', 'NOT_FOUND', 404)
@@ -82,7 +82,7 @@ async function getOrderHandler(
     console.error('Error fetching order:', error)
 
     logSecurityEvent('ORDER_GET_ERROR', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: context.params.id,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -103,9 +103,9 @@ async function updateOrderHandler(
   validatedData: z.infer<typeof updateOrderSchema>,
   context: { params: { id: string } }
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: `/api/orders/${context.params.id}`,
       method: 'PUT',
@@ -114,7 +114,7 @@ async function updateOrderHandler(
   }
 
   // Check user permissions
-  if (session.user.role === 'THIRD_PARTY_CLIENT') {
+  if (user.role === 'THIRD_PARTY_CLIENT') {
     return createErrorResponse('Insufficient permissions', 'FORBIDDEN', 403)
   }
 
@@ -298,7 +298,7 @@ async function updateOrderHandler(
     })) as any // Type assertion for mock compatibility
 
     logSecurityEvent('ORDER_UPDATED', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: updatedOrder.id,
       orderNumber: updatedOrder.orderNumber,
       changes: Object.keys(validatedData),
@@ -309,7 +309,7 @@ async function updateOrderHandler(
     console.error('Error updating order:', error)
 
     logSecurityEvent('ORDER_UPDATE_ERROR', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: context.params.id,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -340,9 +340,9 @@ async function deleteOrderHandler(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: `/api/orders/${context.params.id}`,
       method: 'DELETE',
@@ -351,7 +351,7 @@ async function deleteOrderHandler(
   }
 
   // Check user permissions
-  if (session.user.role === 'THIRD_PARTY_CLIENT') {
+  if (user.role === 'THIRD_PARTY_CLIENT') {
     return createErrorResponse('Insufficient permissions', 'FORBIDDEN', 403)
   }
 
@@ -428,7 +428,7 @@ async function deleteOrderHandler(
     })) as any // Type assertion for mock compatibility
 
     logSecurityEvent('ORDER_CANCELLED', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: cancelledOrder.id,
       orderNumber: cancelledOrder.orderNumber,
     })
@@ -438,7 +438,7 @@ async function deleteOrderHandler(
     console.error('Error cancelling order:', error)
 
     logSecurityEvent('ORDER_CANCEL_ERROR', req, {
-      userId: session.user.id,
+      userId: user.id,
       orderId: context.params.id,
       error: error instanceof Error ? error.message : 'Unknown error',
     })

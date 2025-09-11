@@ -4,8 +4,8 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import { useAuth } from '@/hooks/use-auth'
 import OrdersTable from '@/components/orders/orders-table'
 import OrderDetailDialog from '@/components/orders/order-detail-dialog'
 import OrderFormDialog from '@/components/orders/order-form-dialog'
@@ -17,8 +17,8 @@ import {
 } from '@/types/orders'
 
 export default function OrderManagementPage() {
-  const { data: session } = useSession()
   const t = useTranslations('orders')
+  const { user } = useAuth()
 
   // State management
   const [orders, setOrders] = useState<OrderWithDetails[]>([])
@@ -238,11 +238,11 @@ export default function OrderManagementPage() {
     return undefined
   }, [formMode, selectedOrder])
 
-  if (!session) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <AlertCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-medium text-gray-900">Access Denied</h3>
           <p className="text-gray-500">
             Please sign in to access order management.
@@ -271,9 +271,9 @@ export default function OrderManagementPage() {
             />
             {t('refresh')}
           </Button>
-          {session.user?.role !== 'THIRD_PARTY_CLIENT' && (
+          {user?.role !== 'THIRD_PARTY_CLIENT' && (
             <Button onClick={handleCreateOrder}>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2" />
               {t('addOrder')}
             </Button>
           )}
@@ -285,12 +285,12 @@ export default function OrderManagementPage() {
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+              <AlertCircle className="w-5 h-5 mr-2 text-red-500" />
               <div>
                 <h3 className="text-sm font-medium text-red-800">
                   {t('errorLoading')}
                 </h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <p className="mt-1 text-sm text-red-700">{error}</p>
               </div>
               <Button
                 variant="outline"
@@ -316,7 +316,7 @@ export default function OrderManagementPage() {
         onEditOrder={handleEditOrder}
         onCancelOrder={handleCancelOrder}
         loading={loading}
-        userRole={session.user?.role}
+        userRole={user?.role}
       />
 
       {/* Order Detail Dialog */}
@@ -326,7 +326,7 @@ export default function OrderManagementPage() {
         onClose={() => setShowOrderDetail(false)}
         onEdit={handleEditOrder}
         onCancel={handleCancelOrder}
-        userRole={session.user?.role}
+        userRole={user?.role}
       />
 
       {/* Order Form Dialog */}

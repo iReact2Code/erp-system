@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 interface LanguageFontProps {
   children: React.ReactNode
   className?: string
-  as?: keyof JSX.IntrinsicElements
+  as?: React.ElementType
 }
 
 export function LanguageFont({

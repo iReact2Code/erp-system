@@ -10,36 +10,11 @@ import {
   Activity,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<{
-    id: string
-    name: string
-    email: string
-    role: string
-  } | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
   const t = useTranslations('dashboard')
-
-  useEffect(() => {
-    // Check for stored user data
-    const storedUser = localStorage.getItem('user')
-    const storedToken = localStorage.getItem('auth-token')
-
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser))
-    }
-    setLoading(false)
-  }, [])
-
-  if (loading) {
-    return <div>{t('loading')}</div>
-  }
-
-  if (!user) {
-    return <div>{t('pleaseLogin')}</div>
-  }
 
   return (
     <div className="space-y-6 animate-fade-in">

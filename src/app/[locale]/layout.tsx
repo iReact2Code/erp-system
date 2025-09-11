@@ -124,9 +124,6 @@ export default async function LocaleLayout({
       </head>
       <body
         className={`${fontConfig.className} antialiased`}
-        style={{
-          fontFamily: fontConfig.fontFamily || undefined,
-        }}
         suppressHydrationWarning
       >
         <ThemeProvider>

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 import {
   withRequestValidation,
@@ -19,14 +19,14 @@ async function getInventoryHandler(
   req: NextRequest,
   validatedData: z.infer<typeof paginationSchema>
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
   const startTime = Date.now()
   const clientIP =
     req.headers.get('x-forwarded-for') ||
     req.headers.get('x-real-ip') ||
     'unknown'
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: '/api/inventory',
     })
@@ -69,7 +69,6 @@ async function getInventoryHandler(
           description: true,
           quantity: true,
           unitPrice: true,
-          status: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -81,10 +80,10 @@ async function getInventoryHandler(
     await auditAPIAccess(
       '/api/inventory/enhanced',
       'GET',
-      session.user.id!,
-      session.user.email!,
+      user.id,
+      user.email,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      session.user.role as any,
+      user.role as any,
       clientIP,
       req.headers.get('user-agent') || 'Unknown',
       true,
@@ -114,7 +113,7 @@ async function getInventoryHandler(
     logSecurityEvent('INTERNAL_ERROR', req, {
       error: error instanceof Error ? error.message : 'Unknown error',
       endpoint: '/api/inventory',
-      userId: session.user.id,
+      userId: user.id,
     })
 
     return createErrorResponse('Internal server error', 'INTERNAL_ERROR', 500)
@@ -128,9 +127,9 @@ async function createInventoryHandler(
   req: NextRequest,
   validatedData: z.infer<typeof createInventorySchema>
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
 
-  if (!session?.user) {
+  if (!user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {
       endpoint: '/api/inventory',
       method: 'POST',
@@ -139,10 +138,10 @@ async function createInventoryHandler(
   }
 
   // Check user permissions (only admin and manager can create inventory)
-  if (!['ADMIN', 'MANAGER'].includes(session.user.role || '')) {
+  if (!['ADMIN', 'MANAGER'].includes(user.role || '')) {
     logSecurityEvent('INSUFFICIENT_PERMISSIONS', req, {
-      userId: session.user.id,
-      role: session.user.role,
+      userId: user.id,
+      role: user.role,
       endpoint: '/api/inventory',
       method: 'POST',
     })
@@ -162,7 +161,13 @@ async function createInventoryHandler(
     // Create inventory item
     const inventoryItem = await db.inventoryItem.create({
       data: {
-        ...validatedData,
+        name: validatedData.name,
+        sku: validatedData.sku,
+        description: validatedData.description,
+        quantity: validatedData.quantity,
+        unitPrice: validatedData.unitPrice,
+        createdById: user.id,
+        updatedById: user.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -173,7 +178,6 @@ async function createInventoryHandler(
         description: true,
         quantity: true,
         unitPrice: true,
-        status: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -190,7 +194,7 @@ async function createInventoryHandler(
       error: error instanceof Error ? error.message : 'Unknown error',
       endpoint: '/api/inventory',
       method: 'POST',
-      userId: session.user.id,
+      userId: user.id,
     })
 
     return createErrorResponse('Internal server error', 'INTERNAL_ERROR', 500)

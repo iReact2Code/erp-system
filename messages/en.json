@@ -15,7 +15,9 @@
     "login": "Log In",
     "logout": "Log Out",
     "register": "Register",
-    "welcome": "Welcome back"
+    "welcome": "Welcome back",
+    "redirecting": "Redirecting...",
+    "redirectingMessage": "Please wait while we redirect you to the login page."
   },
   "navigation": {
     "dashboard": "Dashboard",

@@ -15,7 +15,9 @@
     "login": "Iniciar Sesión",
     "logout": "Cerrar Sesión",
     "register": "Registrarse",
-    "welcome": "Bienvenido de vuelta"
+    "welcome": "Bienvenido de vuelta",
+    "redirecting": "Redirigiendo...",
+    "redirectingMessage": "Por favor espera mientras te redirigimos a la página de inicio de sesión."
   },
   "navigation": {
     "dashboard": "Tablero",
