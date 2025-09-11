@@ -22,7 +22,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/lib/prisma-mock'
 
 const formSchema = z.object({
   name: z.string().min(2, {

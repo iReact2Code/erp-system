@@ -10,13 +10,19 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
   {
-    plugins: {
-      prettier: require('eslint-plugin-prettier'),
-    },
+    ignores: [
+      '.next/**/*',
+      'src/generated/**/*',
+      '**/*.stories.ts',
+      '**/*.stories.tsx',
+      'src/stories/**/*',
+      'next-env.d.ts',
+    ],
+  },
+  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  {
     rules: {
-      'prettier/prettier': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_' },
@@ -24,10 +30,10 @@ const eslintConfig = [
       '@typescript-eslint/no-explicit-any': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
       'react/display-name': 'off',
+      'react/no-unescaped-entities': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ]
-
-export default eslintConfig
 
 export default eslintConfig

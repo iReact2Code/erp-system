@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 interface ApiState<T> {
   data: T | null
@@ -22,11 +22,15 @@ export function useApi<T>(
     error: null,
   })
 
+  // Use useRef to store the fetcher function to avoid dependency issues
+  const fetcherRef = useRef(fetcher)
+  fetcherRef.current = fetcher
+
   const execute = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }))
 
     try {
-      const response = await fetcher()
+      const response = await fetcherRef.current()
 
       if (response.error) {
         setState({
@@ -48,7 +52,7 @@ export function useApi<T>(
         error: err instanceof Error ? err.message : 'An error occurred',
       })
     }
-  }, [fetcher])
+  }, []) // Remove fetcher from dependencies
 
   const refresh = useCallback(() => {
     execute()
@@ -88,12 +92,16 @@ export function useMutation<TData, TVariables>(
     error: null,
   })
 
+  // Use useRef to store the mutation function to avoid dependency issues
+  const mutationRef = useRef(mutationFn)
+  mutationRef.current = mutationFn
+
   const mutate = useCallback(
     async (variables: TVariables) => {
       setState(prev => ({ ...prev, loading: true, error: null }))
 
       try {
-        const response = await mutationFn(variables)
+        const response = await mutationRef.current(variables)
 
         if (response.error) {
           setState({
@@ -120,7 +128,7 @@ export function useMutation<TData, TVariables>(
         return { success: false, error }
       }
     },
-    [mutationFn]
+    [] // Remove mutationFn from dependencies
   )
 
   const reset = useCallback(() => {

@@ -1,4 +1,4 @@
-import { UserRole } from '@/types/api'
+import { UserRole } from '@/lib/prisma-mock'
 
 // Audit event types
 export type AuditEventType =

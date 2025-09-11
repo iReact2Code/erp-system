@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 
-const locales = ['en', 'es', 'fr', 'ar', 'he', 'zh']
+const locales = ['en', 'es', 'fr', 'ar', 'he', 'zh', 'ug']
 
 const intlMiddleware = createIntlMiddleware({
   locales,

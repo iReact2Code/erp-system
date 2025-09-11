@@ -42,7 +42,22 @@
     "loadingPurchases": "جاري تحميل المشتريات...",
     "loadingProfile": "جاري تحميل الملف الشخصي...",
     "loadingInventory": "جاري تحميل المخزون...",
-    "logOut": "تسجيل الخروج"
+    "logOut": "تسجيل الخروج",
+    "select": "تحديد",
+    "noItems": "لم يتم إضافة عناصر بعد",
+    "clickAdd": "انقر على إضافة",
+    "toStart": "للبدء",
+    "purchases": "المشتريات",
+    "managePurchases": "إدارة المشتريات",
+    "searchPurchases": "البحث في المشتريات",
+    "sales": "المبيعات",
+    "manageSales": "إدارة المبيعات",
+    "searchSales": "البحث في المبيعات",
+    "inventory": "المخزون",
+    "manageInventory": "إدارة المخزون",
+    "searchInventory": "البحث في المخزون",
+    "users": "المستخدمون",
+    "searchUsers": "البحث في المستخدمين"
   },
   "theme": {
     "light": "فاتح",
@@ -55,7 +70,8 @@
     "french": "الفرنسية",
     "arabic": "العربية",
     "hebrew": "العبرية",
-    "chinese": "الصينية"
+    "chinese": "الصينية",
+    "uyghur": "الأويغورية"
   },
   "dashboard": {
     "title": "لوحة القيادة",
@@ -102,13 +118,23 @@
     "title": "إدارة المبيعات",
     "description": "تتبع وإدارة مبيعاتك",
     "addSale": "إضافة بيع",
+    "sale": "بيع",
+    "saleDescription": "معاملة بيع جديدة",
     "customer": "العميل",
     "amount": "المبلغ",
     "date": "التاريخ",
     "status": "الحالة",
     "completed": "مكتمل",
     "pending": "قيد الانتظار",
-    "cancelled": "ملغى"
+    "cancelled": "ملغى",
+    "items": "العناصر",
+    "item": "عنصر",
+    "product": "منتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "total": "المجموع",
+    "grandTotal": "المجموع الكلي",
+    "available": "متاح"
   },
   "orders": {
     "title": "إدارة الطلبات",
@@ -161,6 +187,13 @@
     "quantity": "الكمية",
     "unitPrice": "سعر الوحدة",
     "subtotal": "المجموع الفرعي",
-    "total": "المجموع"
+    "total": "المجموع",
+    "pending": "قيد الانتظار",
+    "approved": "موافق عليه",
+    "rejected": "مرفوض",
+    "completed": "مكتمل",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "complete": "إكمال"
   }
 }

@@ -100,7 +100,7 @@ export function withAdmin(
     session: { user: { id: string; email: string; role: UserRole } }
   ) => Promise<Response | NextResponse>
 ) {
-  return withRole(['ADMIN'], handler)
+  return withRole([UserRole.ADMIN], handler)
 }
 
 // Manager and Admin middleware
@@ -110,7 +110,7 @@ export function withManagerOrAdmin(
     session: { user: { id: string; email: string; role: UserRole } }
   ) => Promise<Response | NextResponse>
 ) {
-  return withRole(['ADMIN', 'MANAGER'], handler)
+  return withRole([UserRole.ADMIN, UserRole.SUPERVISOR], handler)
 }
 
 // User can access their own data or admin/manager can access any data

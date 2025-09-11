@@ -42,7 +42,22 @@
     "loadingPurchases": "טוען רכישות...",
     "loadingProfile": "טוען פרופיל...",
     "loadingInventory": "טוען מלאי...",
-    "logOut": "התנתקות"
+    "logOut": "התנתקות",
+    "select": "בחר",
+    "noItems": "לא נוספו פריטים עדיין",
+    "clickAdd": "לחץ הוסף",
+    "toStart": "כדי להתחיל",
+    "purchases": "רכישות",
+    "managePurchases": "נהל רכישות",
+    "searchPurchases": "חפש רכישות",
+    "sales": "מכירות",
+    "manageSales": "נהל מכירות",
+    "searchSales": "חפש מכירות",
+    "inventory": "מלאי",
+    "manageInventory": "נהל מלאי",
+    "searchInventory": "חפש במלאי",
+    "users": "משתמשים",
+    "searchUsers": "חפש משתמשים"
   },
   "theme": {
     "light": "בהיר",
@@ -55,7 +70,8 @@
     "french": "צרפתית",
     "arabic": "ערבית",
     "hebrew": "עברית",
-    "chinese": "סינית"
+    "chinese": "סינית",
+    "uyghur": "אויגורית"
   },
   "dashboard": {
     "title": "לוח בקרה",
@@ -102,13 +118,23 @@
     "title": "ניהול מכירות",
     "description": "עקוב ונהל את המכירות שלך",
     "addSale": "הוסף מכירה",
+    "sale": "מכירה",
+    "saleDescription": "עסקת מכירה חדשה",
     "customer": "לקוח",
     "amount": "סכום",
     "date": "תאריך",
     "status": "סטטוס",
     "completed": "הושלם",
     "pending": "ממתין",
-    "cancelled": "בוטל"
+    "cancelled": "בוטל",
+    "items": "פריטים",
+    "item": "פריט",
+    "product": "מוצר",
+    "quantity": "כמות",
+    "unitPrice": "מחיר ליחידה",
+    "total": "סה\"כ",
+    "grandTotal": "סה\"כ כללי",
+    "available": "זמין"
   },
   "orders": {
     "title": "ניהול הזמנות",
@@ -161,6 +187,13 @@
     "quantity": "כמות",
     "unitPrice": "מחיר ליחידה",
     "subtotal": "סכום ביניים",
-    "total": "סך הכל"
+    "total": "סך הכל",
+    "pending": "ממתין",
+    "approved": "מאושר",
+    "rejected": "נדחה",
+    "completed": "הושלם",
+    "approve": "אשר",
+    "reject": "דחה",
+    "complete": "השלם"
   }
 }

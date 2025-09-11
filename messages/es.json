@@ -42,7 +42,22 @@
     "loadingPurchases": "Cargando compras...",
     "loadingProfile": "Cargando perfil...",
     "loadingInventory": "Cargando inventario...",
-    "logOut": "Cerrar sesión"
+    "logOut": "Cerrar sesión",
+    "select": "Seleccionar",
+    "noItems": "Aún no se han agregado artículos",
+    "clickAdd": "Haz clic en agregar",
+    "toStart": "para comenzar",
+    "purchases": "Compras",
+    "managePurchases": "Gestionar Compras",
+    "searchPurchases": "Buscar Compras",
+    "sales": "Ventas",
+    "manageSales": "Gestionar Ventas",
+    "searchSales": "Buscar Ventas",
+    "inventory": "Inventario",
+    "manageInventory": "Gestionar Inventario",
+    "searchInventory": "Buscar Inventario",
+    "users": "Usuarios",
+    "searchUsers": "Buscar Usuarios"
   },
   "theme": {
     "light": "Claro",
@@ -55,7 +70,8 @@
     "french": "Francés",
     "arabic": "Árabe",
     "hebrew": "Hebreo",
-    "chinese": "Chino"
+    "chinese": "Chino",
+    "uyghur": "Uigur"
   },
   "dashboard": {
     "title": "Tablero",
@@ -102,13 +118,23 @@
     "title": "Gestión de Ventas",
     "description": "Rastree y administre sus ventas",
     "addSale": "Agregar Venta",
+    "sale": "Venta",
+    "saleDescription": "una nueva transacción de venta",
     "customer": "Cliente",
     "amount": "Cantidad",
     "date": "Fecha",
     "status": "Estado",
     "completed": "Completado",
     "pending": "Pendiente",
-    "cancelled": "Cancelado"
+    "cancelled": "Cancelado",
+    "items": "Artículos",
+    "item": "Artículo",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "total": "Total",
+    "grandTotal": "Total General",
+    "available": "Disponible"
   },
   "orders": {
     "title": "Gestión de Pedidos",
@@ -161,6 +187,13 @@
     "quantity": "Cantidad",
     "unitPrice": "Precio Unitario",
     "subtotal": "Subtotal",
-    "total": "Total"
+    "total": "Total",
+    "pending": "Pendiente",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "completed": "Completado",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "complete": "Completar"
   }
 }

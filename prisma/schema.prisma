@@ -13,9 +13,29 @@ datasource db {
 }
 
 enum UserRole {
+  ADMIN
+  MANAGER
   CLERK
   SUPERVISOR
   THIRD_PARTY_CLIENT
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum OrderPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
 model User {
@@ -29,6 +49,7 @@ model User {
   // Relations
   sales          Sale[]
   purchases      Purchase[]
+  orders         Order[]
   createdItems   InventoryItem[] @relation("CreatedBy")
   updatedItems   InventoryItem[] @relation("UpdatedBy")
 }
@@ -49,6 +70,7 @@ model InventoryItem {
   updatedBy     User           @relation("UpdatedBy", fields: [updatedById], references: [id])
   saleItems     SaleItem[]
   purchaseItems PurchaseItem[]
+  orderItems    OrderItem[]
 }
 
 model Sale {
@@ -99,4 +121,52 @@ model PurchaseItem {
   // Relations
   purchase        Purchase      @relation(fields: [purchaseId], references: [id])
   inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  customerAddress String?
+  status          OrderStatus   @default(DRAFT)
+  priority        OrderPriority @default(NORMAL)
+  orderDate       DateTime      @default(now())
+  requiredDate    DateTime?
+  shippedDate     DateTime?
+  deliveredDate   DateTime?
+  subtotal        Float         @default(0)
+  taxAmount       Float         @default(0)
+  shippingAmount  Float         @default(0)
+  discountAmount  Float         @default(0)
+  totalAmount     Float         @default(0)
+  notes           String?
+  internalNotes   String?
+  userId          String
+  // Relations
+  user            User          @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String        @id @default(cuid())
+  quantity        Int
+  unitPrice       Float
+  discount        Float         @default(0)
+  total           Float
+  notes           String?
+  orderId         String
+  inventoryItemId String
+  // Relations
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("order_items")
 }

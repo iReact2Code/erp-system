@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/lib/prisma-mock'
 
 const registerSchema = z.object({
   name: z.string().min(2),

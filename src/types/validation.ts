@@ -62,6 +62,19 @@ export const userRoleSchema = z.enum([
   'EMPLOYEE',
   'THIRD_PARTY_CLIENT',
 ] as const)
+export const orderStatusSchema = z.enum([
+  'DRAFT',
+  'PENDING',
+  'CONFIRMED',
+  'PROCESSING',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+  'REFUNDED',
+])
+
+export const orderPrioritySchema = z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT'])
+
 export const saleStatusSchema = z.enum([
   'PENDING',
   'COMPLETED',
@@ -281,6 +294,92 @@ export const paginatedResponseSchema = apiResponseSchema.extend({
     .optional(),
 })
 
+// Order validation schemas
+export const orderItemSchema = z.object({
+  inventoryItemId: idSchema,
+  quantity: quantitySchema,
+  unitPrice: priceSchema,
+  discount: z.number().min(0, 'Discount cannot be negative').default(0),
+  notes: z.string().max(500, 'Notes must not exceed 500 characters').optional(),
+})
+
+export const createOrderSchema = z.object({
+  customerName: nameSchema,
+  customerEmail: emailSchema,
+  customerPhone: z
+    .string()
+    .regex(/^\+?[\d\s\-\(\)]+$/, 'Invalid phone number format')
+    .optional(),
+  customerAddress: z
+    .string()
+    .max(500, 'Address must not exceed 500 characters')
+    .optional(),
+  priority: orderPrioritySchema.default('NORMAL'),
+  requiredDate: z.string().datetime('Invalid date format').optional(),
+  notes: z
+    .string()
+    .max(1000, 'Notes must not exceed 1000 characters')
+    .optional(),
+  internalNotes: z
+    .string()
+    .max(1000, 'Internal notes must not exceed 1000 characters')
+    .optional(),
+  items: z
+    .array(orderItemSchema)
+    .min(1, 'At least one item is required')
+    .max(50, 'Cannot add more than 50 items per order'),
+})
+
+export const updateOrderSchema = z.object({
+  id: idSchema,
+  customerName: nameSchema.optional(),
+  customerEmail: emailSchema.optional(),
+  customerPhone: z
+    .string()
+    .regex(/^\+?[\d\s\-\(\)]+$/, 'Invalid phone number format')
+    .optional(),
+  customerAddress: z
+    .string()
+    .max(500, 'Address must not exceed 500 characters')
+    .optional(),
+  status: orderStatusSchema.optional(),
+  priority: orderPrioritySchema.optional(),
+  requiredDate: z.string().datetime('Invalid date format').optional(),
+  shippedDate: z.string().datetime('Invalid date format').optional(),
+  deliveredDate: z.string().datetime('Invalid date format').optional(),
+  notes: z
+    .string()
+    .max(1000, 'Notes must not exceed 1000 characters')
+    .optional(),
+  internalNotes: z
+    .string()
+    .max(1000, 'Internal notes must not exceed 1000 characters')
+    .optional(),
+  items: z
+    .array(orderItemSchema)
+    .min(1, 'At least one item is required')
+    .max(50, 'Cannot add more than 50 items per order')
+    .optional(),
+})
+
+export const ordersQuerySchema = z.object({
+  page: z.string().transform(Number).pipe(z.number().min(1)).default(1),
+  limit: z
+    .string()
+    .transform(Number)
+    .pipe(z.number().min(1).max(100))
+    .default(10),
+  search: z.string().max(200).optional(),
+  status: orderStatusSchema.optional(),
+  priority: orderPrioritySchema.optional(),
+  dateFrom: z.string().datetime('Invalid date format').optional(),
+  dateTo: z.string().datetime('Invalid date format').optional(),
+  sortBy: z
+    .enum(['orderDate', 'customerName', 'totalAmount', 'status', 'priority'])
+    .default('orderDate'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+})
+
 // Export types for TypeScript
 export type CreateUserInput = z.infer<typeof createUserSchema>
 export type UpdateUserInput = z.infer<typeof updateUserSchema>
@@ -299,3 +398,7 @@ export type UsersQueryInput = z.infer<typeof usersQuerySchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
+export type OrderItemInput = z.infer<typeof orderItemSchema>
+export type CreateOrderInput = z.infer<typeof createOrderSchema>
+export type UpdateOrderInput = z.infer<typeof updateOrderSchema>
+export type OrdersQueryInput = z.infer<typeof ordersQuerySchema>

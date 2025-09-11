@@ -1,4 +1,8 @@
 // API Response Types
+import { UserRole } from '@/lib/prisma-mock'
+
+export { UserRole }
+
 export interface ApiResponse<T = unknown> {
   data?: T
   error?: string
@@ -15,8 +19,6 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // Status Types
-export type UserRole = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'THIRD_PARTY_CLIENT'
-
 export type SaleStatus = 'PENDING' | 'COMPLETED' | 'CANCELLED'
 
 export type PurchaseStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'

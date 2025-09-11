@@ -1,8 +1,7 @@
 import { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from '@/generated/prisma'
-import type { UserRole } from '@/generated/prisma'
+import { PrismaClient, UserRole } from '@/lib/prisma-mock'
 
 const prisma = new PrismaClient()
 
@@ -17,12 +16,6 @@ declare module 'next-auth' {
       name?: string | null
       role?: UserRole
     }
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    role?: UserRole
   }
 }
 

@@ -1,4 +1,4 @@
-import { OrdersTable } from '@/components/orders/orders-table'
+import OrderManagementPage from '@/components/orders/order-management-page'
 import { getTranslations } from 'next-intl/server'
 
 export default async function OrdersPage() {
@@ -10,7 +10,7 @@ export default async function OrdersPage() {
         <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground">{t('description')}</p>
       </div>
-      <OrdersTable />
+      <OrderManagementPage />
     </div>
   )
 }

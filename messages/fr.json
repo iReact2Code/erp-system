@@ -42,7 +42,22 @@
     "loadingPurchases": "Chargement des achats...",
     "loadingProfile": "Chargement du profil...",
     "loadingInventory": "Chargement de l'inventaire...",
-    "logOut": "Se déconnecter"
+    "logOut": "Se déconnecter",
+    "select": "Sélectionner",
+    "noItems": "Aucun article ajouté pour le moment",
+    "clickAdd": "Cliquez sur ajouter",
+    "toStart": "pour commencer",
+    "purchases": "Achats",
+    "managePurchases": "Gérer les Achats",
+    "searchPurchases": "Rechercher des Achats",
+    "sales": "Ventes",
+    "manageSales": "Gérer les Ventes",
+    "searchSales": "Rechercher des Ventes",
+    "inventory": "Inventaire",
+    "manageInventory": "Gérer l'Inventaire",
+    "searchInventory": "Rechercher dans l'Inventaire",
+    "users": "Utilisateurs",
+    "searchUsers": "Rechercher des Utilisateurs"
   },
   "theme": {
     "light": "Clair",
@@ -55,7 +70,8 @@
     "french": "Français",
     "arabic": "Arabe",
     "hebrew": "Hébreu",
-    "chinese": "Chinois"
+    "chinese": "Chinois",
+    "uyghur": "Ouïghour"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -102,13 +118,23 @@
     "title": "Gestion des Ventes",
     "description": "Suivez et gérez vos ventes",
     "addSale": "Ajouter une Vente",
+    "sale": "Vente",
+    "saleDescription": "une nouvelle transaction de vente",
     "customer": "Client",
     "amount": "Montant",
     "date": "Date",
     "status": "Statut",
     "completed": "Terminée",
     "pending": "En attente",
-    "cancelled": "Annulée"
+    "cancelled": "Annulée",
+    "items": "Articles",
+    "item": "Article",
+    "product": "Produit",
+    "quantity": "Quantité",
+    "unitPrice": "Prix Unitaire",
+    "total": "Total",
+    "grandTotal": "Total Général",
+    "available": "Disponible"
   },
   "orders": {
     "title": "Gestion des Commandes",
@@ -161,6 +187,13 @@
     "quantity": "Quantité",
     "unitPrice": "Prix Unitaire",
     "subtotal": "Sous-total",
-    "total": "Total"
+    "total": "Total",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "completed": "Terminé",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "complete": "Terminer"
   }
 }
