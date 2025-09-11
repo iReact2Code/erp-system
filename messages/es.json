@@ -91,6 +91,7 @@
     "title": "Tablero",
     "welcome": "Bienvenido de nuevo",
     "role": "Rol",
+    "loading": "Cargando...",
     "stats": {
       "totalSales": "Ventas Totales",
       "inventoryItems": "Artículos de Inventario",

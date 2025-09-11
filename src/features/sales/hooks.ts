@@ -4,10 +4,13 @@ import { Sale, CreateSaleRequest } from '@/types/api'
 
 // Fetch all sales
 export function useSales() {
-  return useApi<Sale[]>(async () => {
-    const response = await authenticatedFetch('/api/sales')
-    return response.json()
-  })
+  return useApi<Sale[]>(
+    async () => {
+      const response = await authenticatedFetch('/api/sales')
+      return response.json()
+    },
+    { key: 'sales:list', staleTime: 60000 }
+  )
 }
 
 // Create new sale

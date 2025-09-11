@@ -92,6 +92,7 @@
     "title": "לוח בקרה",
     "welcome": "ברוך השב",
     "role": "תפקיד",
+    "loading": "טוען...",
     "stats": {
       "totalSales": "סך המכירות",
       "inventoryItems": "פריטי מלאי",

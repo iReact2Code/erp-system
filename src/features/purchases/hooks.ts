@@ -4,10 +4,13 @@ import { Purchase, CreatePurchaseRequest, PurchaseStatus } from '@/types/api'
 
 // Fetch all purchases
 export function usePurchases() {
-  return useApi<Purchase[]>(async () => {
-    const response = await authenticatedFetch('/api/purchases')
-    return response.json()
-  })
+  return useApi<Purchase[]>(
+    async () => {
+      const response = await authenticatedFetch('/api/purchases')
+      return response.json()
+    },
+    { key: 'purchases:list', staleTime: 60000 }
+  )
 }
 
 // Create new purchase

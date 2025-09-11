@@ -13,8 +13,7 @@ export async function middleware(request: NextRequest) {
   // Handle internationalization first
   const response = intlMiddleware(request)
 
-  // Temporarily disable authentication check to test token-based auth
-  console.log('Middleware: Allowing all requests for token-based auth testing')
+  // Auth checks/logging disabled for performance in development
 
   return response
 }

@@ -1,20 +1,10 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { Geist, Geist_Mono } from 'next/font/google'
 import { AuthProvider } from '@/components/providers/auth-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { getFontConfig } from '@/lib/font-config'
 import type { Metadata } from 'next'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
 
 const locales = ['en', 'ug', 'es', 'fr', 'ar', 'he', 'zh'] as const
 type Locale = (typeof locales)[number]
@@ -55,6 +45,9 @@ export default async function LocaleLayout({
   // Providing all messages to the client side with the specific locale
   const messages = await getMessages({ locale })
 
+  // Get language-specific font configuration
+  const fontConfig = getFontConfig(locale)
+
   // Determine if the locale is RTL
   const isRTL = ['ar', 'he', 'ug'].includes(locale)
 
@@ -65,8 +58,75 @@ export default async function LocaleLayout({
       className={isRTL ? 'rtl' : 'ltr'}
       suppressHydrationWarning
     >
+      <head>
+        {/* Load language-specific fonts */}
+        {locale === 'ug' && (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link
+              rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossOrigin="anonymous"
+            />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap"
+              rel="stylesheet"
+            />
+            {/* UKIJ Tuz font for Uyghur */}
+            <link
+              href="https://cdn.jsdelivr.net/gh/UKIJ/UKIJ-fonts@main/UKIJ-Tuz/UKIJ-Tuz.css"
+              rel="stylesheet"
+            />
+          </>
+        )}
+        {locale === 'ar' && (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link
+              rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossOrigin="anonymous"
+            />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap"
+              rel="stylesheet"
+            />
+          </>
+        )}
+        {locale === 'he' && (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link
+              rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossOrigin="anonymous"
+            />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@100;200;300;400;500;600;700;800;900&display=swap"
+              rel="stylesheet"
+            />
+          </>
+        )}
+        {locale === 'zh' && (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link
+              rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossOrigin="anonymous"
+            />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;200;300;400;500;600;700;800;900&display=swap"
+              rel="stylesheet"
+            />
+          </>
+        )}
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${fontConfig.className} antialiased`}
+        style={{
+          fontFamily: fontConfig.fontFamily || undefined,
+        }}
         suppressHydrationWarning
       >
         <ThemeProvider>

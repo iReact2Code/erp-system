@@ -8,10 +8,13 @@ import {
 
 // Fetch all inventory items
 export function useInventory() {
-  return useApi<InventoryItem[]>(async () => {
-    const response = await authenticatedFetch('/api/inventory')
-    return response.json()
-  })
+  return useApi<InventoryItem[]>(
+    async () => {
+      const response = await authenticatedFetch('/api/inventory')
+      return response.json()
+    },
+    { key: 'inventory:list', staleTime: 60000 }
+  )
 }
 
 // Create new inventory item

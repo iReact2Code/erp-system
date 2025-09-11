@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useMemo, useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -26,7 +26,7 @@ import { usePurchases, useDeletePurchase } from '@/features/purchases/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 
-export function PurchasesTable() {
+export const PurchasesTable = memo(function PurchasesTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tPurchases = useTranslations('purchases')
@@ -34,21 +34,27 @@ export function PurchasesTable() {
   const { data: purchases, loading, error, refresh } = usePurchases()
   const deletePurchase = useDeletePurchase()
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('confirmDelete'))) return
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (!confirm(t('confirmDelete'))) return
+      const result = await deletePurchase.mutate(id)
+      if (result.success) {
+        refresh()
+      }
+    },
+    [deletePurchase, refresh, t]
+  )
 
-    const result = await deletePurchase.mutate(id)
-    if (result.success) {
-      refresh()
-    }
-  }
-
-  const handlePurchaseCreated = () => {
+  const handlePurchaseCreated = useCallback(() => {
     refresh()
-  }
+  }, [refresh])
 
-  const filteredPurchases = (purchases || []).filter(purchase =>
-    purchase.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPurchases = useMemo(
+    () =>
+      (purchases || []).filter(purchase =>
+        purchase.id.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [purchases, searchTerm]
   )
 
   const getStatusBadge = (status: string) => {
@@ -168,4 +174,4 @@ export function PurchasesTable() {
       </CardContent>
     </Card>
   )
-}
+})

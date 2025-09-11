@@ -4,10 +4,13 @@ import { User, CreateUserRequest } from '@/types/api'
 
 // Fetch all users
 export function useUsers() {
-  return useApi<User[]>(async () => {
-    const response = await authenticatedFetch('/api/users')
-    return response.json()
-  })
+  return useApi<User[]>(
+    async () => {
+      const response = await authenticatedFetch('/api/users')
+      return response.json()
+    },
+    { key: 'users:list', staleTime: 60000 }
+  )
 }
 
 // Create new user

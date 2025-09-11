@@ -91,6 +91,7 @@
     "title": "Tableau de bord",
     "welcome": "Bon retour",
     "role": "Rôle",
+    "loading": "Chargement...",
     "stats": {
       "totalSales": "Ventes Totales",
       "inventoryItems": "Articles d'Inventaire",

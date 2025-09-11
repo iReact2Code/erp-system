@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useMemo, useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -26,7 +26,7 @@ import { useSales, useDeleteSale } from '@/features/sales/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 
-export function SalesTable() {
+export const SalesTable = memo(function SalesTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tSales = useTranslations('sales')
@@ -34,21 +34,27 @@ export function SalesTable() {
   const { data: sales, loading, error, refresh } = useSales()
   const deleteSale = useDeleteSale()
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('confirmDelete'))) return
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (!confirm(t('confirmDelete'))) return
+      const result = await deleteSale.mutate(id)
+      if (result.success) {
+        refresh()
+      }
+    },
+    [deleteSale, refresh, t]
+  )
 
-    const result = await deleteSale.mutate(id)
-    if (result.success) {
-      refresh()
-    }
-  }
-
-  const handleSaleCreated = () => {
+  const handleSaleCreated = useCallback(() => {
     refresh()
-  }
+  }, [refresh])
 
-  const filteredSales = (sales || []).filter(sale =>
-    sale.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSales = useMemo(
+    () =>
+      (sales || []).filter(sale =>
+        sale.id.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [sales, searchTerm]
   )
 
   const getStatusBadge = (status: string) => {
@@ -160,4 +166,4 @@ export function SalesTable() {
       </CardContent>
     </Card>
   )
-}
+})

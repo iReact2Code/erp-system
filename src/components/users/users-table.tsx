@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useMemo, useCallback, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -19,7 +19,7 @@ import { useUsers, useDeleteUser } from '@/features/users/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 
-export function UsersTable() {
+export const UsersTable = memo(function UsersTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tUsers = useTranslations('users')
@@ -28,19 +28,25 @@ export function UsersTable() {
   const { data: users, loading, error, refresh } = useUsers()
   const deleteUser = useDeleteUser()
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('confirmDelete'))) return
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (!confirm(t('confirmDelete'))) return
+      const result = await deleteUser.mutate(id)
+      if (result.success) {
+        refresh()
+      }
+    },
+    [deleteUser, refresh, t]
+  )
 
-    const result = await deleteUser.mutate(id)
-    if (result.success) {
-      refresh()
-    }
-  }
-
-  const filteredUsers = (users || []).filter(
-    user =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = useMemo(
+    () =>
+      (users || []).filter(
+        user =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [users, searchTerm]
   )
 
   const getRoleBadge = (role: string) => {
@@ -139,4 +145,4 @@ export function UsersTable() {
       </CardContent>
     </Card>
   )
-}
+})

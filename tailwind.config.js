@@ -17,6 +17,37 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: [
+          'var(--font-geist-sans)',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+        ],
+        mono: [
+          'var(--font-geist-mono)',
+          'ui-monospace',
+          'SFMono-Regular',
+          'monospace',
+        ],
+        // Language-specific fonts
+        arabic: ['Noto Sans Arabic', 'var(--font-geist-sans)', 'sans-serif'],
+        hebrew: ['Noto Sans Hebrew', 'var(--font-geist-sans)', 'sans-serif'],
+        chinese: [
+          'Noto Sans SC',
+          'PingFang SC',
+          'Microsoft YaHei',
+          'var(--font-geist-sans)',
+          'sans-serif',
+        ],
+        uyghur: [
+          'UKIJ Tuz Tor',
+          'UKIJ Tuz',
+          'UKIJ Tuz Kitab',
+          'var(--font-geist-sans)',
+          'sans-serif',
+        ],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

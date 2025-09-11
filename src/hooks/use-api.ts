@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 
+// Simple in-memory cache with staleTime and request de-duplication
+type CacheEntry<T> = { data: T; timestamp: number }
+const responseCache = new Map<string, CacheEntry<unknown>>()
+const inflightRequests = new Map<string, Promise<unknown>>()
+
 interface ApiState<T> {
   data: T | null
   loading: boolean
@@ -8,13 +13,17 @@ interface ApiState<T> {
 
 interface UseApiOptions {
   immediate?: boolean
+  /** Unique cache key; when provided, results are cached */
+  key?: string
+  /** Milliseconds to keep cached value fresh; defaults to 30000 (30s) */
+  staleTime?: number
 }
 
 export function useApi<T>(
   fetcher: () => Promise<{ data?: T; error?: string }>,
   options: UseApiOptions = {}
 ) {
-  const { immediate = true } = options
+  const { immediate = true, key, staleTime = 30000 } = options
 
   const [state, setState] = useState<ApiState<T>>({
     data: null,
@@ -29,21 +38,43 @@ export function useApi<T>(
   const execute = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }))
 
-    try {
-      const response = await fetcherRef.current()
+    // Serve from cache if fresh
+    if (key && responseCache.has(key)) {
+      const cached = responseCache.get(key) as CacheEntry<T> | undefined
+      if (cached && Date.now() - cached.timestamp < staleTime) {
+        setState({ data: cached.data, loading: false, error: null })
+        return
+      }
+    }
 
-      if (response.error) {
-        setState({
-          data: null,
-          loading: false,
-          error: response.error,
-        })
+    try {
+      // Deduplicate in-flight requests by key
+      let result: { data?: T; error?: string }
+      if (key) {
+        let inflight = inflightRequests.get(key) as
+          | Promise<{
+              data?: T
+              error?: string
+            }>
+          | undefined
+        if (!inflight) {
+          inflight = fetcherRef.current()
+          inflightRequests.set(key, inflight as unknown as Promise<unknown>)
+        }
+        result = await inflight
+        inflightRequests.delete(key)
       } else {
-        setState({
-          data: response.data || null,
-          loading: false,
-          error: null,
-        })
+        result = await fetcherRef.current()
+      }
+
+      if (result.error) {
+        setState({ data: null, loading: false, error: result.error })
+      } else {
+        const data = (result.data || null) as T | null
+        setState({ data, loading: false, error: null })
+        if (key && data !== null) {
+          responseCache.set(key, { data, timestamp: Date.now() })
+        }
       }
     } catch (err) {
       setState({
@@ -52,11 +83,15 @@ export function useApi<T>(
         error: err instanceof Error ? err.message : 'An error occurred',
       })
     }
-  }, []) // Remove fetcher from dependencies
+  }, [key, staleTime])
 
   const refresh = useCallback(() => {
+    // Force refresh: clear cache for this key before executing
+    if (key) {
+      responseCache.delete(key)
+    }
     execute()
-  }, [execute])
+  }, [execute, key])
 
   const reset = useCallback(() => {
     setState({
