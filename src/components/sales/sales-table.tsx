@@ -29,6 +29,7 @@ import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 export function SalesTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
+  const tSales = useTranslations('sales')
 
   const { data: sales, loading, error, refresh } = useSales()
   const deleteSale = useDeleteSale()
@@ -60,7 +61,7 @@ export function SalesTable() {
         )
       case 'PENDING':
         return (
-          <Badge variant="secondary" className="bg-yellow-500 text-white">
+          <Badge variant="secondary" className="text-white bg-yellow-500">
             Pending
           </Badge>
         )
@@ -76,8 +77,8 @@ export function SalesTable() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{t('sales')}</CardTitle>
-            <CardDescription>{t('manageSales')}</CardDescription>
+            <CardTitle>{tSales('title')}</CardTitle>
+            <CardDescription>{tSales('description')}</CardDescription>
           </div>
           <SaleForm mode="add" onSuccess={handleSaleCreated} />
         </div>
@@ -88,10 +89,10 @@ export function SalesTable() {
           onDismiss={() => deleteSale.reset()}
         />
 
-        <div className="flex items-center space-x-2 mb-4">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center mb-4 space-x-2">
+          <Search className="w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={t('searchSales')}
+            placeholder={`${t('search')} ${tSales('title')}`}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="max-w-sm"
@@ -104,10 +105,10 @@ export function SalesTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('id')}</TableHead>
-                <TableHead>{t('date')}</TableHead>
-                <TableHead>{t('total')}</TableHead>
-                <TableHead>{t('status')}</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>{tSales('date')}</TableHead>
+                <TableHead>{tSales('total')}</TableHead>
+                <TableHead>{tSales('status')}</TableHead>
                 <TableHead>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -125,7 +126,7 @@ export function SalesTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
+                        <Eye className="w-4 h-4" />
                       </Button>
                       <SaleForm
                         sale={sale}
@@ -138,7 +139,7 @@ export function SalesTable() {
                         onClick={() => handleDelete(sale.id)}
                         disabled={deleteSale.loading}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -147,7 +148,9 @@ export function SalesTable() {
               {filteredSales.length === 0 && !loading && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    {searchTerm ? t('noSalesFound') : t('noSales')}
+                    {searchTerm
+                      ? `No ${tSales('title').toLowerCase()} found`
+                      : `No ${tSales('title').toLowerCase()} yet`}
                   </TableCell>
                 </TableRow>
               )}

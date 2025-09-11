@@ -1,4 +1,5 @@
 import { useApi, useMutation } from '@/hooks/use-api'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import {
   InventoryItem,
   CreateInventoryRequest,
@@ -8,7 +9,7 @@ import {
 // Fetch all inventory items
 export function useInventory() {
   return useApi<InventoryItem[]>(async () => {
-    const response = await fetch('/api/inventory')
+    const response = await authenticatedFetch('/api/inventory')
     return response.json()
   })
 }
@@ -16,9 +17,8 @@ export function useInventory() {
 // Create new inventory item
 export function useCreateInventory() {
   return useMutation<InventoryItem, CreateInventoryRequest>(async data => {
-    const response = await fetch('/api/inventory', {
+    const response = await authenticatedFetch('/api/inventory', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
     return response.json()
@@ -29,9 +29,8 @@ export function useCreateInventory() {
 export function useUpdateInventory() {
   return useMutation<InventoryItem, { id: string } & UpdateInventoryRequest>(
     async ({ id, ...data }) => {
-      const response = await fetch(`/api/inventory/${id}`, {
+      const response = await authenticatedFetch(`/api/inventory/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
       return response.json()
@@ -42,7 +41,7 @@ export function useUpdateInventory() {
 // Delete inventory item
 export function useDeleteInventory() {
   return useMutation<void, string>(async id => {
-    const response = await fetch(`/api/inventory/${id}`, {
+    const response = await authenticatedFetch(`/api/inventory/${id}`, {
       method: 'DELETE',
     })
     return response.json()

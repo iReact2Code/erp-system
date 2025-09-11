@@ -51,6 +51,8 @@
     "purchases": "سېتىۋېلىشلار",
     "managePurchases": "سېتىۋېلىشلارنى باشقۇرۇش",
     "searchPurchases": "سېتىۋېلىشلارنى ئىزدەش",
+    "noPurchasesFound": "سېتىۋېلىش خاتىرىسى تېپىلمىدى",
+    "noPurchases": "تېخى سېتىۋېلىش خاتىرىسى يوق",
     "sales": "سېتىشلار",
     "manageSales": "سېتىشلارنى باشقۇرۇش",
     "searchSales": "سېتىشلارنى ئىزدەش",
@@ -58,7 +60,15 @@
     "manageInventory": "امبارنى باشقۇرۇش",
     "searchInventory": "امباردىن ئىزدەش",
     "users": "ئىشلەتكۈچىلەر",
-    "searchUsers": "ئىشلەتكۈچىلەرنى ئىزدەش"
+    "searchUsers": "ئىشلەتكۈچىلەرنى ئىزدەش",
+    "noUsers": "تېخى ئىشلەتكۈچى قوشۇلمىدى",
+    "noUsersFound": "ئىشلەتكۈچى تېپىلمىدى",
+    "id": "ID",
+    "date": "چېسلا",
+    "total": "جەمئىي",
+    "status": "ھالەت",
+    "noSalesFound": "ساتىش خاتىرىسى تېپىلمىدى",
+    "noSales": "تېخى ساتىش خاتىرىسى يوق"
   },
   "theme": {
     "light": "يورۇق",
@@ -92,6 +102,14 @@
       "sales": "سېتىش",
       "purchases": "سېتىۋېلىش",
       "reports": "دوكلاتلار"
+    },
+    "quickActions": {
+      "recentActivity": "يېقىنقى پائالىيەت",
+      "noRecentActivity": "يېقىنقى پائالىيەت يوق",
+      "lowStockAlerts": "كەم قالغان ئاگاھلاندۇرۇش",
+      "noLowStockItems": "كەم قالغان تۈرلەر يوق",
+      "systemHealth": "سىستېما ساغلاملىقى",
+      "allSystemsOperational": "بارلىق سىستېمىلار نورمال ئىشلەۋاتىدۇ"
     }
   },
   "inventory": {
@@ -153,7 +171,16 @@
     "description": "تەپسىلىي سودا دوكلاتلىرىنى كۆرۈڭ",
     "salesReport": "سېتىش دوكلاتى",
     "inventoryReport": "امبار دوكلاتى",
-    "userReport": "ئىشلەتكۈچى دوكلاتى"
+    "userReport": "ئىشلەتكۈچى دوكلاتى",
+    "totalSales": "ئومۇمىي سېتىش",
+    "totalRevenue": "ئومۇمىي كىرىم",
+    "totalProducts": "ئومۇمىي مەھسۇلاتلار",
+    "lowStockAlert": "ئاز زاپاس ئاگاھلاندۇرۇشى",
+    "completedTransactions": "تاماملانغان سودىلار",
+    "activeInventoryItems": "ئاكتىپ امبار تۈرلىرى",
+    "fromSalesTransactions": "سېتىش سودىلىرىدىن",
+    "itemsBelowTenUnits": "10 دانىدىن ئاز تۈرلەر",
+    "recentTransactions": "يېقىنقى سودىلار"
   },
   "users": {
     "title": "ئىشلەتكۈچى باشقۇرۇشى",
@@ -166,7 +193,10 @@
     "role": "رول",
     "status": "ھالەت",
     "active": "ئاكتىپ",
-    "inactive": "ئاكتىپ ئەمەس"
+    "inactive": "ئاكتىپ ئەمەس",
+    "admin": "باشقۇرغۇچى",
+    "manager": "مەنىجېر",
+    "user": "ئىشلەتكۈچى"
   },
   "profile": {
     "title": "شەخسىي ئۇچۇر",

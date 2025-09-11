@@ -1,4 +1,4 @@
-import { PrismaClient } from './prisma-mock'
+import { PrismaClient } from '@/generated/prisma'
 
 declare global {
   var cachedPrisma: PrismaClient

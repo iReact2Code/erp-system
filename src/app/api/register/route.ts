@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { UserRole } from '@/lib/prisma-mock'
+import { UserRole } from '@/generated/prisma'
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -14,12 +14,17 @@ const registerSchema = z.object({
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+    console.log('Registration request body:', body)
+
     const { name, email, password, role } = registerSchema.parse(body)
+    console.log('Parsed data:', { name, email, role })
 
     // Check if user already exists
     const existingUser = await db.user.findUnique({
       where: { email },
     })
+
+    console.log('Existing user check:', existingUser)
 
     if (existingUser) {
       return NextResponse.json(

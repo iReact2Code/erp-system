@@ -1,11 +1,15 @@
 {
+  "metadata": {
+    "title": "מערכת ERP עם בינה מלאכותית",
+    "description": "מערכת תכנון משאבי הארגון עם יכולות בינה מלאכותית"
+  },
   "auth": {
     "welcomeBack": "ברוך שובך",
-    "signInDescription": "היכנס לחשבונך כדי להמשיך",
+    "signInDescription": "התחבר לחשבונך כדי להמשיך",
     "email": "אימייל",
     "password": "סיסמה",
-    "signIn": "היכנס",
-    "signUp": "הירשם",
+    "signIn": "התחבר",
+    "signUp": "הרשם",
     "createAccount": "צור חשבון",
     "signUpDescription": "צור חשבון חדש כדי להתחיל",
     "login": "התחברות",
@@ -51,6 +55,8 @@
     "purchases": "רכישות",
     "managePurchases": "נהל רכישות",
     "searchPurchases": "חפש רכישות",
+    "noPurchasesFound": "לא נמצאו רכישות",
+    "noPurchases": "עדיין אין רכישות",
     "sales": "מכירות",
     "manageSales": "נהל מכירות",
     "searchSales": "חפש מכירות",
@@ -58,7 +64,15 @@
     "manageInventory": "נהל מלאי",
     "searchInventory": "חפש במלאי",
     "users": "משתמשים",
-    "searchUsers": "חפש משתמשים"
+    "searchUsers": "חפש משתמשים",
+    "noUsers": "עדיין לא נוספו משתמשים",
+    "noUsersFound": "לא נמצאו משתמשים",
+    "id": "מזהה",
+    "date": "תאריך",
+    "total": "סה\"כ",
+    "status": "סטטוס",
+    "noSalesFound": "לא נמצאו מכירות",
+    "noSales": "עדיין אין מכירות"
   },
   "theme": {
     "light": "בהיר",
@@ -92,6 +106,14 @@
       "sales": "מכירות",
       "purchases": "רכישות",
       "reports": "דוחות"
+    },
+    "quickActions": {
+      "recentActivity": "פעילות אחרונה",
+      "noRecentActivity": "אין פעילות אחרונה",
+      "lowStockAlerts": "התראות מלאי נמוך",
+      "noLowStockItems": "אין פריטים עם מלאי נמוך",
+      "systemHealth": "בריאות המערכת",
+      "allSystemsOperational": "כל המערכות פועלות כראוי"
     }
   },
   "inventory": {
@@ -139,7 +161,11 @@
   },
   "orders": {
     "title": "ניהול הזמנות",
-    "description": "נהל את ההזמנות שלך",
+    "description": "נהל ועקוב אחר כל הזמנות הלקוחות",
+    "addOrder": "צור הזמנה",
+    "refresh": "רענן",
+    "errorLoading": "שגיאה בטעינת הזמנות",
+    "tryAgain": "נסה שוב",
     "orderNumber": "מספר הזמנה",
     "orderDate": "תאריך הזמנה",
     "totalAmount": "סכום כולל",
@@ -153,7 +179,16 @@
     "description": "צפה בדוחות עסקיים מפורטים",
     "salesReport": "דוח מכירות",
     "inventoryReport": "דוח מלאי",
-    "userReport": "דוח משתמשים"
+    "userReport": "דוח משתמשים",
+    "totalSales": "סך המכירות",
+    "totalRevenue": "סך ההכנסות",
+    "totalProducts": "סך המוצרים",
+    "lowStockAlert": "התראת מלאי נמוך",
+    "completedTransactions": "עסקאות שהושלמו",
+    "activeInventoryItems": "פריטי מלאי פעילים",
+    "fromSalesTransactions": "מעסקאות מכירה",
+    "itemsBelowTenUnits": "פריטים מתחת ל-10 יחידות",
+    "recentTransactions": "עסקאות אחרונות"
   },
   "users": {
     "title": "ניהול משתמשים",
@@ -166,7 +201,10 @@
     "role": "תפקיד",
     "status": "סטטוס",
     "active": "פעיל",
-    "inactive": "לא פעיל"
+    "inactive": "לא פעיל",
+    "admin": "מנהל",
+    "manager": "מנהל",
+    "user": "משתמש"
   },
   "profile": {
     "title": "פרופיל",

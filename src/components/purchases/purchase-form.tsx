@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Plus, Edit, Save, X, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface InventoryItem {
   id: string
@@ -57,16 +59,19 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
     items: purchase?.items || [],
   })
 
+  const t = useTranslations('common')
+  const tPurchases = useTranslations('purchases')
+
   useEffect(() => {
     fetchInventoryItems()
   }, [])
 
   const fetchInventoryItems = async () => {
     try {
-      const response = await fetch('/api/inventory')
+      const response = await authenticatedFetch('/api/inventory')
       if (response.ok) {
         const data = await response.json()
-        setInventoryItems(data)
+        setInventoryItems(data.data || data || [])
       }
     } catch (error) {
       console.error('Error fetching inventory items:', error)
@@ -158,7 +163,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
         {mode === 'add' ? (
           <Button className="hover-lift animate-scale-in">
             <Plus className="w-4 h-4 mr-2" />
-            Add Purchase
+            {tPurchases('purchase')}
           </Button>
         ) : (
           <Button variant="outline" size="sm" className="hover-scale">
@@ -175,18 +180,18 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
             ) : (
               <Edit className="w-5 h-5" />
             )}
-            {mode === 'add' ? 'Add' : 'Edit'} Purchase
+            {mode === 'add' ? t('add') : t('edit')} {tPurchases('purchase')}
           </DialogTitle>
           <DialogDescription>
             {mode === 'add'
-              ? 'Create a new purchase order'
-              : 'Edit purchase order'}
+              ? `${t('add')} ${tPurchases('purchaseDescription')}`
+              : `${t('edit')} ${tPurchases('purchaseDescription')}`}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{tPurchases('status')}</Label>
             <Select
               value={formData.status}
               onValueChange={value =>
@@ -197,17 +202,23 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="APPROVED">Approved</SelectItem>
-                <SelectItem value="REJECTED">Rejected</SelectItem>
-                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="PENDING">{tPurchases('pending')}</SelectItem>
+                <SelectItem value="APPROVED">
+                  {tPurchases('approved')}
+                </SelectItem>
+                <SelectItem value="REJECTED">
+                  {tPurchases('rejected')}
+                </SelectItem>
+                <SelectItem value="COMPLETED">
+                  {tPurchases('completed')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Label>Items</Label>
+            <div className="flex items-center justify-between">
+              <Label>{tPurchases('items')}</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -216,14 +227,16 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                 className="hover-scale"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add Item
+                {t('add')} {tPurchases('item')}
               </Button>
             </div>
 
             {formData.items.map((item, index) => (
-              <div key={index} className="border rounded-md p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Item {index + 1}</h4>
+              <div key={index} className="p-4 space-y-3 border rounded-md">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">
+                    {tPurchases('item')} {index + 1}
+                  </h4>
                   <Button
                     type="button"
                     variant="outline"
@@ -235,9 +248,9 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                   <div className="space-y-2">
-                    <Label>Product</Label>
+                    <Label>{tPurchases('product')}</Label>
                     <Select
                       value={item.inventoryItemId}
                       onValueChange={value => {
@@ -255,7 +268,9 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                       }}
                     >
                       <SelectTrigger className="hover-glow">
-                        <SelectValue placeholder="Select product" />
+                        <SelectValue
+                          placeholder={`${t('select')} ${tPurchases('product')}`}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {inventoryItems.map(invItem => (
@@ -268,7 +283,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Quantity</Label>
+                    <Label>{tPurchases('quantity')}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -285,7 +300,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Unit Price</Label>
+                    <Label>{tPurchases('unitPrice')}</Label>
                     <Input
                       type="number"
                       min="0"
@@ -312,10 +327,10 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
             ))}
           </div>
 
-          <div className="border-t pt-4">
+          <div className="pt-4 border-t">
             <div className="text-right">
               <span className="text-lg font-bold">
-                Total: ${formData.total.toFixed(2)}
+                {tPurchases('total')}: ${formData.total.toFixed(2)}
               </span>
             </div>
           </div>
@@ -328,7 +343,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
               className="hover-scale"
             >
               <X className="w-4 h-4 mr-2" />
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               type="submit"
@@ -336,7 +351,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
               className="hover-lift"
             >
               <Save className="w-4 h-4 mr-2" />
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? t('saving') : t('save')}
             </Button>
           </div>
         </form>

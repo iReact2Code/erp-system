@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import {
   Select,
   SelectContent,
@@ -72,11 +73,12 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
 
   const fetchInventoryItems = async () => {
     try {
-      const response = await fetch('/api/inventory')
+      const response = await authenticatedFetch('/api/inventory')
       if (response.ok) {
         const data = await response.json()
+        const items = data.data || data || []
         setInventoryItems(
-          data.filter((item: InventoryItem) => item.quantity > 0)
+          items.filter((item: InventoryItem) => item.quantity > 0)
         )
       }
     } catch (error) {

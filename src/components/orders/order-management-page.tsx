@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import OrdersTable from '@/components/orders/orders-table'
 import OrderDetailDialog from '@/components/orders/order-detail-dialog'
 import OrderFormDialog from '@/components/orders/order-form-dialog'
@@ -17,6 +18,7 @@ import {
 
 export default function OrderManagementPage() {
   const { data: session } = useSession()
+  const t = useTranslations('orders')
 
   // State management
   const [orders, setOrders] = useState<OrderWithDetails[]>([])
@@ -255,10 +257,8 @@ export default function OrderManagementPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Order Management
-          </h1>
-          <p className="text-gray-500">Manage and track all customer orders</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-gray-500">{t('description')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -269,12 +269,12 @@ export default function OrderManagementPage() {
             <RefreshCw
               className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}
             />
-            Refresh
+            {t('refresh')}
           </Button>
           {session.user?.role !== 'THIRD_PARTY_CLIENT' && (
             <Button onClick={handleCreateOrder}>
               <Plus className="h-4 w-4 mr-2" />
-              Create Order
+              {t('addOrder')}
             </Button>
           )}
         </div>
@@ -288,7 +288,7 @@ export default function OrderManagementPage() {
               <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
               <div>
                 <h3 className="text-sm font-medium text-red-800">
-                  Error loading orders
+                  {t('errorLoading')}
                 </h3>
                 <p className="text-sm text-red-700 mt-1">{error}</p>
               </div>
@@ -298,7 +298,7 @@ export default function OrderManagementPage() {
                 onClick={() => fetchOrders()}
                 className="ml-auto"
               >
-                Try Again
+                {t('tryAgain')}
               </Button>
             </div>
           </CardContent>

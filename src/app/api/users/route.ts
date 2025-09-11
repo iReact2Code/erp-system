@@ -1,17 +1,14 @@
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     // Only supervisors can view all users
-    if (session.user?.role !== 'SUPERVISOR') {
+    if (user!.role !== 'SUPERVISOR') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -30,6 +27,9 @@ export async function GET() {
 
     return NextResponse.json(users)
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching users:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

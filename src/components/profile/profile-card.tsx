@@ -1,15 +1,32 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { User, Mail, Calendar, Shield } from 'lucide-react'
 
 export function ProfileCard() {
-  const { data: session } = useSession()
+  const [user, setUser] = useState<{
+    id: string
+    name: string
+    email: string
+    role: string
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (!session?.user) {
+  useEffect(() => {
+    // Check for stored user data
+    const storedUser = localStorage.getItem('user')
+    const storedToken = localStorage.getItem('auth-token')
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser))
+    }
+    setLoading(false)
+  }, [])
+
+  if (loading) {
     return (
       <Card>
         <CardHeader>
@@ -18,6 +35,23 @@ export function ProfileCard() {
         <CardContent>
           <div className="text-center py-8">
             <div className="text-muted-foreground">Loading profile...</div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <div className="text-muted-foreground">
+              Please log in to view your profile.
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -50,16 +84,16 @@ export function ProfileCard() {
           <div className="flex items-start space-x-4">
             <Avatar className="h-16 w-16">
               <AvatarFallback className="text-lg">
-                {session.user.name?.[0]?.toUpperCase() || 'U'}
+                {user.name?.[0]?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2 flex-1">
               <div>
-                <h3 className="text-lg font-semibold">{session.user.name}</h3>
-                <p className="text-muted-foreground">{session.user.email}</p>
+                <h3 className="text-lg font-semibold">{user.name}</h3>
+                <p className="text-muted-foreground">{user.email}</p>
               </div>
-              <Badge variant={getRoleBadgeVariant(session.user.role || '')}>
-                {session.user.role?.replace('_', ' ') || 'Unknown Role'}
+              <Badge variant={getRoleBadgeVariant(user.role || '')}>
+                {user.role?.replace('_', ' ') || 'Unknown Role'}
               </Badge>
             </div>
           </div>
@@ -73,7 +107,7 @@ export function ProfileCard() {
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-semibold">{session.user.email}</div>
+            <div className="text-lg font-semibold">{user.email}</div>
             <p className="text-xs text-muted-foreground">
               Your primary email address
             </p>
@@ -87,7 +121,7 @@ export function ProfileCard() {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-semibold">
-              {session.user.role?.replace('_', ' ') || 'Unknown'}
+              {user.role?.replace('_', ' ') || 'Unknown'}
             </div>
             <p className="text-xs text-muted-foreground">
               Your access level in the system

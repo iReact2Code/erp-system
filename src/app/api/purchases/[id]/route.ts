@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 
 export async function PATCH(
@@ -7,11 +7,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const { id } = await params
     const body = await request.json()
@@ -65,11 +62,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const { id } = await params
 

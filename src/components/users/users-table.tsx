@@ -46,15 +46,15 @@ export function UsersTable() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'ADMIN':
-        return <Badge variant="destructive">Admin</Badge>
+        return <Badge variant="destructive">{tUsers('admin') || 'Admin'}</Badge>
       case 'MANAGER':
         return (
           <Badge variant="default" className="bg-blue-500">
-            Manager
+            {tUsers('manager') || 'Manager'}
           </Badge>
         )
       case 'USER':
-        return <Badge variant="secondary">User</Badge>
+        return <Badge variant="secondary">{tUsers('user') || 'User'}</Badge>
       default:
         return <Badge variant="outline">{role}</Badge>
     }

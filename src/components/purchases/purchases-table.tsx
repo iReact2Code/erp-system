@@ -29,6 +29,7 @@ import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 export function PurchasesTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
+  const tPurchases = useTranslations('purchases')
 
   const { data: purchases, loading, error, refresh } = usePurchases()
   const deletePurchase = useDeletePurchase()
@@ -55,17 +56,25 @@ export function PurchasesTable() {
       case 'COMPLETED':
         return (
           <Badge variant="default" className="bg-green-500">
-            Completed
+            {tPurchases('completed')}
           </Badge>
         )
       case 'PENDING':
         return (
-          <Badge variant="secondary" className="bg-yellow-500 text-white">
-            Pending
+          <Badge variant="secondary" className="text-white bg-yellow-500">
+            {tPurchases('pending')}
           </Badge>
         )
       case 'CANCELLED':
-        return <Badge variant="destructive">Cancelled</Badge>
+        return <Badge variant="destructive">{tPurchases('cancelled')}</Badge>
+      case 'APPROVED':
+        return (
+          <Badge variant="default" className="bg-blue-500">
+            {tPurchases('approved')}
+          </Badge>
+        )
+      case 'REJECTED':
+        return <Badge variant="destructive">{tPurchases('rejected')}</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -76,8 +85,8 @@ export function PurchasesTable() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{t('purchases')}</CardTitle>
-            <CardDescription>{t('managePurchases')}</CardDescription>
+            <CardTitle>{tPurchases('title')}</CardTitle>
+            <CardDescription>{tPurchases('description')}</CardDescription>
           </div>
           <PurchaseForm mode="add" onSuccess={handlePurchaseCreated} />
         </div>
@@ -88,10 +97,10 @@ export function PurchasesTable() {
           onDismiss={() => deletePurchase.reset()}
         />
 
-        <div className="flex items-center space-x-2 mb-4">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center mb-4 space-x-2">
+          <Search className="w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={t('searchPurchases')}
+            placeholder={`${t('search')} ${tPurchases('title')}`}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className="max-w-sm"
@@ -104,10 +113,10 @@ export function PurchasesTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('id')}</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>{t('date')}</TableHead>
-                <TableHead>{t('total')}</TableHead>
-                <TableHead>{t('status')}</TableHead>
+                <TableHead>{tPurchases('total')}</TableHead>
+                <TableHead>{tPurchases('status')}</TableHead>
                 <TableHead>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -125,7 +134,7 @@ export function PurchasesTable() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
+                        <Eye className="w-4 h-4" />
                       </Button>
                       <PurchaseForm
                         purchase={purchase}
@@ -138,7 +147,7 @@ export function PurchasesTable() {
                         onClick={() => handleDelete(purchase.id)}
                         disabled={deletePurchase.loading}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -147,7 +156,9 @@ export function PurchasesTable() {
               {filteredPurchases.length === 0 && !loading && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    {searchTerm ? t('noPurchasesFound') : t('noPurchases')}
+                    {searchTerm
+                      ? `No ${tPurchases('title').toLowerCase()} found`
+                      : `No ${tPurchases('title').toLowerCase()} yet`}
                   </TableCell>
                 </TableRow>
               )}

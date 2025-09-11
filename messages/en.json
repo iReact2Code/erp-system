@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "AI ERP System",
+    "description": "Enterprise Resource Planning System with AI capabilities"
+  },
   "auth": {
     "welcomeBack": "Welcome Back",
     "signInDescription": "Sign in to your account to continue",
@@ -50,6 +54,8 @@
     "purchases": "Purchases",
     "managePurchases": "Manage Purchases",
     "searchPurchases": "Search Purchases",
+    "noPurchasesFound": "No purchases found",
+    "noPurchases": "No purchases yet",
     "sales": "Sales",
     "manageSales": "Manage Sales",
     "searchSales": "Search Sales",
@@ -59,7 +65,13 @@
     "users": "Users",
     "searchUsers": "Search Users",
     "noUsers": "No users added yet",
-    "noUsersFound": "No users found"
+    "noUsersFound": "No users found",
+    "id": "ID",
+    "date": "Date",
+    "total": "Total",
+    "status": "Status",
+    "noSalesFound": "No sales found",
+    "noSales": "No sales yet"
   },
   "theme": {
     "light": "Light",
@@ -79,6 +91,8 @@
     "title": "Dashboard",
     "welcome": "Welcome back",
     "role": "Role",
+    "loading": "Loading...",
+    "pleaseLogin": "Please log in to access the dashboard.",
     "stats": {
       "totalSales": "Total Sales",
       "inventoryItems": "Inventory Items",
@@ -93,6 +107,14 @@
       "sales": "Sales",
       "purchases": "Purchases",
       "reports": "Reports"
+    },
+    "quickActions": {
+      "recentActivity": "Recent Activity",
+      "noRecentActivity": "No recent activity",
+      "lowStockAlerts": "Low Stock Alerts",
+      "noLowStockItems": "No low stock items",
+      "systemHealth": "System Health",
+      "allSystemsOperational": "All systems operational"
     }
   },
   "inventory": {
@@ -140,7 +162,11 @@
   },
   "orders": {
     "title": "Order Management",
-    "description": "Manage your orders",
+    "description": "Manage and track all customer orders",
+    "addOrder": "Create Order",
+    "refresh": "Refresh",
+    "errorLoading": "Error loading orders",
+    "tryAgain": "Try Again",
     "orderNumber": "Order Number",
     "orderDate": "Order Date",
     "totalAmount": "Total Amount",
@@ -154,7 +180,16 @@
     "description": "View detailed business reports",
     "salesReport": "Sales Report",
     "inventoryReport": "Inventory Report",
-    "userReport": "User Report"
+    "userReport": "User Report",
+    "totalSales": "Total Sales",
+    "totalRevenue": "Total Revenue",
+    "totalProducts": "Total Products",
+    "lowStockAlert": "Low Stock Alert",
+    "completedTransactions": "Completed transactions",
+    "activeInventoryItems": "Active inventory items",
+    "fromSalesTransactions": "From sales transactions",
+    "itemsBelowTenUnits": "Items below 10 units",
+    "recentTransactions": "Recent Transactions"
   },
   "users": {
     "title": "User Management",
@@ -167,7 +202,10 @@
     "role": "Role",
     "status": "Status",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "admin": "Admin",
+    "manager": "Manager",
+    "user": "User"
   },
   "profile": {
     "title": "Profile",

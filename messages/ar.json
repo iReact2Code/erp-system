@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "نظام تخطيط موارد المؤسسة بالذكاء الاصطناعي",
+    "description": "نظام تخطيط موارد المؤسسة مع قدرات الذكاء الاصطناعي"
+  },
   "auth": {
     "welcomeBack": "أهلاً بعودتك",
     "signInDescription": "سجل دخولك إلى حسابك للمتابعة",
@@ -51,6 +55,8 @@
     "purchases": "المشتريات",
     "managePurchases": "إدارة المشتريات",
     "searchPurchases": "البحث في المشتريات",
+    "noPurchasesFound": "لم يتم العثور على مشتريات",
+    "noPurchases": "لا توجد مشتريات حتى الآن",
     "sales": "المبيعات",
     "manageSales": "إدارة المبيعات",
     "searchSales": "البحث في المبيعات",
@@ -58,7 +64,15 @@
     "manageInventory": "إدارة المخزون",
     "searchInventory": "البحث في المخزون",
     "users": "المستخدمون",
-    "searchUsers": "البحث في المستخدمين"
+    "searchUsers": "البحث في المستخدمين",
+    "noUsers": "لا يوجد مستخدمون مضافون بعد",
+    "noUsersFound": "لم يتم العثور على مستخدمين",
+    "id": "المعرف",
+    "date": "التاريخ",
+    "total": "المجموع",
+    "status": "الحالة",
+    "noSalesFound": "لم يتم العثور على مبيعات",
+    "noSales": "لا توجد مبيعات بعد"
   },
   "theme": {
     "light": "فاتح",
@@ -78,6 +92,8 @@
     "title": "لوحة القيادة",
     "welcome": "مرحباً بعودتك",
     "role": "الدور",
+    "loading": "جاري التحميل...",
+    "pleaseLogin": "يرجى تسجيل الدخول للوصول إلى لوحة القيادة.",
     "stats": {
       "totalSales": "إجمالي المبيعات",
       "inventoryItems": "عناصر المخزون",
@@ -92,6 +108,14 @@
       "sales": "المبيعات",
       "purchases": "المشتريات",
       "reports": "التقارير"
+    },
+    "quickActions": {
+      "recentActivity": "النشاط الأخير",
+      "noRecentActivity": "لا توجد أنشطة حديثة",
+      "lowStockAlerts": "تنبيهات المخزون المنخفض",
+      "noLowStockItems": "لا توجد عناصر مخزون منخفض",
+      "systemHealth": "صحة النظام",
+      "allSystemsOperational": "جميع الأنظمة تعمل بشكل طبيعي"
     }
   },
   "inventory": {
@@ -139,7 +163,11 @@
   },
   "orders": {
     "title": "إدارة الطلبات",
-    "description": "إدارة طلباتك",
+    "description": "إدارة وتتبع جميع طلبات العملاء",
+    "addOrder": "إنشاء طلب",
+    "refresh": "تحديث",
+    "errorLoading": "خطأ في تحميل الطلبات",
+    "tryAgain": "حاول مرة أخرى",
     "orderNumber": "رقم الطلب",
     "orderDate": "تاريخ الطلب",
     "totalAmount": "المبلغ الإجمالي",
@@ -153,7 +181,16 @@
     "description": "عرض تقارير الأعمال المفصلة",
     "salesReport": "تقرير المبيعات",
     "inventoryReport": "تقرير المخزون",
-    "userReport": "تقرير المستخدم"
+    "userReport": "تقرير المستخدم",
+    "totalSales": "إجمالي المبيعات",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalProducts": "إجمالي المنتجات",
+    "lowStockAlert": "تنبيه المخزون المنخفض",
+    "completedTransactions": "المعاملات المكتملة",
+    "activeInventoryItems": "عناصر المخزون النشطة",
+    "fromSalesTransactions": "من معاملات المبيعات",
+    "itemsBelowTenUnits": "العناصر أقل من 10 وحدات",
+    "recentTransactions": "المعاملات الأخيرة"
   },
   "users": {
     "title": "إدارة المستخدمين",
@@ -166,7 +203,10 @@
     "role": "الدور",
     "status": "الحالة",
     "active": "نشط",
-    "inactive": "غير نشط"
+    "inactive": "غير نشط",
+    "admin": "مدير",
+    "manager": "مدير",
+    "user": "مستخدم"
   },
   "profile": {
     "title": "الملف الشخصي",

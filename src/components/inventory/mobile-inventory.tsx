@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -78,7 +79,7 @@ const MobileInventoryCard: React.FC<{
     <Card
       className={cn('transition-all hover:shadow-md', isMobile ? 'p-3' : 'p-4')}
     >
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3
             className={cn('font-semibold', isMobile ? 'text-sm' : 'text-base')}
@@ -96,7 +97,7 @@ const MobileInventoryCard: React.FC<{
             onClick={onEdit}
             className={cn(isMobile ? 'h-8 w-8 p-0' : 'h-9 w-9 p-0')}
           >
-            <Edit className="h-3 w-3" />
+            <Edit className="w-3 h-3" />
           </ResponsiveButton>
           <ResponsiveButton
             size="sm"
@@ -107,7 +108,7 @@ const MobileInventoryCard: React.FC<{
               isMobile ? 'h-8 w-8 p-0' : 'h-9 w-9 p-0'
             )}
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="w-3 h-3" />
           </ResponsiveButton>
         </div>
       </div>
@@ -128,7 +129,7 @@ const MobileInventoryCard: React.FC<{
               {item.currentStock}
             </Badge>
             {stockStatus.status === 'critical' && (
-              <AlertTriangle className="h-3 w-3 text-red-500" />
+              <AlertTriangle className="w-3 h-3 text-red-500" />
             )}
           </div>
         </div>
@@ -138,8 +139,8 @@ const MobileInventoryCard: React.FC<{
         </div>
       </div>
 
-      <div className="mt-3 pt-3 border-t">
-        <div className="flex justify-between items-center text-xs">
+      <div className="pt-3 mt-3 border-t">
+        <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">
             Min: {item.minStock} | Max: {item.maxStock}
           </span>
@@ -172,6 +173,7 @@ const InventoryForm: React.FC<{
   onSubmit: (data: InventoryFormData) => void
   onCancel: () => void
 }> = ({ item, onSubmit, onCancel }) => {
+  const t = useTranslations('inventory')
   const [formData, setFormData] = useState({
     name: item?.name || '',
     sku: item?.sku || '',
@@ -207,7 +209,7 @@ const InventoryForm: React.FC<{
   return (
     <form onSubmit={handleSubmit}>
       <ResponsiveForm
-        title={item ? 'Edit Product' : 'Add New Product'}
+        title={item ? t('editItem') : t('addItem')}
         description={
           item
             ? 'Update product information'
@@ -231,40 +233,40 @@ const InventoryForm: React.FC<{
       >
         <ResponsiveFormGrid>
           <ResponsiveInput
-            label="Product Name"
+            label={t('name')}
             required
             value={formData.name}
             onChange={e =>
               setFormData(prev => ({ ...prev, name: e.target.value }))
             }
-            placeholder="Enter product name"
+            placeholder={t('name')}
           />
 
           <ResponsiveInput
-            label="SKU"
+            label={t('sku')}
             required
             value={formData.sku}
             onChange={e =>
               setFormData(prev => ({ ...prev, sku: e.target.value }))
             }
-            placeholder="Enter SKU"
+            placeholder={t('sku')}
           />
         </ResponsiveFormGrid>
 
         <ResponsiveFormGrid>
           <ResponsiveSelect
-            label="Category"
+            label={t('category')}
             required
             options={categories}
             value={formData.category}
             onValueChange={value =>
               setFormData(prev => ({ ...prev, category: value }))
             }
-            placeholder="Select category"
+            placeholder={t('category')}
           />
 
           <ResponsiveSelect
-            label="Status"
+            label={t('status')}
             required
             options={statuses}
             value={formData.status}
@@ -274,12 +276,13 @@ const InventoryForm: React.FC<{
                 status: value as 'active' | 'inactive' | 'discontinued',
               }))
             }
+            placeholder={t('status')}
           />
         </ResponsiveFormGrid>
 
         <ResponsiveFormGrid columns={{ mobile: 1, tablet: 3, desktop: 3 }}>
           <ResponsiveInput
-            label="Current Stock"
+            label={t('currentStock')}
             type="number"
             required
             value={formData.currentStock.toString()}
@@ -289,11 +292,25 @@ const InventoryForm: React.FC<{
                 currentStock: parseInt(e.target.value) || 0,
               }))
             }
-            placeholder="0"
+            placeholder={t('currentStock')}
           />
 
           <ResponsiveInput
-            label="Minimum Stock"
+            label={t('unitPrice')}
+            type="number"
+            required
+            value={formData.unitPrice.toString()}
+            onChange={e =>
+              setFormData(prev => ({
+                ...prev,
+                unitPrice: parseFloat(e.target.value) || 0,
+              }))
+            }
+            placeholder={t('unitPrice')}
+          />
+
+          <ResponsiveInput
+            label={t('minStock')}
             type="number"
             required
             value={formData.minStock.toString()}
@@ -303,11 +320,11 @@ const InventoryForm: React.FC<{
                 minStock: parseInt(e.target.value) || 0,
               }))
             }
-            placeholder="0"
+            placeholder={t('minStock')}
           />
 
           <ResponsiveInput
-            label="Maximum Stock"
+            label={t('maxStock')}
             type="number"
             required
             value={formData.maxStock.toString()}
@@ -317,34 +334,32 @@ const InventoryForm: React.FC<{
                 maxStock: parseInt(e.target.value) || 0,
               }))
             }
-            placeholder="100"
+            placeholder={t('maxStock')}
           />
         </ResponsiveFormGrid>
 
         <ResponsiveFormGrid>
           <ResponsiveInput
-            label="Unit Price"
+            label={t('price')}
             type="number"
-            step="0.01"
             required
-            value={formData.unitPrice.toString()}
+            value={formData.price.toString()}
             onChange={e =>
               setFormData(prev => ({
                 ...prev,
-                unitPrice: parseFloat(e.target.value) || 0,
+                price: parseFloat(e.target.value) || 0,
               }))
             }
-            placeholder="0.00"
+            placeholder={t('price')}
           />
 
           <ResponsiveInput
-            label="Location"
-            required
+            label={t('location')}
             value={formData.location}
             onChange={e =>
               setFormData(prev => ({ ...prev, location: e.target.value }))
             }
-            placeholder="Enter storage location"
+            placeholder={t('location')}
           />
         </ResponsiveFormGrid>
       </ResponsiveForm>
@@ -359,6 +374,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
   onItemAdd,
 }) => {
   const { isMobile } = useResponsive()
+  const t = useTranslations('inventory')
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -399,15 +415,15 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
   return (
     <div className={mobileContainer}>
       <ResponsiveDashboardLayout
-        title="Inventory Management"
+        title={t('title')}
         subtitle={`${filteredItems.length} products total${lowStockItems > 0 ? ` • ${lowStockItems} low stock` : ''}`}
         actions={
           <ResponsiveButton
             onClick={() => setShowAddForm(true)}
             className="flex items-center gap-2"
           >
-            <Plus className="h-4 w-4" />
-            Add Product
+            <Plus className="w-4 h-4" />
+            {t('addItem')}
           </ResponsiveButton>
         }
       >
@@ -415,7 +431,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
         <Card>
           <CardContent className="p-4 space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
               <Input
                 placeholder="Search products or SKU..."
                 value={searchTerm}
@@ -429,7 +445,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
                 <select
                   value={categoryFilter}
                   onChange={e => setCategoryFilter(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex w-full h-10 px-3 py-2 text-sm border rounded-md border-input bg-background"
                 >
                   <option value="">All Categories</option>
                   {categories.map(category => (
@@ -442,7 +458,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
                 <select
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex w-full h-10 px-3 py-2 text-sm border rounded-md border-input bg-background"
                 >
                   <option value="">All Status</option>
                   {statuses.map(status => (
@@ -461,7 +477,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
           <Card className="border-yellow-200 bg-yellow-50">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <AlertTriangle className="w-5 h-5 text-yellow-600" />
                 <div>
                   <p className="font-semibold text-yellow-800">
                     Low Stock Alert
@@ -523,9 +539,9 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
         {filteredItems.length === 0 && (
           <Card>
             <CardContent className="p-8 text-center">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No products found</h3>
-              <p className="text-muted-foreground mb-4">
+              <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="mb-2 text-lg font-semibold">No products found</h3>
+              <p className="mb-4 text-muted-foreground">
                 {searchTerm
                   ? 'Try adjusting your search terms'
                   : 'Get started by adding your first product'}

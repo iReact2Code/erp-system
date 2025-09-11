@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const sales = await db.sale.findMany({
       include: {
@@ -23,6 +20,9 @@ export async function GET() {
 
     return NextResponse.json({ data: sales })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching sales:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -33,11 +33,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const body = await request.json()
     const {
@@ -55,7 +52,7 @@ export async function POST(request: NextRequest) {
         saleDate: new Date(),
         total: total,
         status,
-        userId: session.user.id,
+        userId: user!.id,
         items: {
           create: items.map(
             (item: {
@@ -99,6 +96,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error creating sale:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

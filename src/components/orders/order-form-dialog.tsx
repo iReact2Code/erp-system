@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import {
   Select,
   SelectContent,
@@ -101,7 +102,7 @@ export default function OrderFormDialog({
   const fetchInventoryItems = React.useCallback(async () => {
     setInventoryLoading(true)
     try {
-      const response = await fetch('/api/inventory')
+      const response = await authenticatedFetch('/api/inventory')
       if (response.ok) {
         const data = await response.json()
         setInventoryItems(data.data || data)

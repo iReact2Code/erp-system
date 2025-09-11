@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const purchases = await db.purchase.findMany({
       include: {
@@ -23,6 +20,9 @@ export async function GET() {
 
     return NextResponse.json({ data: purchases })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching purchases:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -33,11 +33,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const body = await request.json()
     const { total, status, items } = body
@@ -47,7 +44,7 @@ export async function POST(request: NextRequest) {
         purchaseDate: new Date(),
         total: parseFloat(total),
         status,
-        userId: session.user.id,
+        userId: user!.id,
         items: {
           create: items.map(
             (item: {
@@ -74,6 +71,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(purchase, { status: 201 })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error creating purchase:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -84,11 +84,8 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const body = await request.json()
     const { id, total, status } = body
@@ -115,6 +112,9 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(purchase)
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error updating purchase:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -125,11 +125,8 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
@@ -149,6 +146,9 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ message: 'Purchase deleted successfully' })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error deleting purchase:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

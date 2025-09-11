@@ -1,19 +1,44 @@
-import { auth } from '@/lib/auth'
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { InventoryTable } from '@/components/inventory/inventory-table'
-import { SalesTable } from '@/components/sales/sales-table'
-import { PurchasesTable } from '@/components/purchases/purchases-table'
-import { ReportsComponent } from '@/components/reports/reports-component'
-import { Package, ShoppingCart, Users, DollarSign } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import {
+  Package,
+  ShoppingCart,
+  Users,
+  DollarSign,
+  TrendingUp,
+  Activity,
+} from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 
-export default async function DashboardPage() {
-  const session = await auth()
-  const t = await getTranslations('dashboard')
+export default function DashboardPage() {
+  const [user, setUser] = useState<{
+    id: string
+    name: string
+    email: string
+    role: string
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+  const t = useTranslations('dashboard')
 
-  if (!session) {
-    return <div>Please log in to access the dashboard.</div>
+  useEffect(() => {
+    // Check for stored user data
+    const storedUser = localStorage.getItem('user')
+    const storedToken = localStorage.getItem('auth-token')
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser))
+    }
+    setLoading(false)
+  }, [])
+
+  if (loading) {
+    return <div>{t('loading')}</div>
+  }
+
+  if (!user) {
+    return <div>{t('pleaseLogin')}</div>
   }
 
   return (
@@ -21,19 +46,18 @@ export default async function DashboardPage() {
       <div className="animate-slide-in-left">
         <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
         <p className="text-muted-foreground">
-          {t('welcome')}, {session.user?.name}! {t('role')}:{' '}
-          {session.user?.role}
+          {t('welcome')}, {user?.name}! {t('role')}: {user?.role}
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 stats-grid">
         <Card className="rtl:text-right hover-lift animate-scale-in">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
             <CardTitle className="text-sm font-medium">
               {t('stats.totalSales')}
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground stat-icon" />
+            <DollarSign className="w-4 h-4 text-muted-foreground stat-icon" />
           </CardHeader>
           <CardContent className="card-content">
             <div className="text-2xl font-bold">$0.00</div>
@@ -46,11 +70,11 @@ export default async function DashboardPage() {
           className="rtl:text-right hover-lift animate-scale-in"
           style={{ animationDelay: '0.1s' }}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
             <CardTitle className="text-sm font-medium">
               {t('stats.inventoryItems')}
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground stat-icon" />
+            <Package className="w-4 h-4 text-muted-foreground stat-icon" />
           </CardHeader>
           <CardContent className="card-content">
             <div className="text-2xl font-bold">0</div>
@@ -63,11 +87,11 @@ export default async function DashboardPage() {
           className="rtl:text-right hover-lift animate-scale-in"
           style={{ animationDelay: '0.2s' }}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
             <CardTitle className="text-sm font-medium">
               {t('stats.activeOrders')}
             </CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground stat-icon" />
+            <ShoppingCart className="w-4 h-4 text-muted-foreground stat-icon" />
           </CardHeader>
           <CardContent className="card-content">
             <div className="text-2xl font-bold">0</div>
@@ -80,57 +104,65 @@ export default async function DashboardPage() {
           className="rtl:text-right hover-lift animate-scale-in"
           style={{ animationDelay: '0.3s' }}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
             <CardTitle className="text-sm font-medium">
               {t('stats.totalUsers')}
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground stat-icon" />
+            <Users className="w-4 h-4 text-muted-foreground stat-icon" />
           </CardHeader>
           <CardContent className="card-content">
             <div className="text-2xl font-bold">1</div>
             <p className="text-xs text-muted-foreground">
-              {session?.user?.role?.toLowerCase()}
+              {user?.role?.toLowerCase()}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs
-        defaultValue="inventory"
-        className="space-y-4 rtl:text-right animate-slide-in-right"
-      >
-        <TabsList className="hover-glow">
-          <TabsTrigger value="inventory" className="hover-scale">
-            {t('tabs.inventory')}
-          </TabsTrigger>
-          <TabsTrigger value="sales" className="hover-scale">
-            {t('tabs.sales')}
-          </TabsTrigger>
-          <TabsTrigger value="purchases" className="hover-scale">
-            {t('tabs.purchases')}
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="hover-scale">
-            {t('tabs.reports')}
-          </TabsTrigger>
-        </TabsList>
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-slide-in-right">
+        <Card className="rtl:text-right hover-lift">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
+            <CardTitle className="text-sm font-medium">
+              {t('quickActions.recentActivity')}
+            </CardTitle>
+            <Activity className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground">
+              {t('quickActions.noRecentActivity')}
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="inventory" className="space-y-4 animate-fade-in">
-          <InventoryTable />
-        </TabsContent>
+        <Card className="rtl:text-right hover-lift">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
+            <CardTitle className="text-sm font-medium">
+              {t('quickActions.lowStockAlerts')}
+            </CardTitle>
+            <Package className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground">
+              {t('quickActions.noLowStockItems')}
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="sales" className="space-y-4 animate-fade-in">
-          <SalesTable />
-        </TabsContent>
-
-        <TabsContent value="purchases" className="space-y-4 animate-fade-in">
-          <PurchasesTable />
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4 animate-fade-in">
-          <ReportsComponent />
-        </TabsContent>
-      </Tabs>
+        <Card className="rtl:text-right hover-lift">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 rtl:flex-row-reverse">
+            <CardTitle className="text-sm font-medium">
+              {t('quickActions.systemHealth')}
+            </CardTitle>
+            <TrendingUp className="w-4 h-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-green-600">
+              {t('quickActions.allSystemsOperational')}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

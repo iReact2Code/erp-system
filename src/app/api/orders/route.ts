@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 import {
   withRequestValidation,
@@ -9,6 +9,7 @@ import {
 } from '@/lib/request-validation'
 import { withSecurity, logSecurityEvent } from '@/lib/security-headers'
 import { createOrderSchema, ordersQuerySchema } from '@/types/validation'
+import { auth } from '@/lib/auth'
 
 /**
  * Enhanced orders GET endpoint with filtering and pagination
@@ -17,7 +18,8 @@ async function getOrdersHandler(
   req: NextRequest,
   validatedData: z.infer<typeof ordersQuerySchema>
 ) {
-  const session = await auth()
+  const user = getUserFromRequest(req)
+  requireAuth(user)
 
   if (!session?.user) {
     logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', req, {

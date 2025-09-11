@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,20 +38,36 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
+      setError(null)
+
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Ensure cookies are sent/received
+        body: JSON.stringify(values),
       })
 
-      if (response?.error) {
-        setError('Invalid email or password')
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Login failed')
         return
       }
 
-      router.refresh()
-      router.push('/dashboard')
-    } catch {
+      if (data.success) {
+        // Store token and user info in localStorage
+        localStorage.setItem('auth-token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+
+        console.log('Login successful, token stored')
+
+        // Use window.location for full page reload to ensure middleware runs
+        window.location.href = '/dashboard'
+      }
+    } catch (error) {
+      console.error('Login error:', error)
       setError('An error occurred. Please try again.')
     }
   }

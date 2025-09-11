@@ -48,6 +48,33 @@ export class ApiErrorHandler {
   }
 }
 
+// Client-side helper for authenticated API calls
+export function getAuthHeaders(): HeadersInit {
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null
+
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+  }
+}
+
+export async function authenticatedFetch(
+  url: string,
+  options: RequestInit = {}
+) {
+  const headers = {
+    ...getAuthHeaders(),
+    ...options.headers,
+  }
+
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
+}
+
 // Auth middleware helper
 export async function requireAuth() {
   const { auth } = await import('@/lib/auth')

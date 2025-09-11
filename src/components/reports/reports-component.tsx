@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import {
   BarChart3,
   TrendingUp,
@@ -46,20 +47,37 @@ export function ReportsComponent() {
   const fetchReportData = async () => {
     try {
       // Fetch inventory data
-      const inventoryResponse = await fetch('/api/inventory')
-      const inventory = inventoryResponse.ok
+      const inventoryResponse = await authenticatedFetch('/api/inventory')
+      const inventoryData = inventoryResponse.ok
         ? await inventoryResponse.json()
-        : []
+        : { data: [] }
+      const inventory = Array.isArray(inventoryData.data)
+        ? inventoryData.data
+        : Array.isArray(inventoryData)
+          ? inventoryData
+          : []
 
       // Fetch sales data
-      const salesResponse = await fetch('/api/sales')
-      const sales = salesResponse.ok ? await salesResponse.json() : []
+      const salesResponse = await authenticatedFetch('/api/sales')
+      const salesData = salesResponse.ok
+        ? await salesResponse.json()
+        : { data: [] }
+      const sales = Array.isArray(salesData.data)
+        ? salesData.data
+        : Array.isArray(salesData)
+          ? salesData
+          : []
 
       // Fetch purchases data
-      const purchasesResponse = await fetch('/api/purchases')
-      const purchases = purchasesResponse.ok
+      const purchasesResponse = await authenticatedFetch('/api/purchases')
+      const purchasesData = purchasesResponse.ok
         ? await purchasesResponse.json()
-        : []
+        : { data: [] }
+      const purchases = Array.isArray(purchasesData.data)
+        ? purchasesData.data
+        : Array.isArray(purchasesData)
+          ? purchasesData
+          : []
 
       // Calculate metrics
       const totalRevenue = sales.reduce(
@@ -104,6 +122,15 @@ export function ReportsComponent() {
       })
     } catch (error) {
       console.error('Error fetching report data:', error)
+      // Set safe default values in case of error
+      setReportData({
+        totalInventoryItems: 0,
+        totalSales: 0,
+        totalPurchases: 0,
+        totalRevenue: 0,
+        lowStockItems: 0,
+        recentTransactions: [],
+      })
     } finally {
       setLoading(false)
     }
@@ -114,7 +141,7 @@ export function ReportsComponent() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <BarChart3 className="mr-2 h-5 w-5" />
+            <BarChart3 className="w-5 h-5 mr-2" />
             {tReports('title')}
           </CardTitle>
         </CardHeader>
@@ -132,7 +159,7 @@ export function ReportsComponent() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <BarChart3 className="mr-2 h-5 w-5" />
+            <BarChart3 className="w-5 h-5 mr-2" />
             {tReports('title')}
           </CardTitle>
         </CardHeader>
@@ -141,61 +168,65 @@ export function ReportsComponent() {
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">
-              Total Products
+              {tReports('totalProducts')}
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {reportData.totalInventoryItems}
             </div>
             <p className="text-xs text-muted-foreground">
-              Active inventory items
+              {tReports('activeInventoryItems')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">
+              {tReports('totalSales')}
+            </CardTitle>
+            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{reportData.totalSales}</div>
             <p className="text-xs text-muted-foreground">
-              Completed transactions
+              {tReports('completedTransactions')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">
+              {tReports('totalRevenue')}
+            </CardTitle>
+            <DollarSign className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               ${reportData.totalRevenue.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
-              From sales transactions
+              {tReports('fromSalesTransactions')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">
-              Low Stock Alert
+              {tReports('lowStockAlert')}
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{reportData.lowStockItems}</div>
             <p className="text-xs text-muted-foreground">
-              Items below 10 units
+              {tReports('itemsBelowTenUnits')}
             </p>
           </CardContent>
         </Card>
@@ -204,12 +235,12 @@ export function ReportsComponent() {
       {/* Recent Transactions */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
+          <CardTitle>{tReports('recentTransactions')}</CardTitle>
         </CardHeader>
         <CardContent>
           {reportData.recentTransactions.length === 0 ? (
-            <div className="text-center py-8">
-              <BarChart3 className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <div className="py-8 text-center">
+              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-lg font-semibold">No transactions found</h3>
               <p className="text-muted-foreground">
                 Start by creating sales or purchases to see activity here.

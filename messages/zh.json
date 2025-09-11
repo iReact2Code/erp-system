@@ -1,13 +1,17 @@
 {
+  "metadata": {
+    "title": "AI 企业资源规划系统",
+    "description": "具有人工智能功能的企业资源规划系统"
+  },
   "auth": {
     "welcomeBack": "欢迎回来",
-    "signInDescription": "登录您的帐户以继续",
+    "signInDescription": "登录您的账户以继续",
     "email": "邮箱",
     "password": "密码",
     "signIn": "登录",
     "signUp": "注册",
     "createAccount": "创建账户",
-    "signUpDescription": "创建一个新帐户开始",
+    "signUpDescription": "创建新账户开始使用",
     "login": "登录",
     "logout": "登出",
     "register": "注册",
@@ -51,6 +55,8 @@
     "purchases": "采购",
     "managePurchases": "管理采购",
     "searchPurchases": "搜索采购",
+    "noPurchasesFound": "未找到采购记录",
+    "noPurchases": "还没有采购记录",
     "sales": "销售",
     "manageSales": "管理销售",
     "searchSales": "搜索销售",
@@ -58,7 +64,15 @@
     "manageInventory": "管理库存",
     "searchInventory": "搜索库存",
     "users": "用户",
-    "searchUsers": "搜索用户"
+    "searchUsers": "搜索用户",
+    "noUsers": "还没有添加用户",
+    "noUsersFound": "未找到用户",
+    "id": "ID",
+    "date": "日期",
+    "total": "总计",
+    "status": "状态",
+    "noSalesFound": "未找到销售记录",
+    "noSales": "还没有销售记录"
   },
   "theme": {
     "light": "浅色",
@@ -78,6 +92,8 @@
     "title": "仪表板",
     "welcome": "欢迎回来",
     "role": "角色",
+    "loading": "加载中...",
+    "pleaseLogin": "请登录以访问仪表板。",
     "stats": {
       "totalSales": "总销售额",
       "inventoryItems": "库存项目",
@@ -92,6 +108,14 @@
       "sales": "销售",
       "purchases": "采购",
       "reports": "报告"
+    },
+    "quickActions": {
+      "recentActivity": "最近活动",
+      "noRecentActivity": "无最近活动",
+      "lowStockAlerts": "低库存警报",
+      "noLowStockItems": "无低库存项目",
+      "systemHealth": "系统健康状况",
+      "allSystemsOperational": "所有系统运行正常"
     }
   },
   "inventory": {
@@ -139,7 +163,11 @@
   },
   "orders": {
     "title": "订单管理",
-    "description": "管理您的订单",
+    "description": "管理和跟踪所有客户订单",
+    "addOrder": "创建订单",
+    "refresh": "刷新",
+    "errorLoading": "加载订单时出错",
+    "tryAgain": "重试",
     "orderNumber": "订单号",
     "orderDate": "订单日期",
     "totalAmount": "总金额",
@@ -153,7 +181,16 @@
     "description": "查看详细的业务报告",
     "salesReport": "销售报告",
     "inventoryReport": "库存报告",
-    "userReport": "用户报告"
+    "userReport": "用户报告",
+    "totalSales": "总销售额",
+    "totalRevenue": "总收入",
+    "totalProducts": "总产品数",
+    "lowStockAlert": "低库存警报",
+    "completedTransactions": "已完成的交易",
+    "activeInventoryItems": "活跃库存项目",
+    "fromSalesTransactions": "来自销售交易",
+    "itemsBelowTenUnits": "低于10个单位的项目",
+    "recentTransactions": "最近的交易"
   },
   "users": {
     "title": "用户管理",
@@ -166,7 +203,10 @@
     "role": "角色",
     "status": "状态",
     "active": "活跃",
-    "inactive": "非活跃"
+    "inactive": "非活跃",
+    "admin": "管理员",
+    "manager": "经理",
+    "user": "用户"
   },
   "profile": {
     "title": "个人资料",

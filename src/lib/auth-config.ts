@@ -1,9 +1,8 @@
 import { NextAuthConfig } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { PrismaClient, UserRole } from '@/lib/prisma-mock'
-
-const prisma = new PrismaClient()
+import { UserRole } from '@/generated/prisma'
+import { db } from './db'
 
 declare module 'next-auth' {
   interface User {
@@ -32,7 +31,7 @@ export const authConfig: NextAuthConfig = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           where: {
             email: credentials.email as string,
           },
@@ -62,6 +61,7 @@ export const authConfig: NextAuthConfig = {
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -82,4 +82,6 @@ export const authConfig: NextAuthConfig = {
     signIn: '/login',
   },
   trustHost: true,
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
 }

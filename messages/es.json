@@ -1,12 +1,16 @@
 {
+  "metadata": {
+    "title": "Sistema ERP con IA",
+    "description": "Sistema de Planificación de Recursos Empresariales con capacidades de IA"
+  },
   "auth": {
-    "welcomeBack": "Bienvenido de Vuelta",
+    "welcomeBack": "Bienvenido de nuevo",
     "signInDescription": "Inicia sesión en tu cuenta para continuar",
-    "email": "Correo",
+    "email": "Correo electrónico",
     "password": "Contraseña",
-    "signIn": "Iniciar Sesión",
+    "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
-    "createAccount": "Crear Cuenta",
+    "createAccount": "Crear cuenta",
     "signUpDescription": "Crea una nueva cuenta para comenzar",
     "login": "Iniciar Sesión",
     "logout": "Cerrar Sesión",
@@ -50,6 +54,8 @@
     "purchases": "Compras",
     "managePurchases": "Gestionar Compras",
     "searchPurchases": "Buscar Compras",
+    "noPurchasesFound": "No se encontraron compras",
+    "noPurchases": "No hay compras aún",
     "sales": "Ventas",
     "manageSales": "Gestionar Ventas",
     "searchSales": "Buscar Ventas",
@@ -58,8 +64,14 @@
     "searchInventory": "Buscar Inventario",
     "users": "Usuarios",
     "searchUsers": "Buscar Usuarios",
-    "noUsers": "Aún no se han agregado usuarios",
-    "noUsersFound": "No se encontraron usuarios"
+    "noUsers": "No hay usuarios agregados aún",
+    "noUsersFound": "No se encontraron usuarios",
+    "id": "ID",
+    "date": "Fecha",
+    "total": "Total",
+    "status": "Estado",
+    "noSalesFound": "No se encontraron ventas",
+    "noSales": "No hay ventas aún"
   },
   "theme": {
     "light": "Claro",
@@ -93,6 +105,14 @@
       "sales": "Ventas",
       "purchases": "Compras",
       "reports": "Reportes"
+    },
+    "quickActions": {
+      "recentActivity": "Actividad Reciente",
+      "noRecentActivity": "Sin actividad reciente",
+      "lowStockAlerts": "Alertas de Stock Bajo",
+      "noLowStockItems": "Sin artículos con stock bajo",
+      "systemHealth": "Estado del Sistema",
+      "allSystemsOperational": "Todos los sistemas operativos"
     }
   },
   "inventory": {
@@ -140,7 +160,11 @@
   },
   "orders": {
     "title": "Gestión de Pedidos",
-    "description": "Administre sus pedidos",
+    "description": "Administre y rastree todos los pedidos de clientes",
+    "addOrder": "Crear Pedido",
+    "refresh": "Actualizar",
+    "errorLoading": "Error al cargar pedidos",
+    "tryAgain": "Intentar de Nuevo",
     "orderNumber": "Número de Pedido",
     "orderDate": "Fecha del Pedido",
     "totalAmount": "Cantidad Total",
@@ -154,7 +178,16 @@
     "description": "Ver reportes detallados del negocio",
     "salesReport": "Reporte de Ventas",
     "inventoryReport": "Reporte de Inventario",
-    "userReport": "Reporte de Usuarios"
+    "userReport": "Reporte de Usuarios",
+    "totalSales": "Ventas Totales",
+    "totalRevenue": "Ingresos Totales",
+    "totalProducts": "Productos Totales",
+    "lowStockAlert": "Alerta de Stock Bajo",
+    "completedTransactions": "Transacciones completadas",
+    "activeInventoryItems": "Artículos de inventario activos",
+    "fromSalesTransactions": "De transacciones de ventas",
+    "itemsBelowTenUnits": "Artículos por debajo de 10 unidades",
+    "recentTransactions": "Transacciones Recientes"
   },
   "users": {
     "title": "Gestión de Usuarios",
@@ -167,7 +200,10 @@
     "role": "Rol",
     "status": "Estado",
     "active": "Activo",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "admin": "Administrador",
+    "manager": "Gerente",
+    "user": "Usuario"
   },
   "profile": {
     "title": "Perfil",

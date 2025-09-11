@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -124,6 +125,7 @@ export default function OrdersTable({
   loading = false,
   userRole,
 }: OrdersTableProps) {
+  const t = useTranslations('orders')
   const canModifyOrders = userRole !== 'THIRD_PARTY_CLIENT'
 
   const handleSortChange = (field: string) => {
@@ -139,7 +141,7 @@ export default function OrdersTable({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Orders Management
+            {t('title')}
           </CardTitle>
         </CardHeader>
         <CardContent>

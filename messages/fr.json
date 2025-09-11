@@ -1,8 +1,12 @@
 {
+  "metadata": {
+    "title": "Système ERP avec IA",
+    "description": "Système de planification des ressources d'entreprise avec capacités d'IA"
+  },
   "auth": {
-    "welcomeBack": "Bon Retour",
+    "welcomeBack": "Bon retour",
     "signInDescription": "Connectez-vous à votre compte pour continuer",
-    "email": "Email",
+    "email": "E-mail",
     "password": "Mot de passe",
     "signIn": "Se connecter",
     "signUp": "S'inscrire",
@@ -50,6 +54,8 @@
     "purchases": "Achats",
     "managePurchases": "Gérer les Achats",
     "searchPurchases": "Rechercher des Achats",
+    "noPurchasesFound": "Aucun achat trouvé",
+    "noPurchases": "Aucun achat pour le moment",
     "sales": "Ventes",
     "manageSales": "Gérer les Ventes",
     "searchSales": "Rechercher des Ventes",
@@ -59,7 +65,13 @@
     "users": "Utilisateurs",
     "searchUsers": "Rechercher des Utilisateurs",
     "noUsers": "Aucun utilisateur ajouté pour le moment",
-    "noUsersFound": "Aucun utilisateur trouvé"
+    "noUsersFound": "Aucun utilisateur trouvé",
+    "id": "ID",
+    "date": "Date",
+    "total": "Total",
+    "status": "Statut",
+    "noSalesFound": "Aucune vente trouvée",
+    "noSales": "Aucune vente pour le moment"
   },
   "theme": {
     "light": "Clair",
@@ -93,6 +105,14 @@
       "sales": "Ventes",
       "purchases": "Achats",
       "reports": "Rapports"
+    },
+    "quickActions": {
+      "recentActivity": "Activité Récente",
+      "noRecentActivity": "Aucune activité récente",
+      "lowStockAlerts": "Alertes Stock Faible",
+      "noLowStockItems": "Aucun article en rupture de stock",
+      "systemHealth": "Santé du Système",
+      "allSystemsOperational": "Tous les systèmes opérationnels"
     }
   },
   "inventory": {
@@ -140,7 +160,11 @@
   },
   "orders": {
     "title": "Gestion des Commandes",
-    "description": "Gérez vos commandes",
+    "description": "Gérez et suivez toutes les commandes clients",
+    "addOrder": "Créer une Commande",
+    "refresh": "Actualiser",
+    "errorLoading": "Erreur lors du chargement des commandes",
+    "tryAgain": "Réessayer",
     "orderNumber": "Numéro de Commande",
     "orderDate": "Date de Commande",
     "totalAmount": "Montant Total",
@@ -154,7 +178,16 @@
     "description": "Voir les rapports détaillés de l'entreprise",
     "salesReport": "Rapport des Ventes",
     "inventoryReport": "Rapport d'Inventaire",
-    "userReport": "Rapport Utilisateur"
+    "userReport": "Rapport Utilisateur",
+    "totalSales": "Ventes Totales",
+    "totalRevenue": "Revenus Totaux",
+    "totalProducts": "Produits Totaux",
+    "lowStockAlert": "Alerte Stock Faible",
+    "completedTransactions": "Transactions terminées",
+    "activeInventoryItems": "Articles d'inventaire actifs",
+    "fromSalesTransactions": "Des transactions de vente",
+    "itemsBelowTenUnits": "Articles en dessous de 10 unités",
+    "recentTransactions": "Transactions Récentes"
   },
   "users": {
     "title": "Gestion des Utilisateurs",
@@ -167,7 +200,10 @@
     "role": "Rôle",
     "status": "Statut",
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "admin": "Administrateur",
+    "manager": "Gestionnaire",
+    "user": "Utilisateur"
   },
   "profile": {
     "title": "Profil",

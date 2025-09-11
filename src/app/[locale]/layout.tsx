@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { AuthProvider } from '@/components/providers/auth-provider'
@@ -29,10 +29,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'metadata' })
 
   return {
-    title: 'AI ERP System',
-    description: 'Enterprise Resource Planning System with AI capabilities',
+    title: t('title'),
+    description: t('description'),
     other: {
       locale: locale,
     },

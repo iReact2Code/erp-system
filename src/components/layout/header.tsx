@@ -1,8 +1,7 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { usePathname, useParams } from 'next/navigation'
+import { usePathname, useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,9 +15,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { LanguageToggle } from '@/components/theme/language-toggle'
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 
 const navigationKeys = {
-  CLERK: ['dashboard', 'inventory', 'sales'],
+  CLERK: ['dashboard', 'inventory', 'sales', 'profile'],
   SUPERVISOR: [
     'dashboard',
     'inventory',
@@ -26,26 +26,58 @@ const navigationKeys = {
     'purchases',
     'reports',
     'users',
+    'profile',
   ],
   THIRD_PARTY_CLIENT: ['dashboard', 'orders', 'profile'],
 }
 
 export function Header() {
-  const { data: session } = useSession()
+  const [user, setUser] = useState<{
+    id: string
+    name: string
+    email: string
+    role: string
+  } | null>(null)
   const pathname = usePathname()
   const params = useParams()
+  const router = useRouter()
   const locale = params?.locale as string
   const isRTL = locale === 'ar' || locale === 'he' || locale === 'ug'
   const t = useTranslations('navigation')
   const tAuth = useTranslations('auth')
 
-  if (!session?.user) return null
+  useEffect(() => {
+    // Check for stored user data
+    const storedUser = localStorage.getItem('user')
+    const storedToken = localStorage.getItem('auth-token')
 
-  const userRole = session.user.role as keyof typeof navigationKeys
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
+  if (!user) return null
+
+  const userRole = user.role as keyof typeof navigationKeys
   const navKeys = navigationKeys[userRole] || []
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/login' })
+  const handleSignOut = async () => {
+    // Clear local storage
+    localStorage.removeItem('auth-token')
+    localStorage.removeItem('user')
+
+    // Call logout API
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+
+    // Redirect to login
+    router.push('/login')
   }
 
   return (
@@ -125,7 +157,7 @@ export function Header() {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>
-                    {session.user.name?.charAt(0).toUpperCase() || 'U'}
+                    {user.name?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -139,11 +171,9 @@ export function Header() {
                 className="flex flex-col space-y-1 p-2"
                 dir={isRTL ? 'rtl' : 'ltr'}
               >
-                <p className="text-sm font-medium leading-none">
-                  {session.user.name}
-                </p>
+                <p className="text-sm font-medium leading-none">{user.name}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {session.user.email}
+                  {user.email}
                 </p>
               </div>
               <DropdownMenuItem onClick={handleSignOut}>

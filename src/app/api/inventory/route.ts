@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const inventoryItems = await db.inventoryItem.findMany({
       orderBy: { createdAt: 'desc' },
@@ -16,6 +13,9 @@ export async function GET() {
 
     return NextResponse.json({ data: inventoryItems })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error fetching inventory:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -26,11 +26,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const body = await request.json()
     const { name, sku, description, quantity, unitPrice } = body
@@ -42,8 +39,8 @@ export async function POST(request: NextRequest) {
         description,
         quantity: parseInt(quantity),
         unitPrice: parseFloat(unitPrice),
-        createdById: session.user.id,
-        updatedById: session.user.id,
+        createdById: user!.id,
+        updatedById: user!.id,
       },
     })
 
@@ -59,11 +56,8 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const body = await request.json()
     const { id, name, sku, description, quantity, unitPrice } = body
@@ -80,13 +74,16 @@ export async function PUT(request: NextRequest) {
         description,
         quantity: parseInt(quantity),
         unitPrice: parseFloat(unitPrice),
-        updatedById: session.user.id,
+        updatedById: user!.id,
         updatedAt: new Date(),
       },
     })
 
     return NextResponse.json(inventoryItem)
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error updating inventory item:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -97,11 +94,8 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth()
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = getUserFromRequest(request)
+    requireAuth(user)
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
@@ -116,6 +110,9 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ message: 'Item deleted successfully' })
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error deleting inventory item:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
