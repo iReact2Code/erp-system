@@ -57,7 +57,9 @@
     "manageInventory": "Manage Inventory",
     "searchInventory": "Search Inventory",
     "users": "Users",
-    "searchUsers": "Search Users"
+    "searchUsers": "Search Users",
+    "noUsers": "No users added yet",
+    "noUsersFound": "No users found"
   },
   "theme": {
     "light": "Light",

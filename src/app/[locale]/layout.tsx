@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-const locales = ['en', 'es', 'fr', 'ar', 'he', 'zh'] as const
+const locales = ['en', 'ug', 'es', 'fr', 'ar', 'he', 'zh'] as const
 type Locale = (typeof locales)[number]
 
 export function generateStaticParams() {
@@ -54,10 +54,14 @@ export default async function LocaleLayout({
   // Providing all messages to the client side with the specific locale
   const messages = await getMessages({ locale })
 
+  // Determine if the locale is RTL
+  const isRTL = ['ar', 'he', 'ug'].includes(locale)
+
   return (
     <html
       lang={locale}
-      dir={locale === 'ar' || locale === 'he' ? 'rtl' : 'ltr'}
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className={isRTL ? 'rtl' : 'ltr'}
       suppressHydrationWarning
     >
       <body

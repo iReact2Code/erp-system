@@ -41,11 +41,12 @@ const InventoryTableRow = memo(
     deleteLoading: boolean
   }) => {
     const getStockStatus = useCallback((quantity: number) => {
-      if (quantity === 0) {
+      const qty = quantity ?? 0
+      if (qty === 0) {
         return <Badge variant="destructive">Out of Stock</Badge>
-      } else if (quantity < 10) {
+      } else if (qty < 10) {
         return (
-          <Badge variant="secondary" className="bg-yellow-500 text-white">
+          <Badge variant="secondary" className="text-white bg-yellow-500">
             Low Stock
           </Badge>
         )
@@ -64,9 +65,11 @@ const InventoryTableRow = memo(
         <TableCell className="max-w-xs truncate">
           {item.description || '-'}
         </TableCell>
-        <TableCell>{item.quantity}</TableCell>
-        <TableCell>${item.unitPrice.toFixed(2)}</TableCell>
-        <TableCell>{getStockStatus(item.quantity)}</TableCell>
+        <TableCell>{item.quantity ?? 0}</TableCell>
+        <TableCell>
+          ${item.unitPrice ? item.unitPrice.toFixed(2) : '0.00'}
+        </TableCell>
+        <TableCell>{getStockStatus(item.quantity ?? 0)}</TableCell>
         <TableCell>
           <div className="flex items-center space-x-2">
             <InventoryForm item={item} mode="edit" onSuccess={onEditSuccess} />
@@ -76,7 +79,7 @@ const InventoryTableRow = memo(
               onClick={() => onDelete(item.id)}
               disabled={deleteLoading}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </TableCell>
@@ -89,7 +92,8 @@ InventoryTableRow.displayName = 'InventoryTableRow'
 
 export const InventoryTable = memo(() => {
   const [searchTerm, setSearchTerm] = useState('')
-  const t = useTranslations('common')
+  const t = useTranslations('inventory')
+  const tCommon = useTranslations('common')
 
   const { data: items, loading, error, refresh } = useInventory()
   const deleteInventory = useDeleteInventory()
@@ -97,14 +101,14 @@ export const InventoryTable = memo(() => {
   // Memoized delete handler to prevent re-renders
   const handleDelete = useCallback(
     async (id: string) => {
-      if (!confirm(t('confirmDelete'))) return
+      if (!confirm(tCommon('confirmDelete'))) return
 
       const result = await deleteInventory.mutate(id)
       if (result.success) {
         refresh()
       }
     },
-    [deleteInventory, refresh, t]
+    [deleteInventory, refresh, tCommon]
   )
 
   // Memoized success handler
@@ -117,8 +121,8 @@ export const InventoryTable = memo(() => {
     if (!items) return []
     return items.filter(
       item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase())
+        (item.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.sku || '').toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [items, searchTerm])
 
@@ -135,8 +139,8 @@ export const InventoryTable = memo(() => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>{t('inventory')}</CardTitle>
-            <CardDescription>{t('manageInventory')}</CardDescription>
+            <CardTitle>{tCommon('inventory')}</CardTitle>
+            <CardDescription>{tCommon('manageInventory')}</CardDescription>
           </div>
           <InventoryForm mode="add" onSuccess={handleInventoryCreated} />
         </div>
@@ -147,10 +151,10 @@ export const InventoryTable = memo(() => {
           onDismiss={() => deleteInventory.reset()}
         />
 
-        <div className="flex items-center space-x-2 mb-4">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center mb-4 space-x-2">
+          <Search className="w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={t('searchInventory')}
+            placeholder={tCommon('searchInventory')}
             value={searchTerm}
             onChange={handleSearchChange}
             className="max-w-sm"
@@ -165,11 +169,11 @@ export const InventoryTable = memo(() => {
               <TableRow>
                 <TableHead>{t('name')}</TableHead>
                 <TableHead>{t('sku')}</TableHead>
-                <TableHead>{t('description')}</TableHead>
+                <TableHead>{t('itemDescription')}</TableHead>
                 <TableHead>{t('quantity')}</TableHead>
                 <TableHead>{t('price')}</TableHead>
                 <TableHead>{t('status')}</TableHead>
-                <TableHead>{t('actions')}</TableHead>
+                <TableHead>{tCommon('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -185,7 +189,7 @@ export const InventoryTable = memo(() => {
               {filteredItems.length === 0 && !loading && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center">
-                    {searchTerm ? t('noItemsFound') : t('noItems')}
+                    {searchTerm ? tCommon('noItemsFound') : tCommon('noItems')}
                   </TableCell>
                 </TableRow>
               )}

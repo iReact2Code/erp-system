@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -140,11 +140,11 @@ const NavigationItemComponent: React.FC<NavigationItemComponentProps> = ({
         `}
         onClick={handleToggle}
       >
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 rtl:space-x-reverse">
           <IconComponent className="h-4 w-4 flex-shrink-0" />
           <span className="flex-1">{item.title}</span>
           {item.badge && (
-            <Badge variant="secondary" className="ml-auto">
+            <Badge variant="secondary" className="ml-auto rtl:mr-auto rtl:ml-0">
               {item.badge}
             </Badge>
           )}
@@ -189,9 +189,15 @@ const NavigationItemComponent: React.FC<NavigationItemComponentProps> = ({
 
 export default function MobileNavigation({ className }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const pathname = usePathname()
+  const params = useParams()
   const { data: session } = useSession()
   const { isMobile } = useResponsive()
+
+  // Determine RTL based on locale
+  const locale = params?.locale as string
+  const isRTL = locale && ['ar', 'he', 'ug'].includes(locale)
 
   const handleNavigate = () => {
     setIsOpen(false)
@@ -221,11 +227,18 @@ export default function MobileNavigation({ className }: MobileNavigationProps) {
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-72 p-0">
+        <SheetContent
+          side={isRTL ? 'right' : 'left'}
+          className="w-72 p-0"
+          dir={isRTL ? 'rtl' : 'ltr'}
+        >
           <div className="flex h-full flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b px-4 py-4">
-              <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center justify-between border-b px-4 py-4"
+              dir={isRTL ? 'rtl' : 'ltr'}
+            >
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
                 <div className="h-8 w-8 rounded bg-primary"></div>
                 <span className="font-semibold">ERP System</span>
               </div>
@@ -243,8 +256,8 @@ export default function MobileNavigation({ className }: MobileNavigationProps) {
 
             {/* User Info */}
             {session?.user && (
-              <div className="border-b px-4 py-4">
-                <div className="flex items-center space-x-3">
+              <div className="border-b px-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-sm font-medium">
                       {session.user.name?.charAt(0) ||
@@ -278,13 +291,13 @@ export default function MobileNavigation({ className }: MobileNavigationProps) {
             </ScrollArea>
 
             {/* Footer */}
-            <div className="border-t p-4">
+            <div className="border-t p-4" dir={isRTL ? 'rtl' : 'ltr'}>
               <Button
                 variant="ghost"
-                className="w-full justify-start min-h-[44px] touch-manipulation"
+                className="w-full justify-start min-h-[44px] touch-manipulation rtl:justify-end"
                 onClick={handleSignOut}
               >
-                <LogOut className="h-4 w-4 mr-3" />
+                <LogOut className="h-4 w-4 mr-3 rtl:mr-0 rtl:ml-3" />
                 Sign Out
               </Button>
             </div>

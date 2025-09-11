@@ -35,7 +35,7 @@ export function Header() {
   const pathname = usePathname()
   const params = useParams()
   const locale = params?.locale as string
-  const isRTL = locale === 'ar' || locale === 'he'
+  const isRTL = locale === 'ar' || locale === 'he' || locale === 'ug'
   const t = useTranslations('navigation')
   const tAuth = useTranslations('auth')
 

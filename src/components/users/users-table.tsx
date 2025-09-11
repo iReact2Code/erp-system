@@ -23,6 +23,7 @@ export function UsersTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tUsers = useTranslations('users')
+  const tNav = useTranslations('navigation')
 
   const { data: users, loading, error, refresh } = useUsers()
   const deleteUser = useDeleteUser()
@@ -97,10 +98,10 @@ export function UsersTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('name')}</TableHead>
-                <TableHead>{t('email')}</TableHead>
-                <TableHead>{t('role')}</TableHead>
-                <TableHead>{t('joinDate')}</TableHead>
+                <TableHead>{tNav('name')}</TableHead>
+                <TableHead>{tUsers('email')}</TableHead>
+                <TableHead>{tNav('role')}</TableHead>
+                <TableHead>Join Date</TableHead>
                 <TableHead>{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>

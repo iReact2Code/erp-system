@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 
-const locales = ['en', 'es', 'fr', 'ar', 'he', 'zh', 'ug']
+const locales = ['en', 'ug', 'es', 'fr', 'ar', 'he', 'zh']
 
 const intlMiddleware = createIntlMiddleware({
   locales,
@@ -67,15 +67,21 @@ export async function middleware(request: NextRequest) {
   const allowedPaths = roleAccess[userRole as keyof typeof roleAccess] || []
 
   // Check if the path (without locale) is allowed
-  const pathWithoutLocale = path.replace(/^\/[a-z]{2}\//, '/')
+  const pathSegments = path.split('/')
+  const locale = pathSegments[1]
+  const pathWithoutLocale = locales.includes(locale)
+    ? '/' + pathSegments.slice(2).join('/')
+    : path
+
   const isAllowed = allowedPaths.some(allowedPath =>
     pathWithoutLocale.startsWith(allowedPath)
   )
 
   if (!isAllowed) {
-    const locale = path.split('/')[1]
-    const dashboardUrl = locales.includes(locale)
-      ? `/${locale}/dashboard`
+    const pathSegments = path.split('/')
+    const currentLocale = pathSegments[1]
+    const dashboardUrl = locales.includes(currentLocale)
+      ? `/${currentLocale}/dashboard`
       : '/en/dashboard'
     return NextResponse.redirect(new URL(dashboardUrl, request.url))
   }

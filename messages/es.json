@@ -57,7 +57,9 @@
     "manageInventory": "Gestionar Inventario",
     "searchInventory": "Buscar Inventario",
     "users": "Usuarios",
-    "searchUsers": "Buscar Usuarios"
+    "searchUsers": "Buscar Usuarios",
+    "noUsers": "Aún no se han agregado usuarios",
+    "noUsersFound": "No se encontraron usuarios"
   },
   "theme": {
     "light": "Claro",

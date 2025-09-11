@@ -18,6 +18,7 @@ const languages = [
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'zh', name: '简体中文', flag: '🇨🇳' },
+  { code: 'ug', name: 'ئۇيغۇرچە', flag: '' },
 ]
 
 export function LanguageToggle() {
@@ -37,9 +38,12 @@ export function LanguageToggle() {
     }`
     router.push(newUrl)
 
-    // Apply RTL for Arabic and Hebrew
-    const isRTL = ['ar', 'he'].includes(langCode)
+    // Apply RTL for Arabic, Hebrew, and Uyghur
+    const isRTL = ['ar', 'he', 'ug'].includes(langCode)
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr'
+    document.documentElement.className =
+      document.documentElement.className.replace(/\b(rtl|ltr)\b/g, '').trim() +
+      ` ${isRTL ? 'rtl' : 'ltr'}`
     document.documentElement.lang = langCode
 
     // Store preference

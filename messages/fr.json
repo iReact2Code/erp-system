@@ -57,7 +57,9 @@
     "manageInventory": "Gérer l'Inventaire",
     "searchInventory": "Rechercher dans l'Inventaire",
     "users": "Utilisateurs",
-    "searchUsers": "Rechercher des Utilisateurs"
+    "searchUsers": "Rechercher des Utilisateurs",
+    "noUsers": "Aucun utilisateur ajouté pour le moment",
+    "noUsersFound": "Aucun utilisateur trouvé"
   },
   "theme": {
     "light": "Clair",
