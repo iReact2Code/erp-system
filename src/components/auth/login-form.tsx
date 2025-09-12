@@ -50,29 +50,20 @@ export const LoginForm = () => {
       })
 
       const data = await response.json()
-      console.log('🔍 Login response:', response.status, data)
 
       if (!response.ok) {
-        console.error('❌ Login failed:', response.status, data.error)
         setError(data.error || 'Login failed')
         return
       }
 
       if (data.success) {
         // Store token and user info in localStorage
-        console.log('🔍 Login response data:', data)
-        console.log('🔍 Token to store:', data.token)
-
         localStorage.setItem('auth-token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
-
-        console.log('✅ Login successful, token stored')
-        console.log('🔍 Stored token:', localStorage.getItem('auth-token'))
 
         // Use window.location for full page reload to ensure middleware runs
         window.location.href = '/dashboard'
       } else {
-        console.error('❌ Login failed - no success flag')
         setError('Login failed - please try again')
       }
     } catch (error) {

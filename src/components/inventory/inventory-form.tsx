@@ -51,14 +51,6 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
     setLoading(true)
 
     try {
-      // Debug: Check if we have a token
-      const token = localStorage.getItem('auth-token')
-      console.log('Auth token exists:', !!token)
-      console.log(
-        'Token preview:',
-        token ? token.substring(0, 20) + '...' : 'No token'
-      )
-
       const url = '/api/inventory'
       const method = mode === 'add' ? 'POST' : 'PUT'
       const body = mode === 'edit' ? { ...formData, id: item?.id } : formData
@@ -67,10 +59,6 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
         method,
         body: JSON.stringify(body),
       })
-
-      console.log('Response status:', response.status)
-      const responseData = await response.json()
-      console.log('Response data:', responseData)
 
       if (response.ok) {
         setOpen(false)
@@ -85,8 +73,7 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
           })
         }
       } else {
-        console.error('Failed to save item:', responseData)
-        alert(`Error: ${responseData.error || 'Failed to save item'}`)
+        console.error('Failed to save item')
       }
     } catch (error) {
       console.error('Error saving item:', error)

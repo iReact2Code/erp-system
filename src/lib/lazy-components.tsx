@@ -15,14 +15,47 @@ export function createLazyComponent<T extends Record<string, unknown>>(
   fallback: React.ReactNode = <LoadingState />
 ) {
   const LazyComponent = lazy(async () => {
-    const moduleExports = await importFunc()
-    return { default: moduleExports[componentName] as ComponentType<unknown> }
+    try {
+      const moduleExports = await importFunc()
+      const Component = moduleExports[componentName] as ComponentType<
+        Record<string, unknown>
+      >
+
+      if (!Component) {
+        throw new Error(
+          `Component ${String(componentName)} not found in module`
+        )
+      }
+
+      return { default: Component }
+    } catch (error) {
+      console.error(`Failed to load component ${String(componentName)}:`, error)
+      throw error
+    }
   })
 
-  return function LazyWrapper(props: unknown) {
+  return function LazyWrapper(props: Record<string, unknown>) {
     return (
       <Suspense fallback={fallback}>
-        <LazyComponent {...(props as Record<string, unknown>)} />
+        <LazyComponent {...props} />
+      </Suspense>
+    )
+  }
+}
+
+// Simple lazy component for default exports
+export function createLazyDefaultComponent(
+  importFunc: () => Promise<{
+    default: ComponentType<Record<string, unknown>>
+  }>,
+  fallback: React.ReactNode = <LoadingState />
+) {
+  const LazyComponent = lazy(importFunc)
+
+  return function LazyWrapper(props: Record<string, unknown>) {
+    return (
+      <Suspense fallback={fallback}>
+        <LazyComponent {...props} />
       </Suspense>
     )
   }
@@ -73,9 +106,8 @@ export const LazyPurchaseForm = createLazyComponent(
 )
 
 // Reports components (heavy components)
-export const LazyReportsComponent = createLazyComponent(
+export const LazyReportsComponent = createLazyDefaultComponent(
   () => import('@/components/reports/reports-component'),
-  'ReportsComponent',
   <LoadingState message="Loading reports..." />
 )
 

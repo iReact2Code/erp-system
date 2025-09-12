@@ -8,61 +8,49 @@ export interface JWTUser {
   role: string
 }
 
+interface JWTPayload {
+  id: string
+  email: string
+  name: string
+  role: string
+  iat: number
+  exp: number
+}
+
 export function verifyJWTToken(token: string): JWTUser | null {
   try {
-    console.log(
-      '🔍 Verifying JWT token:',
-      token ? `${token.substring(0, 30)}...` : 'null'
-    )
-    console.log('NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET)
+    if (!process.env.NEXTAUTH_SECRET) {
+      throw new Error('NEXTAUTH_SECRET is not configured')
+    }
 
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as JWTUser
-    console.log('✅ Token verification successful:', decoded.email)
-    return decoded
-  } catch (error) {
-    console.error('❌ JWT verification failed:', error)
+    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET) as JWTPayload
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      name: decoded.name,
+      role: decoded.role,
+    }
+  } catch {
     return null
   }
 }
 
 export function getUserFromRequest(request: NextRequest): JWTUser | null {
-  console.log('🔍 Debug - Getting user from request:')
-
-  // Try to get token from Authorization header
+  // Try Authorization header first
   const authHeader = request.headers.get('authorization')
-  console.log('Authorization header:', authHeader)
 
-  if (authHeader?.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7)
-    console.log(
-      'Token from header:',
-      token ? `${token.substring(0, 30)}...` : 'null'
-    )
-    const user = verifyJWTToken(token)
-    console.log(
-      'User from token verification:',
-      user ? 'Valid user' : 'Invalid token'
-    )
-    return user
+    return verifyJWTToken(token)
   }
 
-  // Try to get token from cookies
+  // Try cookie as fallback
   const cookieToken = request.cookies.get('auth-token')?.value
-  console.log(
-    'Cookie token:',
-    cookieToken ? `${cookieToken.substring(0, 30)}...` : 'null'
-  )
 
   if (cookieToken) {
-    const user = verifyJWTToken(cookieToken)
-    console.log(
-      'User from cookie verification:',
-      user ? 'Valid user' : 'Invalid token'
-    )
-    return user
+    return verifyJWTToken(cookieToken)
   }
 
-  console.log('No authentication found')
   return null
 }
 

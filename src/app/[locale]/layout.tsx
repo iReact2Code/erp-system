@@ -3,6 +3,7 @@ import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { AuthProvider } from '@/components/providers/auth-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { ToastProvider } from '@/components/ui/use-toast'
 import { getFontConfig } from '@/lib/font-config'
 import type { Metadata } from 'next'
 
@@ -129,7 +130,7 @@ export default async function LocaleLayout({
         <ThemeProvider>
           <AuthProvider>
             <NextIntlClientProvider messages={messages} locale={locale}>
-              {children}
+              <ToastProvider>{children}</ToastProvider>
             </NextIntlClientProvider>
           </AuthProvider>
         </ThemeProvider>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dialog'
 import { Plus, Edit, Save, X, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useToast } from '@/components/ui/use-toast'
 
 interface InventoryItem {
   id: string
@@ -55,6 +56,7 @@ interface SaleFormProps {
 export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
   const [formData, setFormData] = useState<Sale>({
     total: sale?.total || 0,
@@ -64,14 +66,9 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
 
   const t = useTranslations('common')
   const tSales = useTranslations('sales')
+  const { success, error: showErrorToast } = useToast()
 
-  useEffect(() => {
-    if (open) {
-      fetchInventoryItems()
-    }
-  }, [open])
-
-  const fetchInventoryItems = async () => {
+  const fetchInventoryItems = useCallback(async () => {
     try {
       const response = await authenticatedFetch('/api/inventory')
       if (response.ok) {
@@ -80,11 +77,25 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
         setInventoryItems(
           items.filter((item: InventoryItem) => item.quantity > 0)
         )
+      } else {
+        const errorMsg = 'Failed to load inventory items. Please try again.'
+        setError(errorMsg)
+        showErrorToast('Loading Error', errorMsg)
       }
-    } catch (error) {
-      console.error('Error fetching inventory items:', error)
+    } catch {
+      const errorMsg =
+        'Error loading inventory items. Please check your connection and try again.'
+      setError(errorMsg)
+      showErrorToast('Connection Error', errorMsg)
     }
-  }
+  }, [setError, showErrorToast])
+
+  useEffect(() => {
+    if (open) {
+      fetchInventoryItems()
+      setError(null) // Clear any previous errors when opening
+    }
+  }, [open, fetchInventoryItems])
 
   const addSaleItem = () => {
     setFormData(prev => ({
@@ -149,6 +160,7 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
     try {
       const url = '/api/sales'
@@ -163,6 +175,13 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
       if (response.ok) {
         setOpen(false)
         onSuccess()
+        // Show success toast
+        success(
+          mode === 'add' ? 'Sale Created' : 'Sale Updated',
+          mode === 'add'
+            ? 'The sale has been successfully created.'
+            : 'The sale has been successfully updated.'
+        )
         if (mode === 'add') {
           setFormData({
             total: 0,
@@ -171,10 +190,19 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
           })
         }
       } else {
-        console.error('Failed to save sale')
+        const errorData = await response.json().catch(() => ({}))
+        const errorMessage =
+          errorData.message || errorData.error || `Failed to ${mode} sale`
+        setError(errorMessage)
+        showErrorToast('Save Failed', errorMessage)
       }
     } catch (error) {
-      console.error('Error saving sale:', error)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred while saving the sale'
+      setError(errorMessage)
+      showErrorToast('Unexpected Error', errorMessage)
     } finally {
       setLoading(false)
     }
@@ -211,6 +239,16 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
               : `${t('edit')} ${tSales('saleDescription')}`}
           </DialogDescription>
         </DialogHeader>
+
+        {error && (
+          <div className="p-4 mb-4 text-sm text-red-800 border border-red-200 rounded-md bg-red-50">
+            <div className="flex items-center">
+              <X className="w-4 h-4 mr-2 text-red-600" />
+              <span className="font-medium">Error:</span>
+              <span className="ml-1">{error}</span>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

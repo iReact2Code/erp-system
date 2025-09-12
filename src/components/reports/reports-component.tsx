@@ -1,185 +1,235 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '../ui/skeleton'
 import { authenticatedFetch } from '@/lib/api-helpers'
 import {
-  BarChart3,
   TrendingUp,
   Package,
   ShoppingCart,
   DollarSign,
+  AlertTriangle,
+  Activity,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
-interface ReportData {
+interface ReportsData {
   totalInventoryItems: number
   totalSales: number
   totalPurchases: number
   totalRevenue: number
   lowStockItems: number
-  recentTransactions: {
+  recentTransactions: Array<{
     type: 'sale' | 'purchase'
     amount: number
     date: string
     description: string
-  }[]
+  }>
 }
 
-export function ReportsComponent() {
-  const [reportData, setReportData] = useState<ReportData>({
-    totalInventoryItems: 0,
-    totalSales: 0,
-    totalPurchases: 0,
-    totalRevenue: 0,
-    lowStockItems: 0,
-    recentTransactions: [],
-  })
+export default function ReportsComponent() {
+  const [data, setData] = useState<ReportsData | null>(null)
   const [loading, setLoading] = useState(true)
-  const t = useTranslations('common')
-  const tReports = useTranslations('reports')
-
-  useEffect(() => {
-    fetchReportData()
-  }, [])
+  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations('reports')
 
   const fetchReportData = async () => {
+    setLoading(true)
+    setError(null)
     try {
-      // Fetch inventory data
-      const inventoryResponse = await authenticatedFetch('/api/inventory')
-      const inventoryData = inventoryResponse.ok
-        ? await inventoryResponse.json()
-        : { data: [] }
-      const inventory = Array.isArray(inventoryData.data)
-        ? inventoryData.data
-        : Array.isArray(inventoryData)
-          ? inventoryData
-          : []
+      const response = await authenticatedFetch('/api/reports')
+      const result = await response.json()
 
-      // Fetch sales data
-      const salesResponse = await authenticatedFetch('/api/sales')
-      const salesData = salesResponse.ok
-        ? await salesResponse.json()
-        : { data: [] }
-      const sales = Array.isArray(salesData.data)
-        ? salesData.data
-        : Array.isArray(salesData)
-          ? salesData
-          : []
-
-      // Fetch purchases data
-      const purchasesResponse = await authenticatedFetch('/api/purchases')
-      const purchasesData = purchasesResponse.ok
-        ? await purchasesResponse.json()
-        : { data: [] }
-      const purchases = Array.isArray(purchasesData.data)
-        ? purchasesData.data
-        : Array.isArray(purchasesData)
-          ? purchasesData
-          : []
-
-      // Calculate metrics
-      const totalRevenue = sales.reduce(
-        (sum: number, sale: { total: number }) => sum + sale.total,
-        0
-      )
-      const lowStockItems = inventory.filter(
-        (item: { quantity: number }) => item.quantity < 10
-      ).length
-
-      // Create recent transactions
-      const recentTransactions = [
-        ...sales
-          .slice(0, 3)
-          .map((sale: { total: number; createdAt: string; id: string }) => ({
-            type: 'sale' as const,
-            amount: sale.total,
-            date: sale.createdAt,
-            description: `Sale #${sale.id.slice(0, 8)}`,
-          })),
-        ...purchases
-          .slice(0, 3)
-          .map(
-            (purchase: { total: number; createdAt: string; id: string }) => ({
-              type: 'purchase' as const,
-              amount: purchase.total,
-              date: purchase.createdAt,
-              description: `Purchase #${purchase.id.slice(0, 8)}`,
-            })
-          ),
-      ]
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5)
-
-      setReportData({
-        totalInventoryItems: inventory.length,
-        totalSales: sales.length,
-        totalPurchases: purchases.length,
-        totalRevenue,
-        lowStockItems,
-        recentTransactions,
-      })
+      if (result.success) {
+        setData(result.data)
+      } else {
+        setError('Failed to fetch reports data')
+      }
     } catch (error) {
-      console.error('Error fetching report data:', error)
-      // Set safe default values in case of error
-      setReportData({
-        totalInventoryItems: 0,
-        totalSales: 0,
-        totalPurchases: 0,
-        totalRevenue: 0,
-        lowStockItems: 0,
-        recentTransactions: [],
-      })
+      console.error('Error fetching reports data:', error)
+      setError('Failed to fetch reports data')
     } finally {
       setLoading(false)
     }
   }
 
+  useEffect(() => {
+    fetchReportData()
+  }, [])
+
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2" />
-            {tReports('title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <div className="text-muted-foreground">{t('loadingReports')}</div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-3 w-16 mt-1" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts Skeleton */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tables Skeleton */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-36" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex justify-between">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex justify-between">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-14" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-500" />
+          <p className="mb-4 text-lg text-red-600">{error}</p>
+          <button
+            onClick={fetchReportData}
+            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          >
+            {t('retry')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-lg text-gray-600">{t('noData')}</p>
+      </div>
+    )
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount)
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString()
   }
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2" />
-            {tReports('title')}
-          </CardTitle>
-        </CardHeader>
-      </Card>
-
-      {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">
-              {tReports('totalProducts')}
+              {t('totalInventory')}
             </CardTitle>
-            <Package className="w-4 h-4 text-muted-foreground" />
+            <Package className="w-4 h-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.totalInventoryItems}</div>
+            <p className="text-xs text-muted-foreground">{t('itemsInStock')}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">
+              {t('totalSales')}
+            </CardTitle>
+            <TrendingUp className="w-4 h-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.totalSales}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('salesTransactions')}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">
+              {t('totalPurchases')}
+            </CardTitle>
+            <ShoppingCart className="w-4 h-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.totalPurchases}</div>
+            <p className="text-xs text-muted-foreground">
+              {t('purchaseTransactions')}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">
+              {t('totalRevenue')}
+            </CardTitle>
+            <DollarSign className="w-4 h-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {reportData.totalInventoryItems}
+              {formatCurrency(data.totalRevenue)}
             </div>
             <p className="text-xs text-muted-foreground">
-              {tReports('activeInventoryItems')}
+              {t('totalEarnings')}
             </p>
           </CardContent>
         </Card>
@@ -187,89 +237,60 @@ export function ReportsComponent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">
-              {tReports('totalSales')}
+              {t('lowStock')}
             </CardTitle>
-            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
+            <AlertTriangle className="w-4 h-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{reportData.totalSales}</div>
+            <div className="text-2xl font-bold">{data.lowStockItems}</div>
             <p className="text-xs text-muted-foreground">
-              {tReports('completedTransactions')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
-              {tReports('totalRevenue')}
-            </CardTitle>
-            <DollarSign className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${reportData.totalRevenue.toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {tReports('fromSalesTransactions')}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">
-              {tReports('lowStockAlert')}
-            </CardTitle>
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{reportData.lowStockItems}</div>
-            <p className="text-xs text-muted-foreground">
-              {tReports('itemsBelowTenUnits')}
+              {t('itemsRunningLow')}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Transactions */}
       <Card>
         <CardHeader>
-          <CardTitle>{tReports('recentTransactions')}</CardTitle>
+          <CardTitle className="flex items-center">
+            <Activity className="w-5 h-5 mr-2" />
+            {t('recentTransactions')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {reportData.recentTransactions.length === 0 ? (
-            <div className="py-8 text-center">
-              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold">No transactions found</h3>
-              <p className="text-muted-foreground">
-                Start by creating sales or purchases to see activity here.
-              </p>
-            </div>
+          {data.recentTransactions.length === 0 ? (
+            <p className="py-4 text-center text-gray-500">
+              {t('noRecentTransactions')}
+            </p>
           ) : (
-            <div className="space-y-4">
-              {reportData.recentTransactions.map((transaction, index) => (
+            <div className="space-y-3">
+              {data.recentTransactions.map((transaction, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between p-3 border rounded-lg"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3">
+                    {transaction.type === 'sale' ? (
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <ShoppingCart className="w-4 h-4 text-blue-500" />
+                    )}
+                    <div>
+                      <p className="font-medium">{transaction.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(transaction.date)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
                     <Badge
                       variant={
                         transaction.type === 'sale' ? 'default' : 'secondary'
                       }
                     >
-                      {transaction.type === 'sale' ? 'Sale' : 'Purchase'}
+                      {transaction.type === 'sale' ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
                     </Badge>
-                    <div>
-                      <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(transaction.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="font-bold">
-                    ${transaction.amount.toFixed(2)}
                   </div>
                 </div>
               ))}
