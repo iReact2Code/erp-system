@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Developer testing notes
+
+This project includes a lightweight `useApi` hook used across features. A few testing tips:
+
+- Prefer to assert hook-driven UI changes using RTL's `waitFor` or `act()` rather than relying on internal timing within hooks. Tests that await the public `refresh()` method should wrap assertions in `waitFor` so they observe committed state.
+- `useApi` previously used extra macrotask waits to stabilize Jest runs; that behavior has been removed in favor of clearer test assertions. If you encounter flakiness in CI, prefer adding explicit `waitFor()` in the test rather than reintroducing hidden waits in the hook.
+- Use `clearApiCache()` from `src/hooks/use-api.ts` in test setup/teardown if you need to reset internal caches between tests.
+
+If you'd like, I can add a short `CONTRIBUTING.md` with testing conventions for this repository.
