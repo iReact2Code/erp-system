@@ -1,0 +1,29 @@
+name: Benchmarks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Start app (background)
+        run: |
+          npm run build || true
+          npm run start &
+        env:
+          PORT: 3000
+      - name: Run bench
+        run: |
+          node bench/bench-cache.js
+        env:
+          BENCH_FAIL_ON_SLOW: 'false'
+          BENCH_API_URL: 'http://localhost:3000/api/bench'
