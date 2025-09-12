@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { User, Mail, Calendar, Shield } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function ProfileCard() {
+  const tUsers = useTranslations('users')
   const [user, setUser] = useState<{
     id: string
     name: string
@@ -147,7 +149,7 @@ export function ProfileCard() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Account Status</span>
-              <Badge variant="default">Active</Badge>
+              <Badge variant="default">{tUsers('active')}</Badge>
             </div>
           </div>
         </CardContent>

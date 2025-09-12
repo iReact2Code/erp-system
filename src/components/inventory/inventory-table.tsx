@@ -40,23 +40,28 @@ const InventoryTableRow = memo(
     onEditSuccess: () => void
     deleteLoading: boolean
   }) => {
-    const getStockStatus = useCallback((quantity: number) => {
-      const qty = quantity ?? 0
-      if (qty === 0) {
-        return <Badge variant="destructive">Out of Stock</Badge>
-      } else if (qty < 10) {
+    const tInventory = useTranslations('inventory')
+
+    const getStockStatus = useCallback(
+      (quantity: number) => {
+        const qty = quantity ?? 0
+        if (qty === 0) {
+          return <Badge variant="destructive">{tInventory('outOfStock')}</Badge>
+        } else if (qty < 10) {
+          return (
+            <Badge variant="secondary" className="text-white bg-yellow-500">
+              {tInventory('lowStock')}
+            </Badge>
+          )
+        }
         return (
-          <Badge variant="secondary" className="text-white bg-yellow-500">
-            Low Stock
+          <Badge variant="default" className="bg-green-500">
+            {tInventory('inStock')}
           </Badge>
         )
-      }
-      return (
-        <Badge variant="default" className="bg-green-500">
-          In Stock
-        </Badge>
-      )
-    }, [])
+      },
+      [tInventory]
+    )
 
     return (
       <TableRow key={item.id}>

@@ -62,17 +62,17 @@ export const SalesTable = memo(function SalesTable() {
       case 'COMPLETED':
         return (
           <Badge variant="default" className="bg-green-500">
-            Completed
+            {tSales('completed')}
           </Badge>
         )
       case 'PENDING':
         return (
           <Badge variant="secondary" className="text-white bg-yellow-500">
-            Pending
+            {tSales('pending')}
           </Badge>
         )
       case 'CANCELLED':
-        return <Badge variant="destructive">Cancelled</Badge>
+        return <Badge variant="destructive">{tSales('cancelled')}</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
