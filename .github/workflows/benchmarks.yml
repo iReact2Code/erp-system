@@ -23,6 +23,15 @@ jobs:
           PORT: 3000
       - name: Run bench
         run: |
+          # wait-for-it loop to ensure the app responds before running bench
+          for i in {1..60}; do
+            if curl -sSf http://localhost:3000/api/bench >/dev/null 2>&1; then
+              echo "endpoint ready"
+              break
+            fi
+            echo "waiting for app... ($i)"
+            sleep 1
+          done
           node bench/bench-cache.js
         env:
           BENCH_FAIL_ON_SLOW: 'false'

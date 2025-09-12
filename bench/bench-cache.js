@@ -22,6 +22,29 @@ async function runRound() {
 }
 
 ;(async () => {
+  // Wait for the target endpoint to be available (useful in CI where the app
+  // may be starting in a background step). Timeout after 30s.
+  async function waitForEndpoint(url, timeoutMs = 30_000) {
+    const start = Date.now()
+    while (Date.now() - start < timeoutMs) {
+      try {
+        const r = await fetch(url, { method: 'GET' })
+        if (r.ok) return true
+      } catch {
+        // ignore and retry
+      }
+      await new Promise(r => setTimeout(r, 500))
+    }
+    throw new Error(`Timed out waiting for ${url}`)
+  }
+
+  try {
+    await waitForEndpoint(API_URL)
+  } catch (e) {
+    console.error(e.message)
+    process.exit(2)
+  }
+
   console.log('Starting bench: url=', API_URL, 'concurrency=', CONCURRENCY)
   const start = Date.now()
   for (let r = 0; r < ROUNDS; r++) {

@@ -17,7 +17,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "prepare": "husky",
-    "bench": "node bench/bench-cache.js"
+    "bench": "node bench/bench-cache.js",
+    "bench:local": "node bench/run-local-bench.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -74,6 +75,7 @@
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.1.2",
     "lint-staged": "^16.1.6",
+    "node-fetch": "^2.7.0",
     "playwright": "^1.55.0",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
