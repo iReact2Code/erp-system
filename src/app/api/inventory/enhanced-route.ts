@@ -158,13 +158,14 @@ async function createInventoryHandler(
       return createErrorResponse('SKU already exists', 'DUPLICATE_SKU', 400)
     }
 
-    // Create inventory item
+    // Create inventory item. Ignore any provided `quantity` here — initial
+    // quantity must be managed by purchases/sales workflows.
     const inventoryItem = await db.inventoryItem.create({
       data: {
         name: validatedData.name,
         sku: validatedData.sku,
         description: validatedData.description,
-        quantity: validatedData.quantity,
+        quantity: 0,
         unitPrice: validatedData.unitPrice,
         createdById: user.id,
         updatedById: user.id,

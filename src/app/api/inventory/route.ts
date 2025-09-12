@@ -103,12 +103,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, sku, description, quantity, unitPrice } = body
 
+    // Enforce: inventory quantities must be modified only via purchases/sales
+    // For safety, ignore any provided `quantity` on create and initialize to 0.
     const inventoryItem = await db.inventoryItem.create({
       data: {
         name,
         sku,
         description,
-        quantity: parseInt(quantity),
+        quantity: 0,
         unitPrice: parseFloat(unitPrice),
         createdById: user!.id,
         updatedById: user!.id,
@@ -166,13 +168,47 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Prevent direct quantity modifications via this endpoint. Inventory
+    // quantities must only change through purchases/sales endpoints which
+    // perform transactional updates and stock checks.
+    if (typeof quantity !== 'undefined') {
+      try {
+        const { auditSecurityViolation } = await import('@/lib/audit-logger')
+        const clientIP = request.headers.get('x-forwarded-for') || 'unknown'
+        const userAgent = request.headers.get('user-agent') || 'unknown'
+        auditSecurityViolation(
+          'DIRECT_INVENTORY_QUANTITY_CHANGE_BLOCKED',
+          user?.id,
+          user?.email,
+          user?.role as unknown as UserRole,
+          clientIP,
+          userAgent,
+          {
+            endpoint: '/api/inventory',
+            method: 'PUT',
+            inventoryId: id,
+          }
+        )
+      } catch {
+        // ignore audit errors
+      }
+
+      return NextResponse.json(
+        {
+          error:
+            'Direct modification of inventory quantity is restricted. Use purchases/sales endpoints.',
+        },
+        { status: 403 }
+      )
+    }
+
     const inventoryItem = await db.inventoryItem.update({
       where: { id },
       data: {
         name,
         sku,
         description,
-        quantity: parseInt(quantity),
+        // intentionally do not update `quantity` here
         unitPrice: parseFloat(unitPrice),
         updatedById: user!.id,
         updatedAt: new Date(),

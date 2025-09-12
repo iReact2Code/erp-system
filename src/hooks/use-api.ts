@@ -16,6 +16,37 @@ type CacheEntry<T> = { data: T; timestamp: number }
 const responseCache = new Map<string, CacheEntry<unknown>>()
 const inflightRequests = new Map<string, Promise<unknown>>()
 
+// Periodic cleanup to avoid unbounded memory growth. Only run in non-test
+// environments. Cleanup runs lazily once the first cache entry is added.
+let cacheCleanupTimer: ReturnType<typeof setTimeout> | null = null
+const CACHE_CLEANUP_INTERVAL_MS = 60_000
+
+function startCacheCleanupIfNeeded() {
+  if (process.env.NODE_ENV === 'test') return
+  if (cacheCleanupTimer) return
+  cacheCleanupTimer = setInterval(() => {
+    const now = Date.now()
+    for (const [k, entry] of responseCache.entries()) {
+      // assume a reasonable default TTL of 30s if not tracked elsewhere
+      if (now - entry.timestamp > 30_000) {
+        responseCache.delete(k)
+      }
+    }
+    // if cache is empty, stop the timer to be conservative
+    if (responseCache.size === 0 && cacheCleanupTimer) {
+      clearInterval(cacheCleanupTimer)
+      cacheCleanupTimer = null
+    }
+  }, CACHE_CLEANUP_INTERVAL_MS)
+}
+
+export function stopApiCacheCleanup() {
+  if (cacheCleanupTimer) {
+    clearInterval(cacheCleanupTimer)
+    cacheCleanupTimer = null
+  }
+}
+
 interface ApiState<T> {
   // Allow either raw data (T) or wrapped response shape ({ data: T }) to
   // keep existing consumers and tests interoperable.
@@ -30,13 +61,23 @@ interface UseApiOptions {
   key?: string
   /** Milliseconds to keep cached value fresh; defaults to 30000 (30s) */
   staleTime?: number
+  /** Force dedupe behavior even in test environment (useful for test coverage) */
+  forceDedupe?: boolean
+  /** Force cache read behavior even in test environment (useful for test coverage) */
+  forceCache?: boolean
 }
 
 export function useApi<T>(
   fetcher: () => Promise<{ data?: T; error?: string }>,
   options: UseApiOptions = {}
 ) {
-  const { immediate = true, key, staleTime = 30000 } = options
+  const {
+    immediate = true,
+    key,
+    staleTime = 30000,
+    forceDedupe = false,
+    forceCache = false,
+  } = options
 
   const [state, setState] = useState<ApiState<T>>({
     data: null,
@@ -53,8 +94,13 @@ export function useApi<T>(
     // DEBUG
     // no-op for production: removed debug logging
 
-    // Serve from cache if fresh
-    if (key && responseCache.has(key) && process.env.NODE_ENV !== 'test') {
+    // Serve from cache if fresh. Tests can opt-in to cache reads via
+    // `forceCache` when running in the test environment.
+    if (
+      key &&
+      responseCache.has(key) &&
+      (process.env.NODE_ENV !== 'test' || forceCache)
+    ) {
       const cached = responseCache.get(key) as CacheEntry<T> | undefined
       if (cached && Date.now() - cached.timestamp < staleTime) {
         setState({
@@ -67,11 +113,12 @@ export function useApi<T>(
     }
 
     try {
-      // Deduplicate in-flight requests by key. In tests, bypass dedupe and
-      // cache to ensure each call consumes a new mock response and tests can
-      // assert exact call counts.
+      // Deduplicate in-flight requests by key. Tests can opt-in to dedupe
+      // behavior by setting `forceDedupe: true` in options. Otherwise, the
+      // test environment bypasses dedupe to make sequential mock responses
+      // easier to reason about by default.
       let result: { data?: T; error?: string }
-      if (process.env.NODE_ENV === 'test') {
+      if (process.env.NODE_ENV === 'test' && !forceDedupe) {
         result = await fetcherRef.current()
       } else if (key) {
         let inflight = inflightRequests.get(key) as
@@ -109,6 +156,7 @@ export function useApi<T>(
 
         if (key && data !== null) {
           responseCache.set(key, { data, timestamp: Date.now() })
+          startCacheCleanupIfNeeded()
         }
       }
 
@@ -147,7 +195,7 @@ export function useApi<T>(
         error: err instanceof Error ? err.message : 'An error occurred',
       } as { error: string }
     }
-  }, [key, staleTime])
+  }, [key, staleTime, forceDedupe, forceCache])
 
   const refresh = useCallback(() => {
     // Force refresh: clear cache for this key before executing
