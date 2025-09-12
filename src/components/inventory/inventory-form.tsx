@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Plus, Edit, Save, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { authenticatedFetch } from '@/lib/api-helpers'
 
 interface InventoryItem {
   id?: string
@@ -50,17 +51,26 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
     setLoading(true)
 
     try {
+      // Debug: Check if we have a token
+      const token = localStorage.getItem('auth-token')
+      console.log('Auth token exists:', !!token)
+      console.log(
+        'Token preview:',
+        token ? token.substring(0, 20) + '...' : 'No token'
+      )
+
       const url = '/api/inventory'
       const method = mode === 'add' ? 'POST' : 'PUT'
       const body = mode === 'edit' ? { ...formData, id: item?.id } : formData
 
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(body),
       })
+
+      console.log('Response status:', response.status)
+      const responseData = await response.json()
+      console.log('Response data:', responseData)
 
       if (response.ok) {
         setOpen(false)
@@ -75,7 +85,8 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
           })
         }
       } else {
-        console.error('Failed to save item')
+        console.error('Failed to save item:', responseData)
+        alert(`Error: ${responseData.error || 'Failed to save item'}`)
       }
     } catch (error) {
       console.error('Error saving item:', error)
@@ -157,7 +168,7 @@ export function InventoryForm({ item, mode, onSuccess }: InventoryFormProps) {
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange('description', e.target.value)
                 }
-                className="hover-glow resize-none"
+                className="resize-none hover-glow"
                 rows={3}
               />
             </div>

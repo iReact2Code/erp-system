@@ -129,11 +129,8 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
       const body =
         mode === 'edit' ? { ...formData, id: purchase?.id } : formData
 
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(body),
       })
 

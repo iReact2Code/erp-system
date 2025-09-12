@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/use-auth'
+import { authenticatedFetch } from '@/lib/api-helpers'
 import OrdersTable from '@/components/orders/orders-table'
 import OrderDetailDialog from '@/components/orders/order-detail-dialog'
 import OrderFormDialog from '@/components/orders/order-form-dialog'
@@ -155,7 +156,7 @@ export default function OrderManagementPage() {
       }
 
       try {
-        const response = await fetch(`/api/orders/${order.id}`, {
+        const response = await authenticatedFetch(`/api/orders/${order.id}`, {
           method: 'DELETE',
         })
 
@@ -185,11 +186,8 @@ export default function OrderManagementPage() {
             : `/api/orders/${selectedOrder?.id}`
         const method = formMode === 'create' ? 'POST' : 'PUT'
 
-        const response = await fetch(url, {
+        const response = await authenticatedFetch(url, {
           method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(formData),
         })
 

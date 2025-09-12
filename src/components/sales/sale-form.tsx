@@ -155,11 +155,8 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
       const method = mode === 'add' ? 'POST' : 'PUT'
       const body = mode === 'edit' ? { ...formData, id: sale?.id } : formData
 
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(body),
       })
 
@@ -236,7 +233,7 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <Label>{tSales('items')}</Label>
               <Button
                 type="button"
@@ -251,8 +248,8 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
             </div>
 
             {(formData.items || []).map((item, index) => (
-              <div key={index} className="border rounded-md p-4 space-y-3">
-                <div className="flex justify-between items-center">
+              <div key={index} className="p-4 space-y-3 border rounded-md">
+                <div className="flex items-center justify-between">
                   <h4 className="font-medium">
                     {tSales('item')} {index + 1}
                   </h4>
@@ -261,13 +258,13 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => removeSaleItem(index)}
-                    className="hover-scale text-red-600 hover:text-red-700"
+                    className="text-red-600 hover-scale hover:text-red-700"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
                   <div className="space-y-2">
                     <Label>{tSales('product')}</Label>
                     <Select
@@ -344,13 +341,13 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
             ))}
 
             {(formData.items || []).length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="py-8 text-center text-muted-foreground">
                 {t('noItems')}. {t('clickAdd')} {tSales('item')} {t('toStart')}.
               </div>
             )}
           </div>
 
-          <div className="flex justify-between items-center pt-4 border-t">
+          <div className="flex items-center justify-between pt-4 border-t">
             <div className="text-lg font-semibold">
               {tSales('grandTotal')}: ${formData.total.toFixed(2)}
             </div>

@@ -53,20 +53,32 @@ export function getAuthHeaders(): HeadersInit {
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null
 
-  return {
+  console.log('🔍 Debug - Getting auth headers:')
+  console.log('Token exists:', !!token)
+  console.log('Token value:', token ? `${token.substring(0, 30)}...` : 'null')
+
+  const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
   }
+
+  console.log('Headers being sent:', headers)
+  return headers
 }
 
 export async function authenticatedFetch(
   url: string,
   options: RequestInit = {}
 ) {
+  console.log('🔍 authenticatedFetch called for:', url, options.method || 'GET')
+
+  const authHeaders = getAuthHeaders()
   const headers = {
-    ...getAuthHeaders(),
+    ...authHeaders,
     ...options.headers,
   }
+
+  console.log('🔍 Final headers for request:', headers)
 
   return fetch(url, {
     ...options,
