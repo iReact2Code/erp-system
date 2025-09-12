@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useMemo, useCallback, useState } from 'react'
+import type { User } from '@/types/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -26,6 +27,13 @@ export const UsersTable = memo(function UsersTable() {
   const tNav = useTranslations('navigation')
 
   const { data: users, loading, error, refresh } = useUsers()
+  const usersArray: User[] = useMemo(() => {
+    if (Array.isArray(users)) return users as User[]
+    if (users && typeof users === 'object' && 'data' in users) {
+      return (users as { data: User[] }).data
+    }
+    return []
+  }, [users])
   const deleteUser = useDeleteUser()
 
   const handleDelete = useCallback(
@@ -41,12 +49,12 @@ export const UsersTable = memo(function UsersTable() {
 
   const filteredUsers = useMemo(
     () =>
-      (users || []).filter(
-        user =>
+      usersArray.filter(
+        (user: User) =>
           user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           user.email.toLowerCase().includes(searchTerm.toLowerCase())
       ),
-    [users, searchTerm]
+    [usersArray, searchTerm]
   )
 
   const getRoleBadge = (role: string) => {

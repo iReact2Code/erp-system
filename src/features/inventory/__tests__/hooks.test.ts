@@ -75,7 +75,11 @@ describe('Inventory Hooks', () => {
 
       // Refresh data
       await result.current.refresh()
-      expect(result.current.data).toEqual({ data: mockItems2 })
+      // Wait for the hook state to update; prefer testing via waitFor instead
+      // of relying on implementation timing inside the hook.
+      await waitFor(() => {
+        expect(result.current.data).toEqual({ data: mockItems2 })
+      })
       expect(fetchMock).toHaveBeenCalledTimes(2)
     })
   })

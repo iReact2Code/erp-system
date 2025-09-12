@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import type { InventoryItem } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -31,6 +32,12 @@ export function InventoryTableImproved() {
   const t = useTranslations('common')
 
   const { data: items, loading, error, refresh } = useInventory()
+  const itemsArray: InventoryItem[] = useMemo(() => {
+    if (Array.isArray(items)) return items as InventoryItem[]
+    if (items && typeof items === 'object' && 'data' in items)
+      return (items as { data: InventoryItem[] }).data
+    return []
+  }, [items])
   const deleteInventory = useDeleteInventory()
 
   const handleDelete = async (id: string) => {
@@ -46,8 +53,8 @@ export function InventoryTableImproved() {
     refresh() // Refresh the list when new item is created
   }
 
-  const filteredItems = (items || []).filter(
-    item =>
+  const filteredItems = itemsArray.filter(
+    (item: InventoryItem) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchTerm.toLowerCase())
   )

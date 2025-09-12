@@ -37,8 +37,9 @@ export const SalesTable = memo(function SalesTable() {
   const handleDelete = useCallback(
     async (id: string) => {
       if (!confirm(t('confirmDelete'))) return
-      const result = await deleteSale.mutate(id)
-      if (result.success) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await (deleteSale.mutate as any)(id)
+      if (result && result.success) {
         refresh()
       }
     },
@@ -49,13 +50,12 @@ export const SalesTable = memo(function SalesTable() {
     refresh()
   }, [refresh])
 
-  const filteredSales = useMemo(
-    () =>
-      (sales || []).filter(sale =>
-        sale.id.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [sales, searchTerm]
-  )
+  const filteredSales = useMemo(() => {
+    const list = Array.isArray(sales) ? sales : (sales?.data ?? [])
+    return (list || []).filter(sale =>
+      sale.id.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [sales, searchTerm])
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -154,9 +154,7 @@ export const SalesTable = memo(function SalesTable() {
               {filteredSales.length === 0 && !loading && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    {searchTerm
-                      ? `No ${tSales('title').toLowerCase()} found`
-                      : `No ${tSales('title').toLowerCase()} yet`}
+                    {searchTerm ? tSales('noSales') : tSales('noSales')}
                   </TableCell>
                 </TableRow>
               )}

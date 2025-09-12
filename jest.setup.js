@@ -22,8 +22,58 @@ jest.mock('next/navigation', () => ({
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => key => key,
+  useTranslations: ns => {
+    // Basic namespace->key mapping to return readable strings in tests.
+    const map = {
+      purchases: {
+        title: 'purchases',
+        description: 'description',
+        total: 'total',
+        status: 'status',
+        completed: 'Completed',
+        pending: 'Pending',
+        cancelled: 'Cancelled',
+        approved: 'Approved',
+        rejected: 'Rejected',
+      },
+      inventory: {
+        title: 'inventory',
+        description: 'manageInventory',
+        inStock: 'In Stock',
+        lowStock: 'Low Stock',
+        outOfStock: 'Out of Stock',
+        searchInventory: 'searchInventory',
+        noItemsFound: 'noItemsFound',
+      },
+      sales: {
+        title: 'sales',
+        description: 'description',
+      },
+      common: {
+        search: 'search',
+        date: 'date',
+        actions: 'actions',
+      },
+    }
+
+    const nsMap = map[ns] || {}
+    return key => nsMap[key] ?? key
+  },
   useLocale: () => 'en',
+}))
+
+// Mock useToast to avoid requiring ToastProvider in component tests
+jest.mock('@/components/ui/use-toast', () => ({
+  ToastProvider: ({ children }) => children,
+  useToast: () => ({
+    toasts: [],
+    addToast: jest.fn(),
+    removeToast: jest.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warning: jest.fn(),
+  }),
 }))
 
 // Mock fetch globally
@@ -69,4 +119,12 @@ global.console = {
 // Setup cleanup after each test
 afterEach(() => {
   jest.clearAllMocks()
+  // Clear api cache used by hooks between tests
+  try {
+    // require here to avoid top-level import in jest config
+    const api = require('./src/hooks/use-api')
+    if (api && typeof api.clearApiCache === 'function') api.clearApiCache()
+  } catch {
+    // ignore if module not available in this environment
+  }
 })

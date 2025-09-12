@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, memo } from 'react'
+import { useState, useMemo, useCallback, memo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -97,10 +97,17 @@ InventoryTableRow.displayName = 'InventoryTableRow'
 
 export const InventoryTable = memo(() => {
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const t = useTranslations('inventory')
   const tCommon = useTranslations('common')
 
   const { data: items, loading, error, refresh } = useInventory()
+  // Normalize items: hook may return raw array or wrapped { data: [...] }
+  const itemsArray: InventoryItem[] = Array.isArray(items)
+    ? items
+    : items && typeof items === 'object' && 'data' in items
+      ? (items as { data: InventoryItem[] }).data
+      : []
   const deleteInventory = useDeleteInventory()
 
   // Memoized delete handler to prevent re-renders
@@ -121,15 +128,24 @@ export const InventoryTable = memo(() => {
     refresh()
   }, [refresh])
 
+  // Debounce search input to reduce re-filtering while typing
+  useEffect(() => {
+    const delay = process.env.NODE_ENV === 'test' ? 0 : 250
+    const id = setTimeout(() => setDebouncedSearch(searchTerm), delay)
+    return () => clearTimeout(id)
+  }, [searchTerm])
+
   // Memoized filtered items to prevent unnecessary recalculations
   const filteredItems = useMemo(() => {
-    if (!items) return []
-    return items.filter(
+    const q = debouncedSearch.toLowerCase()
+    if (!itemsArray) return []
+    if (!q) return itemsArray
+    return itemsArray.filter(
       item =>
-        (item.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.sku || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (item.name || '').toLowerCase().includes(q) ||
+        (item.sku || '').toLowerCase().includes(q)
     )
-  }, [items, searchTerm])
+  }, [itemsArray, debouncedSearch])
 
   // Memoized search handler
   const handleSearchChange = useCallback(

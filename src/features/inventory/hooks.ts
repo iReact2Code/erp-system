@@ -44,7 +44,7 @@ export function useUpdateInventory() {
 // Delete inventory item
 export function useDeleteInventory() {
   return useMutation<void, string>(async id => {
-    const response = await authenticatedFetch(`/api/inventory/${id}`, {
+    const response = await authenticatedFetch(`/api/inventory?id=${id}`, {
       method: 'DELETE',
     })
     return response.json()

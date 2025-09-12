@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { ReactNode, createElement } from 'react'
+import { UserRole } from '@/lib/prisma-mock'
 
 // Mock API responses
 export const mockApiResponse = <T>(data: T, delay = 0) => {
@@ -107,11 +108,11 @@ export const createMockPurchase = (overrides = {}) => ({
   ...overrides,
 })
 
-export const createMockUser = (overrides = {}) => ({
+export const createMockUser = (overrides: Record<string, unknown> = {}) => ({
   id: '1',
   name: 'Test User',
   email: 'test@example.com',
-  role: 'EMPLOYEE' as const,
+  role: UserRole.EMPLOYEE,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
   ...overrides,

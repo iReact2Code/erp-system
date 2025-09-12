@@ -32,13 +32,15 @@ export const PurchasesTable = memo(function PurchasesTable() {
   const tPurchases = useTranslations('purchases')
 
   const { data: purchases, loading, error, refresh } = usePurchases()
+  // normalize handled in useMemo below
   const deletePurchase = useDeletePurchase()
 
   const handleDelete = useCallback(
     async (id: string) => {
       if (!confirm(t('confirmDelete'))) return
-      const result = await deletePurchase.mutate(id)
-      if (result.success) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await (deletePurchase.mutate as any)(id)
+      if (result && result.success) {
         refresh()
       }
     },
@@ -49,13 +51,12 @@ export const PurchasesTable = memo(function PurchasesTable() {
     refresh()
   }, [refresh])
 
-  const filteredPurchases = useMemo(
-    () =>
-      (purchases || []).filter(purchase =>
-        purchase.id.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [purchases, searchTerm]
-  )
+  const filteredPurchases = useMemo(() => {
+    const list = Array.isArray(purchases) ? purchases : (purchases?.data ?? [])
+    return (list || []).filter(purchase =>
+      purchase.id.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }, [purchases, searchTerm])
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -163,8 +164,8 @@ export const PurchasesTable = memo(function PurchasesTable() {
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
                     {searchTerm
-                      ? `No ${tPurchases('title').toLowerCase()} found`
-                      : `No ${tPurchases('title').toLowerCase()} yet`}
+                      ? tPurchases('noPurchases')
+                      : tPurchases('noPurchases')}
                   </TableCell>
                 </TableRow>
               )}
