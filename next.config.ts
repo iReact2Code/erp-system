@@ -4,6 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   serverExternalPackages: ['@prisma/client', 'prisma'],
   webpack: (config, { webpack, isServer }) => {
     if (isServer) {
