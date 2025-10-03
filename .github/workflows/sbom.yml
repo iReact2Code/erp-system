@@ -1,0 +1,47 @@
+name: SBOM Generation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '15 2 * * 1' # Weekly Monday 02:15 UTC
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies (frozen)
+        run: npm ci
+      - name: Generate CycloneDX SBOM (JSON)
+        run: npm run sbom
+      - name: Generate CycloneDX SBOM (XML)
+        run: npm run sbom:xml
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom.json
+            sbom.xml
+      - name: (Optional) Notes placeholder
+        run: |
+          echo "Future: convert SBOM to vulnerability SARIF once tooling integrated" > sbom-notes.txt
+      - name: Upload notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-notes
+          path: sbom-notes.txt
