@@ -1,73 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createLogger, serializeError } from '@/lib/logger'
+import { buildCSP, extractNonceHeader } from '@/lib/csp'
+
+// Scoped logger for security & CORS events
+const securityLog = createLogger('security')
 
 /**
  * Security headers configuration
  */
-const SECURITY_HEADERS = {
-  // Prevent MIME type sniffing
-  'X-Content-Type-Options': 'nosniff',
+function buildSecurityHeaders(nonce?: string) {
+  const csp = nonce
+    ? buildCSP(nonce)
+    : [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:",
+        "font-src 'self' data:",
+        "connect-src 'self'",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join('; ')
 
-  // Prevent clickjacking
-  'X-Frame-Options': 'DENY',
+  return {
+    // Prevent MIME type sniffing
+    'X-Content-Type-Options': 'nosniff',
 
-  // Enable XSS protection
-  'X-XSS-Protection': '1; mode=block',
+    // Prevent clickjacking
+    'X-Frame-Options': 'DENY',
 
-  // Control referrer information
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
+    // Enable XSS protection
+    'X-XSS-Protection': '1; mode=block',
 
-  // Prevent downloads of untrusted content
-  'X-Download-Options': 'noopen',
+    // Control referrer information
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
 
-  // Prevent content type sniffing
-  'X-Permitted-Cross-Domain-Policies': 'none',
+    // Prevent downloads of untrusted content
+    'X-Download-Options': 'noopen',
 
-  // Content Security Policy
-  'Content-Security-Policy': [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next.js requires unsafe-inline and unsafe-eval
-    "style-src 'self' 'unsafe-inline'", // Required for CSS-in-JS solutions
-    "img-src 'self' data: https:",
-    "font-src 'self' data:",
-    "connect-src 'self'",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; '),
+    // Prevent content type sniffing
+    'X-Permitted-Cross-Domain-Policies': 'none',
 
-  // Strict Transport Security (HTTPS only)
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+    // Content Security Policy (nonce-aware)
+    'Content-Security-Policy': csp,
 
-  // Permissions Policy (Feature Policy)
-  'Permissions-Policy': [
-    'accelerometer=()',
-    'ambient-light-sensor=()',
-    'autoplay=()',
-    'battery=()',
-    'camera=()',
-    'cross-origin-isolated=()',
-    'display-capture=()',
-    'document-domain=()',
-    'encrypted-media=()',
-    'execution-while-not-rendered=()',
-    'execution-while-out-of-viewport=()',
-    'fullscreen=()',
-    'geolocation=()',
-    'gyroscope=()',
-    'keyboard-map=()',
-    'magnetometer=()',
-    'microphone=()',
-    'midi=()',
-    'navigation-override=()',
-    'payment=()',
-    'picture-in-picture=()',
-    'publickey-credentials-get=()',
-    'screen-wake-lock=()',
-    'sync-xhr=()',
-    'usb=()',
-    'web-share=()',
-    'xr-spatial-tracking=()',
-  ].join(', '),
+    // Strict Transport Security (HTTPS only)
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+
+    // Permissions Policy (Feature Policy)
+    'Permissions-Policy': [
+      'accelerometer=()',
+      'ambient-light-sensor=()',
+      'autoplay=()',
+      'battery=()',
+      'camera=()',
+      'cross-origin-isolated=()',
+      'display-capture=()',
+      'document-domain=()',
+      'encrypted-media=()',
+      'execution-while-not-rendered=()',
+      'execution-while-out-of-viewport=()',
+      'fullscreen=()',
+      'geolocation=()',
+      'gyroscope=()',
+      'keyboard-map=()',
+      'magnetometer=()',
+      'microphone=()',
+      'midi=()',
+      'navigation-override=()',
+      'payment=()',
+      'picture-in-picture=()',
+      'publickey-credentials-get=()',
+      'screen-wake-lock=()',
+      'sync-xhr=()',
+      'usb=()',
+      'web-share=()',
+      'xr-spatial-tracking=()',
+    ].join(', '),
+  }
 }
 
 /**
@@ -92,11 +103,11 @@ const CORS_OPTIONS = {
  * Apply security headers to response
  */
 export function applySecurityHeaders(response: NextResponse): NextResponse {
-  // Apply all security headers
-  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+  const nonce = extractNonceHeader(response.headers) || undefined
+  const headers = buildSecurityHeaders(nonce)
+  Object.entries(headers).forEach(([key, value]) =>
     response.headers.set(key, value)
-  })
-
+  )
   return response
 }
 
@@ -183,7 +194,7 @@ export function withSecurity(
 
       return response
     } catch (error) {
-      console.error('Security middleware error:', error)
+      securityLog.error('middleware_error', { error: serializeError(error) })
 
       const errorResponse = NextResponse.json(
         {
@@ -263,11 +274,8 @@ export function logSecurityEvent(
     ...details,
   }
 
-  // Log to console in development, would integrate with proper logging service in production
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Security Event:', JSON.stringify(logEntry, null, 2))
-  }
-
-  // TODO: Integrate with proper logging service (e.g., Winston, Datadog, etc.)
+  // Structured log of the security event (info level)
+  securityLog.info('event', logEntry)
+  // TODO: Future: enrich with trace/span IDs once OpenTelemetry integrated
   return logEntry
 }
