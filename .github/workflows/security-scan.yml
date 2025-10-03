@@ -1,0 +1,95 @@
+name: Security & Dependency Scans
+
+on:
+  push:
+    branches: [ main, develop, chore/**, feat/** ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 3 * * *' # Daily at 03:00 UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate || echo "Audit reported vulnerabilities"
+      - name: Upload audit report (JSON)
+        if: always()
+        run: |
+          npm audit --production --json > audit-report.json || true
+      - name: Store artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report
+          path: audit-report.json
+
+  snyk:
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_SNYK == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Snyk test
+        uses: snyk/actions/node@v0.5.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --severity-threshold=high --all-projects
+      - name: Monitor (create snapshot)
+        if: github.ref == 'refs/heads/main'
+        uses: snyk/actions/node@v0.5.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --all-projects
+
+  osv-detector:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run OSV Scanner
+        uses: google/osv-scanner-action@v1
+        with:
+          scan-args: "--recursive ."
+      - name: Upload SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: osv-scan-results
+          path: osv-scanner-results.sarif
+
+  dependabot-validation:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'dependabot/')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests on dependency bump
+        run: npm test -- --ci --reporters=default --reporters=jest-junit

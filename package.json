@@ -18,7 +18,12 @@
     "test:e2e:headed": "playwright test --headed",
     "prepare": "husky",
     "bench": "node bench/bench-cache.js",
-    "bench:local": "node bench/run-local-bench.js"
+    "bench:local": "node bench/run-local-bench.js",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:prod": "npm audit --omit=dev --audit-level=moderate",
+    "audit:ci": "npm audit --production --json",
+    "snyk:test": "snyk test --severity-threshold=high",
+    "snyk:monitor": "snyk monitor"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -53,11 +58,12 @@
     "react-day-picker": "^9.9.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
-    "recharts": "^3.2.0",
+    "react-window": "^1.8.10",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.5.4",
     "@playwright/test": "^1.55.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.8.0",
@@ -67,6 +73,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-window": "^1.8.8",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "eslint-config-prettier": "^10.1.8",
@@ -74,6 +81,7 @@
     "husky": "^9.1.7",
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.1.2",
+    "jest-mock-extended": "^4.0.0",
     "lint-staged": "^16.1.6",
     "node-fetch": "^2.7.0",
     "playwright": "^1.55.0",
