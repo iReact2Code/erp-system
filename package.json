@@ -27,7 +27,8 @@
     "snyk:test": "snyk test --severity-threshold=high",
     "snyk:monitor": "snyk monitor",
     "sbom": "npx @cyclonedx/cyclonedx-npm --spec-version 1.5 --output-format json --output-file sbom.json",
-    "sbom:xml": "npx @cyclonedx/cyclonedx-npm --spec-version 1.5 --output-format xml --output-file sbom.xml"
+    "sbom:xml": "npx @cyclonedx/cyclonedx-npm --spec-version 1.5 --output-format xml --output-file sbom.xml",
+    "licenses:scan": "node tools/check-licenses.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -93,7 +94,13 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-node": "^0.54.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.54.0",
+    "@opentelemetry/instrumentation": "^0.54.0",
+    "@opentelemetry/instrumentation-http": "^0.54.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

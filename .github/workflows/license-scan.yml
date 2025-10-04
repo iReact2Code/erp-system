@@ -1,0 +1,25 @@
+name: License Compliance
+
+on:
+  pull_request:
+  push:
+    branches: [ main, chore/**, feat/** ]
+
+jobs:
+  license-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: '20'
+      - name: Install deps (frozen lockfile)
+        run: npm ci
+      - name: Run license scan
+        run: npm run licenses:scan
+      - name: Upload license report on failure
+        if: failure()
+        run: |
+          echo "License scan failed. See logs above."
