@@ -1,4 +1,8 @@
 import { UserRole } from '@/lib/prisma-mock'
+import { createLogger } from '@/lib/logger'
+
+// Scoped logger for audit events
+const auditLog = createLogger('audit')
 
 // Audit event types
 export type AuditEventType =
@@ -56,18 +60,20 @@ export function createAuditLog(
 
   auditLogs.push(logEntry)
 
-  // Log to console for development
-  console.log(
-    `[AUDIT] ${logEntry.timestamp.toISOString()} - ${logEntry.eventType}`,
-    {
-      userId: logEntry.userId,
-      ipAddress: logEntry.ipAddress,
-      resourceType: logEntry.resourceType,
-      resourceId: logEntry.resourceId,
-      success: logEntry.success,
-      details: logEntry.details,
-    }
-  )
+  // Structured audit log
+  auditLog.info(logEntry.eventType.toLowerCase(), {
+    id: logEntry.id,
+    userId: logEntry.userId,
+    userEmail: logEntry.userEmail,
+    userRole: logEntry.userRole,
+    ipAddress: logEntry.ipAddress,
+    resourceType: logEntry.resourceType,
+    resourceId: logEntry.resourceId,
+    success: logEntry.success,
+    errorMessage: logEntry.errorMessage,
+    details: logEntry.details,
+    timestamp: logEntry.timestamp.toISOString(),
+  })
 
   // In production, you would save to database here
   // await saveAuditLogToDatabase(logEntry);

@@ -55,7 +55,7 @@ function verifyWithRotation<T>(token: string): T | null {
         if (process.env.NODE_ENV === 'test') {
           try {
             // Helpful for asserting fallback path usage during tests.
-             
+
             console.log('[JWT_ROTATION_DEBUG] verified with previous secret')
           } catch {}
         }

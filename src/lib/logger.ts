@@ -27,6 +27,37 @@ interface LogRecord {
 }
 
 import { getCurrentRequestContext } from '@/lib/observability/async-context'
+
+// Optional OpenTelemetry API (loaded once so Jest doMock can intercept)
+let optionalOtelApi: undefined | typeof import('@opentelemetry/api')
+try {
+  optionalOtelApi =
+    require('@opentelemetry/api') as typeof import('@opentelemetry/api')
+} catch {
+  optionalOtelApi = undefined
+}
+
+function getActiveOtelTraceId(): string | undefined {
+  try {
+    type OtelLike =
+      | {
+          trace?: {
+            getActiveSpan?: () =>
+              | { spanContext?: () => { traceId?: string } }
+              | undefined
+          }
+        }
+      | undefined
+    const mod =
+      (optionalOtelApi as unknown as { default?: OtelLike } & OtelLike) ||
+      undefined
+    const candidate: OtelLike = mod?.trace ? mod : mod?.default
+    const span = candidate?.trace?.getActiveSpan?.()
+    const sc = span?.spanContext?.()
+    if (sc?.traceId) return String(sc.traceId)
+  } catch {}
+  return undefined
+}
 interface LoggerApi {
   debug: (msg: string, meta?: Record<string, unknown>) => void
   info: (msg: string, meta?: Record<string, unknown>) => void
@@ -81,6 +112,24 @@ function shouldLog(level: LogLevel) {
   return levelOrder.indexOf(level) >= minLevelIndex
 }
 
+function resolveTraceId(meta?: Record<string, unknown>): string | undefined {
+  // 1) explicit in meta
+  const metaTrace =
+    meta && typeof meta === 'object' && 'traceId' in meta
+      ? String((meta as Record<string, unknown>).traceId as unknown as string)
+      : undefined
+  if (metaTrace) return String(metaTrace)
+  // 2) current request context
+  try {
+    const ctx = getCurrentRequestContext()
+    if (ctx?.traceId) return String(ctx.traceId)
+  } catch {}
+  // 3) OpenTelemetry active span (best effort)
+  const otTr = getActiveOtelTraceId()
+  if (otTr) return otTr
+  return undefined
+}
+
 function formatDev(rec: LogRecord): void {
   const color =
     rec.level === 'error'
@@ -91,9 +140,14 @@ function formatDev(rec: LogRecord): void {
           ? '\x1b[36m'
           : '\x1b[32m'
   const reset = '\x1b[0m'
+  const tr = resolveTraceId(rec.meta)
+  const trace = tr ? ` ${tr}` : ''
+  const metaStr =
+    rec.meta && Object.keys(rec.meta).length
+      ? ` ${JSON.stringify(rec.meta)}`
+      : ''
   console.log(
-    `${color}${rec.time} ${rec.level.toUpperCase()}${rec.scope ? ' [' + rec.scope + ']' : ''}${reset} ${rec.msg}`,
-    rec.meta && Object.keys(rec.meta).length ? rec.meta : ''
+    `${color}${rec.time} ${rec.level.toUpperCase()}${rec.scope ? ' [' + rec.scope + ']' : ''}${reset} ${rec.msg}${trace}${metaStr}`
   )
 }
 
@@ -114,12 +168,31 @@ function baseLog(
 ) {
   if (!shouldLog(level)) return
   try {
+    // Start with redacted meta
+    let safeMeta: Record<string, unknown> | undefined = meta
+      ? (redact(meta) as Record<string, unknown>)
+      : undefined
+    // Ensure traceId/requestId are present in meta if available
+    const tr = resolveTraceId(safeMeta)
+    const ctx = (() => {
+      try {
+        return getCurrentRequestContext()
+      } catch {
+        return undefined
+      }
+    })()
+    if (tr && (!safeMeta || !('traceId' in safeMeta))) {
+      safeMeta = { ...(safeMeta || {}), traceId: tr }
+    }
+    if (ctx?.requestId && (!safeMeta || !('requestId' in safeMeta))) {
+      safeMeta = { ...(safeMeta || {}), requestId: ctx.requestId }
+    }
     const record: LogRecord = {
       level,
       time: new Date().toISOString(),
       msg,
       scope,
-      meta: meta ? (redact(meta) as Record<string, unknown>) : undefined,
+      meta: safeMeta,
     }
     emit(record)
   } catch {
@@ -164,17 +237,8 @@ export function getContextLogger(scope: string): LoggerApi {
     let traceId: string | undefined = ctx?.traceId
     // Attempt to read active OpenTelemetry span if tracing enabled
     if (!traceId) {
-      try {
-        // Dynamically require to avoid hard dependency when tracing disabled
-
-        const otelApi =
-          require('@opentelemetry/api') as typeof import('@opentelemetry/api')
-        const span = otelApi.trace.getActiveSpan()
-        const sc = span?.spanContext()
-        if (sc && sc.traceId) traceId = sc.traceId
-      } catch {
-        // ignore if otel not installed
-      }
+      const otTr = getActiveOtelTraceId()
+      if (otTr) traceId = otTr
     }
     if (!ctx && !traceId) return meta
     return { requestId: ctx?.requestId, traceId, ...meta }

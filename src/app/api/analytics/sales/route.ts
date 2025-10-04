@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { wrapCache } from '@/lib/in-memory-cache'
+import { startRequestTimer, endRequestTimer } from '@/lib/request-timing'
 import { z } from 'zod'
 import type { SalesAnalytics } from '@/types/analytics'
 
@@ -34,32 +36,39 @@ export async function GET(request: NextRequest) {
     const prevStartDate = new Date(startDateTime.getTime() - periodDiff)
     const prevEndDate = new Date(startDateTime.getTime())
 
-    // Fetch sales data
-    const [currentSales, previousSales] = await Promise.all([
-      db.sale.findMany({
-        where: {
-          saleDate: {
-            gte: startDateTime,
-            lte: endDateTime,
-          },
-        },
-        include: {
-          items: {
-            include: {
-              inventoryItem: true,
+    const cacheKey = `analytics:sales:${new URL(request.url).search}`
+    const timer = startRequestTimer(request.url)
+    const [currentSales, previousSales] = await wrapCache(
+      cacheKey,
+      30000,
+      async () =>
+        Promise.all([
+          db.sale.findMany({
+            where: {
+              saleDate: {
+                gte: startDateTime,
+                lte: endDateTime,
+              },
             },
-          },
-        },
-      }),
-      db.sale.findMany({
-        where: {
-          saleDate: {
-            gte: prevStartDate,
-            lt: prevEndDate,
-          },
-        },
-      }),
-    ])
+            include: {
+              items: {
+                include: {
+                  inventoryItem: true,
+                },
+              },
+            },
+          }),
+          db.sale.findMany({
+            where: {
+              saleDate: {
+                gte: prevStartDate,
+                lt: prevEndDate,
+              },
+            },
+          }),
+        ])
+    )
+    endRequestTimer(timer, { cacheKey })
 
     // Calculate metrics using correct field name 'total'
     const currentRevenue = currentSales.reduce(

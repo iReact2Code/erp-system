@@ -1,22 +1,19 @@
-import { createLogger } from '../logger'
+import { runWithRequestContext } from '@/lib/observability/async-context'
+import { createRequestContext } from '@/lib/observability/context'
+import { getContextLogger } from '@/lib/logger'
 
 describe('logger traceId enrichment', () => {
-  it('includes traceId when active OpenTelemetry span exists', () => {
-    // Mock @opentelemetry/api before requiring logger internals
-    jest.resetModules()
-    jest.doMock('@opentelemetry/api', () => ({
-      trace: {
-        getActiveSpan: () => ({
-          spanContext: () => ({ traceId: 'abc123traceid' }),
-        }),
-      },
-    }))
-
-    const { createLogger: freshCreateLogger } = require('../logger')
-    const log = freshCreateLogger('test')
+  it('includes traceId in output when present in request context', () => {
+    const log = getContextLogger('test')
 
     const spy = jest.spyOn(console, 'log').mockImplementation(() => {})
-    log.info('hello', { foo: 'bar' })
+    const ctx = createRequestContext({
+      requestId: 'r1',
+      traceId: 'abc123traceid',
+    })
+    runWithRequestContext(ctx, () => {
+      log.info('hello', { foo: 'bar' })
+    })
 
     const output = spy.mock.calls.map(c => c.join(' ')).join('\n')
     expect(output).toContain('abc123traceid')

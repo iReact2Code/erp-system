@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
+import { wrapCache } from '@/lib/in-memory-cache'
+import { startRequestTimer, endRequestTimer } from '@/lib/request-timing'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,6 +10,8 @@ export async function GET(request: NextRequest) {
     requireAuth(user)
 
     // Use database aggregations for better performance
+    const cacheKey = `reports:summary:${new URL(request.url).search}`
+    const timer = startRequestTimer(request.url)
     const [
       inventoryCount,
       salesCount,
@@ -16,58 +20,61 @@ export async function GET(request: NextRequest) {
       lowStockCount,
       recentSales,
       recentPurchases,
-    ] = await Promise.all([
-      // Count total inventory items
-      db.inventoryItem.count(),
+    ] = await wrapCache(cacheKey, 30000, async () =>
+      Promise.all([
+        // Count total inventory items
+        db.inventoryItem.count(),
 
-      // Count total sales
-      db.sale.count(),
+        // Count total sales
+        db.sale.count(),
 
-      // Count total purchases
-      db.purchase.count(),
+        // Count total purchases
+        db.purchase.count(),
 
-      // Calculate total revenue efficiently
-      db.sale.aggregate({
-        _sum: {
-          total: true,
-        },
-      }),
-
-      // Count low stock items (quantity < 10)
-      db.inventoryItem.count({
-        where: {
-          quantity: {
-            lt: 10,
+        // Calculate total revenue efficiently
+        db.sale.aggregate({
+          _sum: {
+            total: true,
           },
-        },
-      }),
+        }),
 
-      // Get recent sales with minimal data
-      db.sale.findMany({
-        select: {
-          id: true,
-          total: true,
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: 3,
-      }),
+        // Count low stock items (quantity < 10)
+        db.inventoryItem.count({
+          where: {
+            quantity: {
+              lt: 10,
+            },
+          },
+        }),
 
-      // Get recent purchases with minimal data
-      db.purchase.findMany({
-        select: {
-          id: true,
-          total: true,
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: 3,
-      }),
-    ])
+        // Get recent sales with minimal data
+        db.sale.findMany({
+          select: {
+            id: true,
+            total: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 3,
+        }),
+
+        // Get recent purchases with minimal data
+        db.purchase.findMany({
+          select: {
+            id: true,
+            total: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 3,
+        }),
+      ])
+    )
+    endRequestTimer(timer, { cacheKey })
 
     // Format recent transactions
     const recentTransactions = [

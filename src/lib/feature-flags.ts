@@ -18,6 +18,11 @@ const defaultFlags: Record<string, boolean> = {
   newDashboardWidgets: false,
 }
 
+// Normalized defaults (keys lowercased with underscores removed per normalize())
+const normalizedDefaultFlags: Record<string, boolean> = Object.fromEntries(
+  Object.entries(defaultFlags).map(([k, v]) => [normalize(k), v])
+)
+
 // In-memory runtime overrides (mutable)
 const runtimeFlags: Record<string, boolean> = {}
 
@@ -36,7 +41,8 @@ function readEnvFlags(): Record<string, boolean> {
 }
 
 function normalize(name: string) {
-  return name.replace(/[-\s]/g, '_').toLowerCase()
+  // Normalize to a compact lowercased key: remove underscores, hyphens, and whitespace
+  return name.replace(/[\s_\-]/g, '').toLowerCase()
 }
 
 function normalizeBoolean(val: unknown): boolean {
@@ -61,7 +67,10 @@ export function isFlagEnabled(
   const sources: { source: string; value: boolean | undefined }[] = [
     { source: 'env', value: env[key] },
     { source: 'runtime', value: runtimeFlags[key] },
-    { source: 'defaults', value: defaultFlags[key] ?? options.default },
+    {
+      source: 'defaults',
+      value: normalizedDefaultFlags[key] ?? options.default,
+    },
   ]
   for (const s of sources) {
     if (typeof s.value === 'boolean') {
@@ -96,7 +105,7 @@ export function clearRuntimeFlag(name: string) {
 export function listFlags() {
   const env = readEnvFlags()
   const keys = new Set([
-    ...Object.keys(defaultFlags),
+    ...Object.keys(normalizedDefaultFlags),
     ...Object.keys(env),
     ...Object.keys(runtimeFlags),
   ])
@@ -105,7 +114,7 @@ export function listFlags() {
     if (k in env) summary[k] = { value: env[k], source: 'env' }
     else if (k in runtimeFlags)
       summary[k] = { value: runtimeFlags[k], source: 'runtime' }
-    else summary[k] = { value: defaultFlags[k], source: 'defaults' }
+    else summary[k] = { value: normalizedDefaultFlags[k], source: 'defaults' }
   }
   return summary
 }

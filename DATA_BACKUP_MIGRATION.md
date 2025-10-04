@@ -56,7 +56,7 @@ Use `pg_dump` for portable schema + data.
 pg_dump --format=custom --file=backup_$(date +%Y%m%d_%H%M).dump "$DATABASE_URL"
 ```
 
-Pros: Restorable to different version (within reason).  
+Pros: Restorable to different version (within reason).
 Cons: Slower for very large datasets.
 
 ### Physical / Managed Snapshots

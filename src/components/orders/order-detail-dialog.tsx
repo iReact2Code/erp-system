@@ -1,4 +1,5 @@
 import React from 'react'
+import Email from '@/components/ui/email'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -170,7 +171,9 @@ export default function OrderDetailDialog({
                 <label className="text-sm font-medium text-gray-500">
                   Email
                 </label>
-                <p className="text-sm">{order.customerEmail}</p>
+                <p className="text-sm">
+                  <Email>{order.customerEmail}</Email>
+                </p>
               </div>
               {order.customerPhone && (
                 <div>
@@ -229,7 +232,7 @@ export default function OrderDetailDialog({
                     Created By
                   </label>
                   <p className="text-sm">
-                    {order.user.name || order.user.email}
+                    {order.user.name || <Email>{order.user.email}</Email>}
                   </p>
                 </div>
               </div>

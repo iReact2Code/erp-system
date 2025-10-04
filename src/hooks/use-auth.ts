@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createLogger, serializeError } from '@/lib/logger'
 import { useRouter, usePathname } from 'next/navigation'
 import { JWTUser } from '@/lib/jwt-auth'
 
@@ -18,7 +19,9 @@ export function useAuth() {
       try {
         setUser(JSON.parse(storedUser))
       } catch (error) {
-        console.error('Error parsing stored user:', error)
+        authLog.error('parse_stored_user_failed', {
+          error: serializeError(error),
+        })
         localStorage.removeItem('user')
         localStorage.removeItem('auth-token')
       }
@@ -49,7 +52,7 @@ export function useAuth() {
         credentials: 'include',
       })
     } catch (error) {
-      console.error('Logout error:', error)
+      authLog.error('logout_failed', { error: serializeError(error) })
     }
 
     router.push('/login')
@@ -62,3 +65,6 @@ export function useAuth() {
     isAuthenticated: !!user,
   }
 }
+
+// place logger after hook definition to avoid server-side issues during import evaluation
+const authLog = createLogger('auth-hook')

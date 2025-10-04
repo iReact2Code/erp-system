@@ -1,39 +1,79 @@
-import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
+import {
+  getUserFromRequest,
+  requireAuth,
+  BasicAuthRequest,
+} from '@/lib/jwt-auth'
 import { db } from '@/lib/db'
-import { NextRequest, NextResponse } from 'next/server'
+// (Not importing NextRequest type directly to keep wrapper generic)
+import { UserService } from '@/server/services/user-service'
+import { UserRepository } from '@/server/repositories/user-repository'
+import { withSpan, withApiContext } from '@/lib/observability/context'
+import { createLogger, serializeError } from '@/lib/logger'
+import { apiError, unauthorized, forbidden, apiSuccess } from '@/lib/api-errors'
+import { requirePermission } from '@/lib/authorization/policies'
 
-export async function GET(request: NextRequest) {
+const userApiLog = createLogger('api.users')
+
+export const GET = withApiContext(async (request: Request, ctx) => {
   try {
-    const user = getUserFromRequest(request)
+    // Create a lightweight view matching expected shape (headers & cookies) for getUserFromRequest.
+    const reqForAuth = request as unknown as BasicAuthRequest
+    const user = getUserFromRequest(reqForAuth)
     requireAuth(user)
 
-    // Only supervisors can view all users
-    if (user!.role !== 'SUPERVISOR') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    // Authorization: user:list (ADMIN, MANAGER, SUPERVISOR per policy mapping)
+    try {
+      requirePermission(user, 'user:list')
+    } catch {
+      return forbidden()
     }
+    const url = new URL(request.url)
+    const q = url.searchParams.get('q') || ''
+    const pageParam = url.searchParams.get('page')
+    const limitParam = url.searchParams.get('limit')
 
-    const users = await db.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    const service = new UserService({
+      userRepository: new UserRepository({ prisma: db }),
     })
 
-    return NextResponse.json(users)
+    // If pagination params or query provided, return a paginated response
+    if (q || pageParam) {
+      const page = Math.max(1, parseInt(pageParam || '1'))
+      const limit = Math.max(1, Math.min(200, parseInt(limitParam || '25')))
+
+      const result = await withSpan('users.list.paginated', ctx, () =>
+        service.list({ q, page, limit })
+      )
+
+      return apiSuccess({
+        data: result,
+        headers: {
+          'Cache-Control': 'public, max-age=10, stale-while-revalidate=60',
+        },
+      })
+    }
+
+    const users = await withSpan('users.list.all', ctx, () => service.list({}))
+
+    return apiSuccess({
+      data: users,
+      headers: {
+        'Cache-Control': 'public, max-age=5, stale-while-revalidate=30',
+      },
+    })
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
-    console.error('Error fetching users:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    userApiLog.error('get_error', {
+      error: serializeError(error),
+      requestId: ctx.requestId,
+      traceId: ctx.traceId,
+    })
+    return apiError({
+      status: 500,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Internal server error',
+    })
   }
-}
+})

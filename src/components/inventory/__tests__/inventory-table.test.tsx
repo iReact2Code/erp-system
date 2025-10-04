@@ -281,4 +281,59 @@ describe('InventoryTable Component', () => {
     // Should display error (assuming ApiErrorDisplay shows the error)
     expect(screen.getByText('inventory')).toBeInTheDocument()
   })
+
+  it('enables virtualization when flag on and item count exceeds threshold', () => {
+    const largeList = Array.from({ length: 150 }).map((_, i) =>
+      createMockInventoryItem({ id: String(i + 1), name: `Item ${i + 1}` })
+    )
+
+    // Enable flag
+    process.env.NEXT_PUBLIC_ENABLE_VIRTUALIZED_TABLES = '1'
+
+    mockInventoryHooks.useInventory.mockReturnValue({
+      data: largeList,
+      loading: false,
+      error: null,
+      execute: jest.fn(),
+      refresh: jest.fn(),
+      reset: jest.fn(),
+    })
+
+    render(<InventoryTable />)
+
+    // Virtualized container present
+    expect(screen.getByTestId('virtualized-container')).toBeInTheDocument()
+
+    // Only a subset of rows actually rendered in DOM (heuristic: should be < total)
+    const renderedCells = screen.getAllByRole('row')
+    expect(renderedCells.length).toBeLessThan(largeList.length)
+  })
+
+  it('does not virtualize when flag off even with many items', () => {
+    const largeList = Array.from({ length: 150 }).map((_, i) =>
+      createMockInventoryItem({ id: String(i + 1), name: `Item ${i + 1}` })
+    )
+
+    process.env.NEXT_PUBLIC_ENABLE_VIRTUALIZED_TABLES = '0'
+
+    mockInventoryHooks.useInventory.mockReturnValue({
+      data: largeList,
+      loading: false,
+      error: null,
+      execute: jest.fn(),
+      refresh: jest.fn(),
+      reset: jest.fn(),
+    })
+
+    render(<InventoryTable />)
+
+    // Virtualized container absent
+    expect(
+      screen.queryByTestId('virtualized-container')
+    ).not.toBeInTheDocument()
+
+    // All items should be present (spot check a few)
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
+    expect(screen.getByText('Item 150')).toBeInTheDocument()
+  })
 })

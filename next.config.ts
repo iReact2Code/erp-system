@@ -1,9 +1,13 @@
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
+// Bundle analyzer (gated)
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
 
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts')
 
-const nextConfig: NextConfig = {
+const baseConfig: NextConfig = {
   reactStrictMode: false,
   serverExternalPackages: ['@prisma/client', 'prisma'],
   webpack: (config, { webpack, isServer }) => {
@@ -24,4 +28,5 @@ const nextConfig: NextConfig = {
   },
 }
 
+const nextConfig = withBundleAnalyzer(baseConfig)
 export default withNextIntl(nextConfig)

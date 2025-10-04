@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { User, Mail, Calendar, Shield } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import Email from '@/components/ui/email'
 
 export function ProfileCard() {
   const tUsers = useTranslations('users')
@@ -93,7 +94,7 @@ export function ProfileCard() {
               <div>
                 <h3 className="text-lg font-semibold">{user.name}</h3>
                 <p className="text-muted-foreground [direction:ltr]">
-                  {user.email}
+                  <Email>{user.email}</Email>
                 </p>
               </div>
               <Badge variant={getRoleBadgeVariant(user.role || '')}>
@@ -112,7 +113,7 @@ export function ProfileCard() {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-semibold [direction:ltr]">
-              {user.email}
+              <Email>{user.email}</Email>
             </div>
             <p className="text-xs text-muted-foreground">
               Your primary email address

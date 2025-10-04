@@ -28,7 +28,7 @@ describe('config drift detector', () => {
     write(example, 'FOO=\nBAR=\n')
     delete process.env.FOO
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
-    reportConfigDrift({ examplePath: example })
+    reportConfigDrift({ examplePath: example, ignoreExtra: true })
     expect(warnSpy).toHaveBeenCalled()
     warnSpy.mockRestore()
   })

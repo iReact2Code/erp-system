@@ -71,6 +71,11 @@ model InventoryItem {
   saleItems     SaleItem[]
   purchaseItems PurchaseItem[]
   orderItems    OrderItem[]
+
+  @@index([createdAt], map: "idx_inventoryitem_created_at")
+  @@index([name], map: "idx_inventoryitem_name")
+  @@index([description], map: "idx_inventoryitem_description")
+  @@index([createdAt, id], map: "idx_inventoryitem_created_at_id")
 }
 
 model Sale {

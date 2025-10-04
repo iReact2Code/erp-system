@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { useResponsive } from '@/lib/responsive-utils'
 import { useAuth } from '@/hooks/use-auth'
+import Email from '@/components/ui/email'
 
 interface NavigationItem {
   title: string
@@ -267,7 +268,7 @@ export default function MobileNavigation({ className }: MobileNavigationProps) {
                       {user.name || 'User'}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {user.email}
+                      <Email className="truncate">{user.email}</Email>
                     </p>
                   </div>
                 </div>

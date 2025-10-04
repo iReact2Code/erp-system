@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest, requireAuth } from '@/lib/jwt-auth'
 import { UserRole } from '@/lib/prisma-mock'
 import { db } from '@/lib/db'
+import { wrapCache } from '@/lib/in-memory-cache'
+import { startRequestTimer, endRequestTimer } from '@/lib/request-timing'
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,12 +14,14 @@ export async function GET(request: NextRequest) {
     const pageParam = url.searchParams.get('page')
     const limitParam = url.searchParams.get('limit')
 
-    if (pageParam) {
-      const page = Math.max(1, parseInt(pageParam || '1'))
-      const limit = Math.max(1, Math.min(100, parseInt(limitParam || '20')))
-      const skip = (page - 1) * limit
+    const page = Math.max(1, parseInt(pageParam || '1'))
+    const limit = Math.max(1, Math.min(200, parseInt(limitParam || '25')))
+    const skip = (page - 1) * limit
 
-      const [items, total] = await Promise.all([
+    const cacheKey = `sales:list:${new URL(request.url).search}`
+    const timer = startRequestTimer(request.url)
+    const [items, total] = await wrapCache(cacheKey, 5000, async () =>
+      Promise.all([
         db.sale.findMany({
           include: {
             items: {
@@ -32,30 +36,18 @@ export async function GET(request: NextRequest) {
         }),
         db.sale.count(),
       ])
+    )
+    endRequestTimer(timer, { cacheKey, page, limit })
 
-      return NextResponse.json({
-        data: items,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
-        },
-      })
-    }
-
-    const sales = await db.sale.findMany({
-      include: {
-        items: {
-          include: {
-            inventoryItem: true,
-          },
-        },
+    return NextResponse.json({
+      data: items,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: 'desc' },
     })
-
-    return NextResponse.json({ data: sales })
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

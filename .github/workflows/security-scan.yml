@@ -2,9 +2,9 @@ name: Security & Dependency Scans
 
 on:
   push:
-    branches: [ main, develop, chore/**, feat/** ]
+    branches: [main, develop, chore/**, feat/**]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   schedule:
     - cron: '0 3 * * *' # Daily at 03:00 UTC
 
@@ -76,7 +76,7 @@ jobs:
       - name: Run OSV Scanner
         uses: google/osv-scanner-action@v1
         with:
-          scan-args: "--recursive ."
+          scan-args: '--recursive .'
       - name: Upload SARIF
         uses: actions/upload-artifact@v4
         with:

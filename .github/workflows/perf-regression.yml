@@ -1,0 +1,68 @@
+name: Performance Regression
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # weekly on Monday 06:00 UTC
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build and start app
+        run: |
+          npm run build || true
+          PORT=3000 npm run start &
+          echo $! > server.pid
+      - name: Wait for readiness
+        run: |
+          for i in {1..120}; do
+            if curl -sSf http://localhost:3000/api/_internal/ready >/dev/null 2>&1; then
+              echo "ready"; break; fi; echo "waiting... $i"; sleep 1; done
+      - name: Run benchmarks (current)
+        run: |
+          node bench/real-endpoint-bench.js > bench-current.txt
+          BENCH_JSON=1 node bench/real-endpoint-bench.js > bench-current.json
+      - name: Upload current bench artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-current
+          path: |
+            bench-current.txt
+            bench-current.json
+      - name: Download baseline if exists
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: perf-regression.yml
+          name: bench-baseline
+          path: .
+        continue-on-error: true
+      - name: Compare against baseline
+        run: |
+          if [ -f bench-baseline.json ]; then \
+            node bench/compare-bench.js --baseline=bench-baseline.json --current=bench-current.json --toleranceP95=25 --toleranceAvg=20; \
+          else \
+            echo "No baseline found; skipping compare"; \
+          fi
+      - name: Save current as baseline (schedule only)
+        if: github.event_name == 'schedule'
+        run: cp bench-current.json bench-baseline.json
+      - name: Upload baseline artifact (schedule only)
+        if: github.event_name == 'schedule'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-baseline
+          path: bench-baseline.json
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill $(cat server.pid) || true; fi

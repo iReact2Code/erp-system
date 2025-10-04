@@ -54,8 +54,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: coverage-report
-            path: coverage
+          name: coverage-report
+          path: coverage
       - name: JUnit report
         if: always()
         run: |

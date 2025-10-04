@@ -12,50 +12,35 @@ export async function GET(request: NextRequest) {
     const pageParam = url.searchParams.get('page')
     const limitParam = url.searchParams.get('limit')
 
-    if (pageParam) {
-      const page = Math.max(1, parseInt(pageParam || '1'))
-      const limit = Math.max(1, Math.min(100, parseInt(limitParam || '20')))
-      const skip = (page - 1) * limit
+    const page = Math.max(1, parseInt(pageParam || '1'))
+    const limit = Math.max(1, Math.min(200, parseInt(limitParam || '25')))
+    const skip = (page - 1) * limit
 
-      const [items, total] = await Promise.all([
-        db.purchase.findMany({
-          include: {
-            items: {
-              include: {
-                inventoryItem: true,
-              },
+    const [items, total] = await Promise.all([
+      db.purchase.findMany({
+        include: {
+          items: {
+            include: {
+              inventoryItem: true,
             },
           },
-          orderBy: { createdAt: 'desc' },
-          skip,
-          take: limit,
-        }),
-        db.purchase.count(),
-      ])
-
-      return NextResponse.json({
-        data: items,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
         },
-      })
-    }
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      db.purchase.count(),
+    ])
 
-    const purchases = await db.purchase.findMany({
-      include: {
-        items: {
-          include: {
-            inventoryItem: true,
-          },
-        },
+    return NextResponse.json({
+      data: items,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: 'desc' },
     })
-
-    return NextResponse.json({ data: purchases })
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

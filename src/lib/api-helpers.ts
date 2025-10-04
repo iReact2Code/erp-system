@@ -41,10 +41,11 @@ export async function authenticatedFetch(
   })
 }
 
-// DEBUG: log when fetch called (temporary)
-
+// DEBUG: log when fetch called (uses structured logger)
+import { createLogger } from '@/lib/logger'
+const apiHelperLog = createLogger('api-client')
 const __debug_fetch = (u: string, o?: RequestInit) => {
-  try {
-    console.log('[authenticatedFetch] calling fetch', u, o)
-  } catch {}
+  if (process.env.NODE_ENV !== 'production') {
+    apiHelperLog.debug('authenticated_fetch', { url: u, hasOptions: !!o })
+  }
 }

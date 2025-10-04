@@ -2,14 +2,43 @@ import { useApi, useMutation } from '@/hooks/use-api'
 import { authenticatedFetch } from '@/lib/api-helpers'
 import { User, CreateUserRequest } from '@/types/api'
 
-// Fetch all users
-export function useUsers() {
-  return useApi<User[]>(
+type UseUsersParams = {
+  q?: string
+  page?: number
+  limit?: number
+}
+
+// Fetch users (supports paginated response when page provided)
+export function useUsers(params?: UseUsersParams) {
+  const q = params?.q || ''
+  const page = params?.page
+  const limit = params?.limit
+
+  const query = new URLSearchParams()
+  if (q) query.set('q', q)
+  if (page) query.set('page', String(page))
+  if (limit) query.set('limit', String(limit))
+
+  const key = `users:list${query.toString() ? `:${query.toString()}` : ''}`
+
+  return useApi<
+    | User[]
+    | {
+        data: User[]
+        pagination: {
+          page: number
+          limit: number
+          total: number
+          pages: number
+        }
+      }
+  >(
     async () => {
-      const response = await authenticatedFetch('/api/users')
+      const url = `/api/users${query.toString() ? `?${query.toString()}` : ''}`
+      const response = await authenticatedFetch(url)
       return response.json()
     },
-    { key: 'users:list', staleTime: 60000 }
+    { key, staleTime: 60000 }
   )
 }
 

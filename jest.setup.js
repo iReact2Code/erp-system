@@ -116,6 +116,107 @@ global.console = {
   error: jest.fn(),
 }
 
+// Provide minimal WHATWG fetch classes if not present (Node < 18 or test env shims)
+if (typeof global.Request === 'undefined') {
+  // Use undici if available (Node 18+ includes fetch implementation)
+  try {
+    const undici = require('undici')
+    if (undici.Request && undici.Response && undici.Headers) {
+      // Attach to global
+      global.Request = undici.Request
+      global.Response = undici.Response
+      global.Headers = undici.Headers
+      if (!global.fetch) {
+        global.fetch = undici.fetch
+      }
+    }
+  } catch {
+    // Fallback minimal polyfill just enough for NextRequest construction
+    class BasicHeaders {
+      constructor(init) {
+        this._map = new Map()
+        if (init) {
+          if (init instanceof Map) {
+            for (const [k, v] of init)
+              this._map.set(String(k).toLowerCase(), String(v))
+          } else if (Array.isArray(init)) {
+            for (const [k, v] of init)
+              this._map.set(String(k).toLowerCase(), String(v))
+          } else if (typeof init === 'object') {
+            for (const k of Object.keys(init))
+              this._map.set(k.toLowerCase(), init[k])
+          }
+        }
+      }
+      get(k) {
+        return this._map.get(k.toLowerCase()) || null
+      }
+      set(k, v) {
+        this._map.set(k.toLowerCase(), v)
+      }
+      has(k) {
+        return this._map.has(k.toLowerCase())
+      }
+      delete(k) {
+        this._map.delete(k.toLowerCase())
+      }
+      forEach(cb) {
+        for (const [k, v] of this._map.entries()) cb(v, k, this)
+      }
+      entries() {
+        return this._map.entries()
+      }
+      keys() {
+        return this._map.keys()
+      }
+      values() {
+        return this._map.values()
+      }
+      [Symbol.iterator]() {
+        return this._map[Symbol.iterator]()
+      }
+    }
+    global.Headers = BasicHeaders
+    class BasicRequest {
+      constructor(input, init) {
+        this._url = input
+        this.headers = new BasicHeaders(init && init.headers)
+      }
+      get url() {
+        return this._url
+      }
+    }
+    global.Request = BasicRequest
+    if (typeof global.Response === 'undefined') {
+      class BasicResponse {
+        constructor(body, init = {}) {
+          this._body = typeof body === 'undefined' ? null : body
+          this.status = init.status || 200
+          this.statusText = init.statusText || ''
+          this.headers = new BasicHeaders(init.headers)
+        }
+        get body() {
+          return this._body
+        }
+        async json() {
+          return JSON.parse(this._body || '{}')
+        }
+        async text() {
+          return this._body || ''
+        }
+        clone() {
+          return new BasicResponse(this._body, {
+            status: this.status,
+            statusText: this.statusText,
+            headers: this.headers,
+          })
+        }
+      }
+      global.Response = BasicResponse
+    }
+  }
+}
+
 // Setup cleanup after each test
 afterEach(() => {
   jest.clearAllMocks()

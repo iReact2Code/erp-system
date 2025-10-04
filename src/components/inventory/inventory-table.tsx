@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useMemo, useCallback, memo, useEffect } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window'
+import useDebouncedValue from '@/hooks/use-debounced-value'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -34,11 +36,13 @@ const InventoryTableRow = memo(
     onDelete,
     onEditSuccess,
     deleteLoading,
+    style,
   }: {
     item: InventoryItem
     onDelete: (id: string) => void
     onEditSuccess: () => void
     deleteLoading: boolean
+    style?: React.CSSProperties
   }) => {
     const tInventory = useTranslations('inventory')
 
@@ -64,7 +68,7 @@ const InventoryTableRow = memo(
     )
 
     return (
-      <TableRow key={item.id}>
+      <TableRow key={item.id} style={style}>
         <TableCell className="font-medium">{item.name}</TableCell>
         <TableCell>{item.sku}</TableCell>
         <TableCell className="max-w-xs truncate">
@@ -97,17 +101,18 @@ InventoryTableRow.displayName = 'InventoryTableRow'
 
 export const InventoryTable = memo(() => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
   const t = useTranslations('inventory')
   const tCommon = useTranslations('common')
 
   const { data: items, loading, error, refresh } = useInventory()
   // Normalize items: hook may return raw array or wrapped { data: [...] }
-  const itemsArray: InventoryItem[] = Array.isArray(items)
-    ? items
-    : items && typeof items === 'object' && 'data' in items
-      ? (items as { data: InventoryItem[] }).data
-      : []
+  const itemsArray: InventoryItem[] = useMemo(() => {
+    if (Array.isArray(items)) return items as InventoryItem[]
+    if (items && typeof items === 'object' && 'data' in items) {
+      return (items as { data: InventoryItem[] }).data
+    }
+    return []
+  }, [items])
   const deleteInventory = useDeleteInventory()
 
   // Memoized delete handler to prevent re-renders
@@ -128,12 +133,10 @@ export const InventoryTable = memo(() => {
     refresh()
   }, [refresh])
 
-  // Debounce search input to reduce re-filtering while typing
-  useEffect(() => {
-    const delay = process.env.NODE_ENV === 'test' ? 0 : 250
-    const id = setTimeout(() => setDebouncedSearch(searchTerm), delay)
-    return () => clearTimeout(id)
-  }, [searchTerm])
+  const debouncedSearch = useDebouncedValue(
+    searchTerm,
+    process.env.NODE_ENV === 'test' ? 0 : 250
+  )
 
   // Memoized filtered items to prevent unnecessary recalculations
   const filteredItems = useMemo(() => {
@@ -146,6 +149,38 @@ export const InventoryTable = memo(() => {
         (item.sku || '').toLowerCase().includes(q)
     )
   }, [itemsArray, debouncedSearch])
+
+  // Virtualization setup ----------------------------------------------------
+  const VIRTUALIZATION_THRESHOLD = 100
+  const ROW_HEIGHT = 56 // px approximate row height including padding
+  const enableVirtualization =
+    process.env.NEXT_PUBLIC_ENABLE_VIRTUALIZED_TABLES === '1'
+  const useVirtual =
+    enableVirtualization && filteredItems.length > VIRTUALIZATION_THRESHOLD
+
+  interface VirtualListData {
+    items: InventoryItem[]
+    handleDelete: (id: string) => void
+    handleInventoryCreated: () => void
+    deleteLoading: boolean
+  }
+
+  const VirtualRow = useCallback(
+    ({ index, style, data }: ListChildComponentProps<VirtualListData>) => {
+      const item = data.items[index]
+      return (
+        <InventoryTableRow
+          item={item}
+          // style comes from react-window; ensure width stretch
+          style={{ ...style, width: '100%' }}
+          onDelete={data.handleDelete}
+          onEditSuccess={data.handleInventoryCreated}
+          deleteLoading={data.deleteLoading}
+        />
+      )
+    },
+    []
+  )
 
   // Memoized search handler
   const handleSearchChange = useCallback(
@@ -197,24 +232,63 @@ export const InventoryTable = memo(() => {
                 <TableHead>{tCommon('actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {filteredItems.map(item => (
-                <InventoryTableRow
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onEditSuccess={handleInventoryCreated}
-                  deleteLoading={deleteInventory.loading}
-                />
-              ))}
-              {filteredItems.length === 0 && !loading && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center">
-                    {searchTerm ? tCommon('noItemsFound') : tCommon('noItems')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+            {useVirtual ? (
+              <TableBody>
+                <tr>
+                  <td colSpan={7} className="p-0">
+                    <div
+                      style={{
+                        width: '100%',
+                        height: Math.min(
+                          600,
+                          filteredItems.length * ROW_HEIGHT
+                        ),
+                      }}
+                      data-testid="virtualized-container"
+                    >
+                      <List
+                        height={Math.min(
+                          600,
+                          filteredItems.length * ROW_HEIGHT
+                        )}
+                        itemCount={filteredItems.length}
+                        itemSize={ROW_HEIGHT}
+                        width="100%"
+                        itemData={{
+                          items: filteredItems,
+                          handleDelete,
+                          handleInventoryCreated,
+                          deleteLoading: deleteInventory.loading,
+                        }}
+                      >
+                        {VirtualRow}
+                      </List>
+                    </div>
+                  </td>
+                </tr>
+              </TableBody>
+            ) : (
+              <TableBody>
+                {filteredItems.map(item => (
+                  <InventoryTableRow
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                    onEditSuccess={handleInventoryCreated}
+                    deleteLoading={deleteInventory.loading}
+                  />
+                ))}
+                {filteredItems.length === 0 && !loading && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center">
+                      {searchTerm
+                        ? tCommon('noItemsFound')
+                        : tCommon('noItems')}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            )}
           </Table>
         )}
       </CardContent>

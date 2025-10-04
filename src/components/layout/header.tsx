@@ -16,6 +16,7 @@ import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { LanguageToggle } from '@/components/theme/language-toggle'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/use-auth'
+import Email from '@/components/ui/email'
 
 const navigationKeys = {
   CLERK: ['dashboard', 'inventory', 'sales', 'profile'],
@@ -138,7 +139,7 @@ export function Header() {
               >
                 <p className="text-sm font-medium leading-none">{user.name}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user.email}
+                  <Email className="truncate">{user.email}</Email>
                 </p>
               </div>
               <DropdownMenuItem onClick={signOut}>
