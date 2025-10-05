@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname, useParams } from 'next/navigation'
+import { Link, usePathname } from '@/navigation'
+import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import { LanguageToggle } from '@/components/theme/language-toggle'
 import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/use-auth'
 import Email from '@/components/ui/email'
-
+// import { useRouter } from 'next/navigation'
 const navigationKeys = {
   CLERK: ['dashboard', 'inventory', 'sales', 'profile'],
   SUPERVISOR: [
@@ -27,10 +27,12 @@ const navigationKeys = {
     'purchases',
     'reports',
     'users',
-    'profile',
+    // const router = useRouter()
   ],
   THIRD_PARTY_CLIENT: ['dashboard', 'orders', 'profile'],
 }
+
+// import { useRouter } from 'next/navigation'
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -47,8 +49,8 @@ export function Header() {
   const navKeys = navigationKeys[userRole] || []
 
   return (
-    <header className="border-b bg-background px-4 lg:px-6 animate-slide-in-left shadow-md">
-      <div className="container mx-auto flex h-16 items-center justify-between">
+    <header className="px-4 border-b shadow-md bg-background lg:px-6 animate-slide-in-left">
+      <div className="container flex items-center justify-between h-16 mx-auto">
         <div
           className="flex items-center gap-6 header-nav"
           dir={isRTL ? 'rtl' : 'ltr'}
@@ -58,7 +60,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="items-center hidden space-x-1 md:flex">
             {navKeys.map((key, index) => (
               <Link
                 key={key}
@@ -91,7 +93,7 @@ export function Header() {
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="hover-scale">
-                <Menu className="h-5 w-5" />
+                <Menu className="w-5 h-5" />
               </Button>
             </SheetTrigger>
             <SheetContent
@@ -99,7 +101,7 @@ export function Header() {
               className="w-72 sheet-content"
               dir={isRTL ? 'rtl' : 'ltr'}
             >
-              <nav className="flex flex-col space-y-4 mt-4">
+              <nav className="flex flex-col mt-4 space-y-4">
                 {navKeys.map(key => (
                   <Link
                     key={key}
@@ -120,8 +122,8 @@ export function Header() {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
+              <Button variant="ghost" className="relative w-8 h-8 rounded-full">
+                <Avatar className="w-8 h-8">
                   <AvatarFallback>
                     {user.name?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
@@ -134,7 +136,7 @@ export function Header() {
               forceMount
             >
               <div
-                className="flex flex-col space-y-1 p-2"
+                className="flex flex-col p-2 space-y-1"
                 dir={isRTL ? 'rtl' : 'ltr'}
               >
                 <p className="text-sm font-medium leading-none">{user.name}</p>
@@ -142,8 +144,8 @@ export function Header() {
                   <Email className="truncate">{user.email}</Email>
                 </p>
               </div>
-              <DropdownMenuItem onClick={signOut}>
-                <LogOut className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => signOut()}>
+                <LogOut className="w-4 h-4 mr-2" />
                 <span>{tAuth('logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

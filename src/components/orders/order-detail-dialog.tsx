@@ -1,4 +1,6 @@
 import React from 'react'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 import Email from '@/components/ui/email'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,16 +35,11 @@ interface OrderDetailDialogProps {
 }
 
 // Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
+// Note: We'll bind locale inside the component to satisfy hook rules
 
-const formatDate = (date: Date | string): string => {
+const formatDate = (date: Date | string, locale: string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -110,6 +107,8 @@ export default function OrderDetailDialog({
   onCancel,
   userRole,
 }: OrderDetailDialogProps) {
+  const { locale } = useParams<{ locale: string }>()
+  const formatCurrency = (amount: number) => formatCurrencyUtil(amount, locale)
   if (!order) return null
 
   const canModifyOrders = userRole !== 'THIRD_PARTY_CLIENT'
@@ -148,7 +147,7 @@ export default function OrderDetailDialog({
               </Badge>
             </div>
             <div className="text-sm text-gray-500">
-              Created: {formatDate(order.createdAt)}
+              Created: {formatDate(order.createdAt, locale)}
             </div>
           </div>
 
@@ -211,21 +210,27 @@ export default function OrderDetailDialog({
                   <label className="text-sm font-medium text-gray-500">
                     Order Date
                   </label>
-                  <p className="text-sm">{formatDate(order.orderDate)}</p>
+                  <p className="text-sm">
+                    {formatDate(order.orderDate, locale)}
+                  </p>
                 </div>
                 {order.requiredDate && (
                   <div>
                     <label className="text-sm font-medium text-gray-500">
                       Required Date
                     </label>
-                    <p className="text-sm">{formatDate(order.requiredDate)}</p>
+                    <p className="text-sm">
+                      {formatDate(order.requiredDate, locale)}
+                    </p>
                   </div>
                 )}
                 <div>
                   <label className="text-sm font-medium text-gray-500">
                     Last Updated
                   </label>
-                  <p className="text-sm">{formatDate(order.updatedAt)}</p>
+                  <p className="text-sm">
+                    {formatDate(order.updatedAt, locale)}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">

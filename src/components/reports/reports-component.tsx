@@ -1,6 +1,8 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '../ui/skeleton'
@@ -34,6 +36,8 @@ export default function ReportsComponent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const t = useTranslations('reports')
+  const { locale } = useParams<{ locale: string }>()
+  const formatCurrency = (amount: number) => formatCurrencyUtil(amount, locale)
 
   const fetchReportData = async () => {
     setLoading(true)
@@ -158,13 +162,6 @@ export default function ReportsComponent() {
         <p className="text-lg text-gray-600">{t('noData')}</p>
       </div>
     )
-  }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
   }
 
   const formatDate = (dateString: string) => {

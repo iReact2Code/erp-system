@@ -4,6 +4,8 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useResponsive, mobileContainer } from '@/lib/responsive-utils'
+import { useParams } from 'next/navigation'
+import { formatCurrency } from '@/lib/formatters'
 import {
   ResponsiveDashboardLayout,
   ResponsiveGrid,
@@ -55,13 +57,6 @@ interface MobileDashboardProps {
   data: DashboardData
 }
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
-
 const getStatusBadge = (status: string) => {
   const variants = {
     pending: 'secondary',
@@ -90,13 +85,13 @@ const getStatusBadge = (status: string) => {
 const getAlertIcon = (type: string) => {
   switch (type) {
     case 'error':
-      return <AlertTriangle className="h-4 w-4 text-red-500" />
+      return <AlertTriangle className="w-4 h-4 text-red-500" />
     case 'warning':
-      return <AlertTriangle className="h-4 w-4 text-yellow-500" />
+      return <AlertTriangle className="w-4 h-4 text-yellow-500" />
     case 'info':
-      return <CheckCircle className="h-4 w-4 text-blue-500" />
+      return <CheckCircle className="w-4 h-4 text-blue-500" />
     default:
-      return <AlertTriangle className="h-4 w-4 text-gray-500" />
+      return <AlertTriangle className="w-4 h-4 text-gray-500" />
   }
 }
 
@@ -104,22 +99,23 @@ const MobileRecentOrders: React.FC<{
   orders: DashboardData['recentOrders']
 }> = ({ orders }) => {
   const { isMobile } = useResponsive()
+  const { locale } = useParams<{ locale: string }>()
 
   if (isMobile) {
     return (
       <div className="space-y-3">
         {orders.slice(0, 3).map(order => (
           <Card key={order.id} className="p-3">
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex items-start justify-between mb-2">
               <div>
-                <p className="font-medium text-sm">{order.customer}</p>
+                <p className="text-sm font-medium">{order.customer}</p>
                 <p className="text-xs text-muted-foreground">{order.id}</p>
               </div>
               {getStatusBadge(order.status)}
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span className="font-semibold">
-                {formatCurrency(order.amount)}
+                {formatCurrency(order.amount, locale)}
               </span>
               <span className="text-xs text-muted-foreground">
                 {order.date}
@@ -148,7 +144,9 @@ const MobileRecentOrders: React.FC<{
             </div>
           </div>
           <div className="text-right">
-            <p className="font-semibold">{formatCurrency(order.amount)}</p>
+            <p className="font-semibold">
+              {formatCurrency(order.amount, locale)}
+            </p>
             <p className="text-sm text-muted-foreground">{order.date}</p>
           </div>
         </div>
@@ -170,7 +168,7 @@ const MobileAlerts: React.FC<{ alerts: DashboardData['alerts'] }> = ({
     return (
       <Card className="p-4">
         <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-500" />
+          <CheckCircle className="w-4 h-4 text-green-500" />
           <span className="text-sm text-muted-foreground">
             No urgent alerts
           </span>
@@ -218,7 +216,7 @@ const MobileLowStock: React.FC<{ items: DashboardData['lowStockItems'] }> = ({
     return (
       <Card className="p-4">
         <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-500" />
+          <CheckCircle className="w-4 h-4 text-green-500" />
           <span className="text-sm text-muted-foreground">
             Stock levels normal
           </span>
@@ -261,6 +259,7 @@ const MobileLowStock: React.FC<{ items: DashboardData['lowStockItems'] }> = ({
 
 const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
   const { isMobile, isTablet } = useResponsive()
+  const { locale } = useParams<{ locale: string }>()
 
   const metricCards = [
     {
@@ -275,8 +274,8 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
           : data.metrics.revenueChange < 0
             ? 'DOWN'
             : 'STABLE',
-      icon: <DollarSign className="h-4 w-4" />,
-      formatter: formatCurrency,
+      icon: <DollarSign className="w-4 h-4" />,
+      formatter: (v: number) => formatCurrency(v, locale),
       priority: 'high',
     },
     {
@@ -291,7 +290,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
           : data.metrics.ordersChange < 0
             ? 'DOWN'
             : 'STABLE',
-      icon: <ShoppingCart className="h-4 w-4" />,
+      icon: <ShoppingCart className="w-4 h-4" />,
       priority: 'high',
     },
     {
@@ -306,7 +305,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
           : data.metrics.productsChange < 0
             ? 'DOWN'
             : 'STABLE',
-      icon: <Package className="h-4 w-4" />,
+      icon: <Package className="w-4 h-4" />,
       priority: 'medium',
     },
     {
@@ -321,7 +320,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
           : data.metrics.customersChange < 0
             ? 'DOWN'
             : 'STABLE',
-      icon: <Users className="h-4 w-4" />,
+      icon: <Users className="w-4 h-4" />,
       priority: 'low',
     },
   ] as const
@@ -367,7 +366,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
                 >
                   Recent Orders
                 </h3>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="w-4 h-4 text-muted-foreground" />
               </div>
               <MobileRecentOrders orders={data.recentOrders} />
             </CardContent>
@@ -382,7 +381,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
                 >
                   Priority Alerts
                 </h3>
-                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                <AlertTriangle className="w-4 h-4 text-muted-foreground" />
               </div>
               <MobileAlerts alerts={data.alerts} />
             </CardContent>
@@ -398,7 +397,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({ data }) => {
               >
                 Critical Stock Levels
               </h3>
-              <Package className="h-4 w-4 text-muted-foreground" />
+              <Package className="w-4 h-4 text-muted-foreground" />
             </div>
             <MobileLowStock items={data.lowStockItems} />
           </CardContent>

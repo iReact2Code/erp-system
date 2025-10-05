@@ -13,10 +13,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   // Non-fatal: surfaces missing/extra env vars early in runtime logs
-  if (typeof window === 'undefined') {
+  if (
+    typeof window === 'undefined' &&
+    (process.env.NODE_ENV === 'production' || process.env.CI === 'true')
+  ) {
     // server only
     try {
-      reportConfigDrift()
+      reportConfigDrift({ ignoreExtra: true })
     } catch {}
   }
   return children

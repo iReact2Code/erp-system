@@ -25,8 +25,11 @@ import { PurchaseForm } from '@/components/purchases/purchase-form'
 import { usePurchases, useDeletePurchase } from '@/features/purchases/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 
 export const PurchasesTable = memo(function PurchasesTable() {
+  const { locale } = useParams<{ locale: string }>()
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tPurchases = useTranslations('purchases')
@@ -136,7 +139,9 @@ export const PurchasesTable = memo(function PurchasesTable() {
                   <TableCell>
                     {new Date(purchase.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>${purchase.total.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {formatCurrencyUtil(purchase.total, locale)}
+                  </TableCell>
                   <TableCell>{getStatusBadge(purchase.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">

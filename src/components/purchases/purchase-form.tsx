@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/dialog'
 import { Plus, Edit, Save, X, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 
 interface InventoryItem {
   id: string
@@ -61,6 +63,7 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
 
   const t = useTranslations('common')
   const tPurchases = useTranslations('purchases')
+  const { locale } = useParams<{ locale: string }>()
 
   useEffect(() => {
     fetchInventoryItems()
@@ -317,7 +320,9 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
 
                 <div className="text-right">
                   <span className="font-medium">
-                    Subtotal: ${(item.quantity * item.unitPrice).toFixed(2)}
+                    {/* Display-only subtotal with locale-aware currency */}
+                    Subtotal:{' '}
+                    {formatCurrencyUtil(item.quantity * item.unitPrice, locale)}
                   </span>
                 </div>
               </div>
@@ -327,7 +332,8 @@ export function PurchaseForm({ purchase, mode, onSuccess }: PurchaseFormProps) {
           <div className="pt-4 border-t">
             <div className="text-right">
               <span className="text-lg font-bold">
-                {tPurchases('total')}: ${formData.total.toFixed(2)}
+                {tPurchases('total')}:{' '}
+                {formatCurrencyUtil(formData.total, locale)}
               </span>
             </div>
           </div>

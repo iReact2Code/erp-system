@@ -25,11 +25,15 @@ import { SaleForm } from '@/components/sales/sale-form'
 import { useSales, useDeleteSale } from '@/features/sales/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
+import { useParams } from 'next/navigation'
+import { formatCurrency } from '@/lib/formatters'
 
 export const SalesTable = memo(function SalesTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const t = useTranslations('common')
   const tSales = useTranslations('sales')
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
 
   const { data: sales, loading, error, refresh } = useSales()
   const deleteSale = useDeleteSale()
@@ -127,7 +131,7 @@ export const SalesTable = memo(function SalesTable() {
                   <TableCell>
                     {new Date(sale.saleDate).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>${sale.total.toFixed(2)}</TableCell>
+                  <TableCell>{formatCurrency(sale.total, locale)}</TableCell>
                   <TableCell>{getStatusBadge(sale.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">

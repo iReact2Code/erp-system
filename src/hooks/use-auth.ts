@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createLogger, serializeError } from '@/lib/logger'
 import { useRouter, usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { JWTUser } from '@/lib/jwt-auth'
 
 export function useAuth() {
@@ -10,6 +11,8 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -37,9 +40,9 @@ export function useAuth() {
       !pathname.includes('/login') &&
       !pathname.includes('/register')
     ) {
-      router.push('/login')
+      router.push(`/${locale}/login`)
     }
-  }, [loading, user, pathname, router])
+  }, [loading, user, pathname, router, locale])
 
   const signOut = async () => {
     localStorage.removeItem('auth-token')
@@ -55,7 +58,10 @@ export function useAuth() {
       authLog.error('logout_failed', { error: serializeError(error) })
     }
 
-    router.push('/login')
+    const params =
+      typeof window !== 'undefined' ? window.location.pathname.split('/') : []
+    const locale = params[1] || 'en'
+    router.push(`/${locale}/login`)
   }
 
   return {

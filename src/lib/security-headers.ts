@@ -48,35 +48,18 @@ function buildSecurityHeaders(nonce?: string) {
     // Strict Transport Security (HTTPS only)
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 
-    // Permissions Policy (Feature Policy)
+    // Permissions Policy (use widely recognized features only)
     'Permissions-Policy': [
       'accelerometer=()',
-      'ambient-light-sensor=()',
-      'autoplay=()',
-      'battery=()',
       'camera=()',
-      'cross-origin-isolated=()',
-      'display-capture=()',
-      'document-domain=()',
-      'encrypted-media=()',
-      'execution-while-not-rendered=()',
-      'execution-while-out-of-viewport=()',
       'fullscreen=()',
       'geolocation=()',
       'gyroscope=()',
-      'keyboard-map=()',
       'magnetometer=()',
       'microphone=()',
       'midi=()',
-      'navigation-override=()',
       'payment=()',
       'picture-in-picture=()',
-      'publickey-credentials-get=()',
-      'screen-wake-lock=()',
-      'sync-xhr=()',
-      'usb=()',
-      'web-share=()',
-      'xr-spatial-tracking=()',
     ].join(', '),
   }
 }

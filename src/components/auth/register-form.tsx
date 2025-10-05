@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -39,6 +39,8 @@ const formSchema = z.object({
 
 export const RegisterForm = () => {
   const router = useRouter()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
   const [error, setError] = useState<string | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,7 +68,7 @@ export const RegisterForm = () => {
         throw new Error(data.error || 'Registration failed')
       }
 
-      router.push('/login?registered=true')
+      router.push(`/${locale}/login?registered=true`)
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
@@ -160,7 +162,7 @@ export const RegisterForm = () => {
           <Button
             variant="link"
             className="p-0 h-auto font-normal"
-            onClick={() => router.push('/login')}
+            onClick={() => router.push(`/${locale}/login`)}
           >
             Sign in here
           </Button>

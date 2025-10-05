@@ -33,6 +33,7 @@
     "edit": "تەھرىرلەش",
     "add": "قوشۇش",
     "search": "ئىزدەش",
+    "clear": "Temizle",
     "actions": "مەشغۇلاتلار",
     "saving": "ساقلاۋاتىدۇ...",
     "confirmDelete": "بۇ تۈرنى ئۆچۈرۈشنى جەزىملەشتۈرەمسىز؟",
@@ -200,7 +201,11 @@
     "inactive": "Pasif",
     "admin": "Yönetici",
     "manager": "Müdür",
-    "user": "Kullanıcı"
+    "user": "Kullanıcı",
+    "invite": "Davet Et",
+    "invitePlaceholder": "Kullanıcı davet et",
+    "listHelp": "Kullanıcıları aramayla filtreleyin veya yeni kullanıcı eklemek için Davet Et'e tıklayın.",
+    "emptyHelp": "Aramanızı ayarlayın veya yeni bir kullanıcı davet edin."
   },
   "profile": {
     "title": "شەخسىي ئۇچۇر",

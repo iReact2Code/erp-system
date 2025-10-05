@@ -15,13 +15,40 @@ interface ContextStore<T> {
 
 let store: ContextStore<RequestContext> | undefined
 
-try {
-  // Dynamically require to avoid bundler complaints if not available.
-  const { AsyncLocalStorage } =
-    require('async_hooks') as typeof import('async_hooks')
-  store = new AsyncLocalStorage<RequestContext>()
-} catch {
-  // Fallback shim (no persistence across async boundaries)
+if (
+  typeof window === 'undefined' &&
+  typeof process !== 'undefined' &&
+  process.versions?.node
+) {
+  try {
+    // Only require async_hooks in Node.js server environments
+
+    const { AsyncLocalStorage } =
+      require('async_hooks') as typeof import('async_hooks')
+    store = new AsyncLocalStorage<RequestContext>()
+  } catch {
+    // Fallback shim (no persistence across async boundaries)
+    let current: RequestContext | undefined
+    store = {
+      run(
+        value: RequestContext,
+        callback: (...args: unknown[]) => void,
+        ...args: unknown[]
+      ) {
+        current = value
+        try {
+          callback(...args)
+        } finally {
+          /* do not clear to allow sync access */
+        }
+      },
+      getStore() {
+        return current
+      },
+    }
+  }
+} else {
+  // Fallback shim for browser/edge runtimes
   let current: RequestContext | undefined
   store = {
     run(

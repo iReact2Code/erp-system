@@ -23,6 +23,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Plus, Search, Package, ShoppingCart, X } from 'lucide-react'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 
 // Import shared types
 import { OrderStatus, OrderPriority, OrderFormData } from '@/types/orders'
@@ -54,11 +56,9 @@ interface OrderFormDialogProps {
   loading?: boolean
 }
 
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
+const useLocaleCurrency = () => {
+  const { locale } = useParams<{ locale: string }>()
+  return (amount: number) => formatCurrencyUtil(amount, locale)
 }
 
 export default function OrderFormDialog({
@@ -69,6 +69,7 @@ export default function OrderFormDialog({
   mode,
   loading = false,
 }: OrderFormDialogProps) {
+  const formatCurrency = useLocaleCurrency()
   const [formData, setFormData] = useState<OrderFormData>({
     customerName: '',
     customerEmail: '',

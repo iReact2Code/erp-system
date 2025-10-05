@@ -2,6 +2,8 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -65,16 +67,9 @@ interface OrdersTableProps {
 }
 
 // Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount)
-}
-
-const formatDate = (date: Date | string): string => {
+const formatDate = (date: Date | string, locale: string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -126,6 +121,7 @@ export default function OrdersTable({
   userRole,
 }: OrdersTableProps) {
   const t = useTranslations('orders')
+  const { locale } = useParams<{ locale: string }>()
   const canModifyOrders = userRole !== 'THIRD_PARTY_CLIENT'
 
   const handleSortChange = (field: string) => {
@@ -310,7 +306,9 @@ export default function OrdersTable({
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{formatDate(order.orderDate)}</TableCell>
+                      <TableCell>
+                        {formatDate(order.orderDate, locale)}
+                      </TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(order.status)}>
                           {order.status}
@@ -322,7 +320,7 @@ export default function OrdersTable({
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">
-                        {formatCurrency(order.totalAmount)}
+                        {formatCurrencyUtil(order.totalAmount, locale)}
                       </TableCell>
                       <TableCell>
                         <span className="text-sm text-gray-600">

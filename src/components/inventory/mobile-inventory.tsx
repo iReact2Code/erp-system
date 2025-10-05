@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/formatters'
 
 interface InventoryItem {
   id: string
@@ -69,6 +71,8 @@ const MobileInventoryCard: React.FC<{
   onDelete: () => void
 }> = ({ item, onEdit, onDelete }) => {
   const { isMobile } = useResponsive()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
   const stockStatus = getStockStatus(
     item.currentStock,
     item.minStock,
@@ -135,7 +139,9 @@ const MobileInventoryCard: React.FC<{
         </div>
         <div>
           <span className="text-muted-foreground">Price:</span>
-          <p className="font-medium">${item.unitPrice.toFixed(2)}</p>
+          <p className="font-medium">
+            {formatCurrency(item.unitPrice, locale)}
+          </p>
         </div>
       </div>
 
@@ -374,6 +380,8 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
   onItemAdd,
 }) => {
   const { isMobile } = useResponsive()
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
   const t = useTranslations('inventory')
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
@@ -446,6 +454,8 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
                   value={categoryFilter}
                   onChange={e => setCategoryFilter(e.target.value)}
                   className="flex w-full h-10 px-3 py-2 text-sm border rounded-md border-input bg-background"
+                  title="Filter by category"
+                  aria-label="Filter by category"
                 >
                   <option value="">All Categories</option>
                   {categories.map(category => (
@@ -459,6 +469,8 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value)}
                   className="flex w-full h-10 px-3 py-2 text-sm border rounded-md border-input bg-background"
+                  title="Filter by status"
+                  aria-label="Filter by status"
                 >
                   <option value="">All Status</option>
                   {statuses.map(status => (
@@ -523,7 +535,7 @@ const MobileInventoryManagement: React.FC<MobileInventoryProps> = ({
                   sku: item.sku,
                   category: item.category,
                   stock: `${item.currentStock}/${item.minStock}-${item.maxStock}`,
-                  price: `$${item.unitPrice.toFixed(2)}`,
+                  price: formatCurrency(item.unitPrice, locale),
                   status: item.status,
                   actions: 'Edit | Delete',
                 }))}

@@ -39,6 +39,7 @@
     "edit": "Editar",
     "add": "Agregar",
     "search": "Buscar",
+    "clear": "Limpiar",
     "actions": "Acciones",
     "saving": "Guardando...",
     "confirmDelete": "¿Estás seguro de que quieres eliminar este artículo?",
@@ -206,7 +207,11 @@
     "inactive": "Inactivo",
     "admin": "Administrador",
     "manager": "Gerente",
-    "user": "Usuario"
+    "user": "Usuario",
+    "invite": "Invitar",
+    "invitePlaceholder": "Invitar usuario",
+    "listHelp": "Filtra usuarios con la búsqueda o haz clic en Invitar para agregar uno nuevo.",
+    "emptyHelp": "Intenta ajustar tu búsqueda o invita un nuevo usuario."
   },
   "profile": {
     "title": "Perfil",

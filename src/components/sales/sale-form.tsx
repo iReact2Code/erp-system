@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/dialog'
 import { Plus, Edit, Save, X, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 import { useToast } from '@/components/ui/use-toast'
 
 interface InventoryItem {
@@ -66,6 +68,7 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
 
   const t = useTranslations('common')
   const tSales = useTranslations('sales')
+  const { locale } = useParams<{ locale: string }>()
   const { success, error: showErrorToast } = useToast()
 
   const fetchInventoryItems = useCallback(async () => {
@@ -387,7 +390,8 @@ export function SaleForm({ sale, mode, onSuccess }: SaleFormProps) {
 
           <div className="flex items-center justify-between pt-4 border-t">
             <div className="text-lg font-semibold">
-              {tSales('grandTotal')}: ${formData.total.toFixed(2)}
+              {tSales('grandTotal')}:{' '}
+              {formatCurrencyUtil(formData.total, locale)}
             </div>
             <div className="flex gap-2">
               <Button

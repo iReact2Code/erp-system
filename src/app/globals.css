@@ -307,7 +307,8 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Keep consistent border color variables available without forcing outlines globally */
+    @apply border-border;
   }
 
   body {
@@ -338,6 +339,15 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Optional debug: add `debug-outlines` to <html> to visualize element boxes */
+@layer utilities {
+  html.debug-outlines * {
+    /* Use a safe, widely-supported color for debug outlines */
+    outline: 2px dashed rgba(59, 130, 246, 0.5); /* approx. Tailwind ring color */
+    outline-offset: 2px;
   }
 }
 

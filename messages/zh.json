@@ -39,6 +39,7 @@
     "edit": "编辑",
     "add": "添加",
     "search": "搜索",
+    "clear": "清除",
     "actions": "操作",
     "saving": "保存中...",
     "confirmDelete": "您确定要删除此项目吗？",
@@ -161,7 +162,8 @@
     "unitPrice": "单价",
     "total": "总计",
     "grandTotal": "总计",
-    "available": "可用"
+    "available": "可用",
+    "noSales": "还没有销售记录"
   },
   "orders": {
     "title": "订单管理",
@@ -221,7 +223,11 @@
     "inactive": "非活跃",
     "admin": "管理员",
     "manager": "经理",
-    "user": "用户"
+    "user": "用户",
+    "invite": "邀请",
+    "invitePlaceholder": "邀请用户",
+    "listHelp": "使用搜索筛选用户，或点击“邀请”添加新用户。",
+    "emptyHelp": "尝试调整搜索或邀请新用户。"
   },
   "profile": {
     "title": "个人资料",

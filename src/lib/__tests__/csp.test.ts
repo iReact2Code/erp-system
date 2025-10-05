@@ -7,10 +7,23 @@ describe('CSP nonce utilities', () => {
   })
 
   it('builds CSP with provided nonce', () => {
-    const n = 'abc123'
-    const csp = buildCSP(n)
-    expect(csp).toContain(`script-src 'self' 'nonce-${n}'`)
-    expect(csp).toContain(`style-src 'self' 'nonce-${n}'`)
+    const prev = process.env.NODE_ENV
+    // NODE_ENV is read-only in Node; override via defineProperty for test scope
+    Object.defineProperty(process, 'env', {
+      value: { ...process.env, NODE_ENV: 'production' },
+      configurable: true,
+    })
+    try {
+      const n = 'abc123'
+      const csp = buildCSP(n)
+      expect(csp).toContain(`script-src 'self' 'nonce-${n}'`)
+      expect(csp).toContain(`style-src 'self' 'nonce-${n}'`)
+    } finally {
+      Object.defineProperty(process, 'env', {
+        value: { ...process.env, NODE_ENV: prev },
+        configurable: true,
+      })
+    }
   })
 
   it('injects nonce attributes into inline tags', () => {

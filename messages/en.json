@@ -39,6 +39,7 @@
     "edit": "Edit",
     "add": "Add",
     "search": "Search",
+    "clear": "Clear",
     "actions": "Actions",
     "saving": "Saving...",
     "confirmDelete": "Are you sure you want to delete this item?",
@@ -220,7 +221,11 @@
     "inactive": "Inactive",
     "admin": "Admin",
     "manager": "Manager",
-    "user": "User"
+    "user": "User",
+    "invite": "Invite",
+    "invitePlaceholder": "Invite user",
+    "listHelp": "Filter users with search, or click Invite to add a new user.",
+    "emptyHelp": "Try adjusting your search or invite a new user."
   },
   "profile": {
     "title": "Profile",

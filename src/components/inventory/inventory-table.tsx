@@ -28,6 +28,8 @@ import { useInventory, useDeleteInventory } from '@/features/inventory/hooks'
 import { TableLoading } from '@/components/ui/loading'
 import { ApiErrorDisplay } from '@/components/ui/error-boundary'
 import type { InventoryItem } from '@/types/api'
+import { useParams } from 'next/navigation'
+import { formatCurrency as formatCurrencyUtil } from '@/lib/formatters'
 
 // Memoized table row component to prevent unnecessary re-renders
 const InventoryTableRow = memo(
@@ -45,6 +47,7 @@ const InventoryTableRow = memo(
     style?: React.CSSProperties
   }) => {
     const tInventory = useTranslations('inventory')
+    const { locale } = useParams<{ locale: string }>()
 
     const getStockStatus = useCallback(
       (quantity: number) => {
@@ -75,9 +78,7 @@ const InventoryTableRow = memo(
           {item.description || '-'}
         </TableCell>
         <TableCell>{item.quantity ?? 0}</TableCell>
-        <TableCell>
-          ${item.unitPrice ? item.unitPrice.toFixed(2) : '0.00'}
-        </TableCell>
+        <TableCell>{formatCurrencyUtil(item.unitPrice || 0, locale)}</TableCell>
         <TableCell>{getStockStatus(item.quantity ?? 0)}</TableCell>
         <TableCell>
           <div className="flex items-center space-x-2">

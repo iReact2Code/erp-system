@@ -101,7 +101,8 @@ export async function POST(request: NextRequest) {
 
     const res = NextResponse.json({
       success: true,
-      accessToken,
+      token: accessToken,
+      accessToken, // maintain backward compatibility with tests expecting this property
       user: {
         id: user.id,
         email: user.email,
